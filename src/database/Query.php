@@ -38,8 +38,9 @@ class Query
             "message"   => "Não foi possível executar a query.",
             "sql"       => $sql,
             "params"    => $paramBinds,
-            "exception" => json_encode($e)
+            "exception" => $e
         ];
+        http_response_code(400);
         die(json_encode($response));
     }
 }
