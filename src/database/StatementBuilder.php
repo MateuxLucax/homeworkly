@@ -1,6 +1,6 @@
 <?php
 
-require_once "Connection.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/../database/Connection.php";
 
 class StatementBuilder
 {

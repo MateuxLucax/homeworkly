@@ -1,11 +1,9 @@
 <?php
 
-require_once "TipoUsuario.php";
-
 class Usuario
 {
     private int $id_usuario;
-    private TipoUsuario $tipo;
+    private string $tipo;
     private string $nome;
     private string $login;
     private string $hash_senha;
@@ -23,12 +21,12 @@ class Usuario
         return $this;
     }
 
-    public function getTipo(): TipoUsuario
+    public function getTipo(): string
     {
         return $this->tipo;
     }
 
-    public function setTipo(TipoUsuario $tipo): Usuario
+    public function setTipo(string $tipo): Usuario
     {
         $this->tipo = $tipo;
         return $this;

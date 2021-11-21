@@ -1,9 +1,9 @@
 <?php
 
-require_once "Usuario.php";
-require_once "../database/StatementBuilder.php";
-require_once "../utils/PasswordUtil.php";
-require_once "../exceptions/UnauthorizedException.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/../models/Usuario.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/../database/StatementBuilder.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/../utils/PasswordUtil.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/../exceptions/UnauthorizedException.php";
 
 class UsuarioDAO
 {

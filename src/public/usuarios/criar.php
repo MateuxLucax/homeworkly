@@ -1,16 +1,24 @@
 <?php
 
-$root = '../..';
+if (!($_SERVER['REQUEST_METHOD'] === 'POST')) {
+    die(json_encode(["erro" => "metodo nao permitido"]));
+}
 
-require_once $root.'/models/Usuario.php';
-require_once $root.'/models/UsuarioDAO.php';
+$root = $_SERVER['DOCUMENT_ROOT'] . '/../';
+
+require_once $root. 'models/Usuario.php';
+require_once $root. 'models/UsuarioDAO.php';
+
+$data = json_decode(file_get_contents('php://input'), true);
 
 $usuario = new Usuario();
-$usuario->setNome($_POST['nome']);
-$usuario->setTipo($_POST['tipo']);
-$usuario->setHashSenha($_POST['senha']);
-$usuario->setLogin($_POST['login']);
+$usuario->setNome($data['nome']);
+$usuario->setTipo($data['tipo']);
+$usuario->setHashSenha($data['senha']);
+$usuario->setLogin($data['login']);
 
-UsuarioDAO::Registrar($usuario);
+$registrado = UsuarioDAO::Registrar($usuario);
 
-header('Location: listar');
+header('Content-Type: application/json; charset=utf-8');
+http_response_code($registrado ? 201 : 400);
+die(json_encode(["registrado" => $registrado]));
