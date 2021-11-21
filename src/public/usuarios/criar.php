@@ -2,15 +2,15 @@
 
 $root = '../..';
 
-require $root.'/classes/Connection.php';
+require_once $root.'/models/Usuario.php';
+require_once $root.'/models/UsuarioDAO.php';
 
-$DB = Connection::getInstance();
+$usuario = new Usuario();
+$usuario->setNome($_POST['nome']);
+$usuario->setTipo($_POST['tipo']);
+$usuario->setHashSenha($_POST['senha']);
+$usuario->setLogin($_POST['login']);
 
-$pstmt = $DB->prepare('INSERT INTO usuario (nome, tipo, login, hash_senha) VALUES (:nome, :tipo, :login, :senha)');
-$pstmt->bindValue(':nome', $_POST['nome']);
-$pstmt->bindValue(':tipo', $_POST['tipo']);
-$pstmt->bindValue(':login', $_POST['login']);
-$pstmt->bindValue(':senha', hash('sha256', $_POST['nome']));
-$pstmt->execute();
+UsuarioDAO::Registrar($usuario);
 
 header('Location: listar');

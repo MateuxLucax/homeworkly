@@ -2,15 +2,10 @@
 
 $root = '../..';
 
-require_once $root.'/classes/Connection.php';
-
-$DB = Connection::getInstance();
-
-$stmt = $DB->query('SELECT id_usuario AS id, nome, tipo, login FROM usuario', PDO::FETCH_ASSOC);
-$usuarios = $stmt->fetchAll();
+require_once $root.'/models/UsuarioDAO.php';
 
 $view['title'] = 'Homeworkly - Usuários';
 $view['pode-modificar-usuarios'] = true;  // TODO true quando o tipo do usuário logado for 'Administrador'
-$view['usuarios'] = $usuarios;
+$view['usuarios'] = UsuarioDAO::ListarTodos();
 
 require $root.'/views/usuarios/listar.php';

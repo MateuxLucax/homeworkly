@@ -1,4 +1,4 @@
-<html>
+<html lang="pt-BR">
 <?php require $root.'/views/componentes/head.php'; ?>
 
 <body>
