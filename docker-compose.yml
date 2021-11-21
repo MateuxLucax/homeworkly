@@ -1,0 +1,49 @@
+version: "3.1"
+
+services:
+  database:
+    container_name: homeworkly-database
+    image: postgres:alpine
+    restart: unless-stopped
+    tty: true
+    environment:
+      # host.docker.internal can be used as host on WSL
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: homeworkly
+    volumes:
+      - ./database:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - homeworkly-network
+
+  server:
+    container_name: homeworkly-server
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    tty: true
+    ports:
+      - "80:80"
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/sites-enabled:/etc/apache2/sites-enabled
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/extra-php-config.ini
+      - ./docker/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./docker/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini
+
+    depends_on:
+      - database
+    networks:
+      - homeworkly-network
+
+networks:
+  homeworkly-network:
+    driver: bridge
+
+volumes:
+  database:
+    driver: local
