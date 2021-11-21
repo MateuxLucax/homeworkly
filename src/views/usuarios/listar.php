@@ -22,6 +22,7 @@
                     <th>Nome</th>
                     <th>Tipo</th>
                     <th>Login</th>
+                    <th></th>
                 </tr>
                 <?php foreach ($view['usuarios'] as $usuario): ?>
                     <tr>
@@ -29,6 +30,8 @@
                         <td><?=$usuario['nome']?></td>
                         <td><?=ucfirst($usuario['tipo'])?></td>
                         <td><?=$usuario['login']?></td>
+                        <td><button type="button" class="btn btn-link btn-excluir-usuario"
+                                    data-id-usuario="<?=$usuario['id']?>">Excluir</button></td>
                     </tr>
                 <?php endforeach; ?>
         <?php endif; ?>
@@ -43,11 +46,7 @@
                     <h5 class="modal-title">Novo usuário</h5>
                 </div>
 
-                <!-- TODO usar fetch em vez do comportamento padrão do form 
-                     aí o criar.php retorna uma responsta em json,
-                     talvez até com uma mensagem tipo "usuário criado com sucesso" ou "erro ao criar usuário" -- nesse segundo caso sem recarregar a página -->
-
-                <form action="criar" method="POST">
+                <form id="form-novo-usuario" action="criar" method="POST">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome</label>
@@ -72,12 +71,89 @@
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">Criar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dmismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modal-excluir-usuario">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <input type="hidden" name="id-usuario">
+                    <p>Tem certeza que deseja excluir este usuário?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
+                    <button class="btn btn-secondary" id="btn-cancelar-exclusao">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+
+        const elemModalExcluir = document.querySelector('#modal-excluir-usuario');
+        const modalExcluir     = new bootstrap.Modal(elemModalExcluir);
+        const inputIdUsuario   = document.querySelector('[name=id-usuario]');
+
+        for (const btnExcluir of document.querySelectorAll('.btn-excluir-usuario')) {
+            btnExcluir.addEventListener('click', () => {
+                inputIdUsuario.value = btnExcluir.dataset.idUsuario;
+                modalExcluir.show();
+            });
+        }
+
+        const btnCancelarExclusao  = document.querySelector('#btn-cancelar-exclusao');
+        const btnConfirmarExclusao = document.querySelector('#btn-confirmar-exclusao');
+
+        document.querySelector('#btn-cancelar-exclusao').addEventListener('click', () => {
+            modalExcluir.hide();
+            inputIdUsuario.value = null;
+        });
+
+        document.querySelector('#btn-confirmar-exclusao').addEventListener('click', () => {
+            const idUsuario = elemModalExcluir.querySelector('[name=id-usuario]').value;
+            if (idUsuario) {
+                const promExcluir = fetch('excluir', {method: 'POST', body: JSON.stringify({id: idUsuario})});
+                const promBody = promExcluir.then(response => {
+                    if (response.status == 200) {
+                        window.location.reload();
+                        return null;
+                    } else {
+                        return response.json();
+                    }
+                });
+                promBody?.then(console.log);
+            }
+            modalExcluir.hide();
+            inputIdUsuario.value = null;
+        });
+
+
+
+
+
+        /*
+        const formUsuario = document.getElementById('form-novo-usuario');
+
+        formUsuario.addEventListener('submit', event => {
+            event.preventDefault();
+            let data = {
+                nome: formUsuario.nome.value,
+                tipo: formUsuario.tipo.value,
+                login: formUsuario.login.value,
+                senha: formUsuario.senha.value,
+            };
+            fetch('http://localhost/usuarios/criar', {method: 'POST', body: data})
+                .then(response => console.log(response));
+        });
+        */
+    </script>
+
 
 </body>
 </html>
