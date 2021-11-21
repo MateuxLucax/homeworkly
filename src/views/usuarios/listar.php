@@ -46,7 +46,7 @@
                     <h5 class="modal-title">Novo usuário</h5>
                 </div>
 
-                <form id="form-novo-usuario" action="criar" method="POST">
+                <form id="form-novo-usuario">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome</label>
@@ -93,12 +93,35 @@
         </div>
     </div>
 
+    <!-- TODO permitir que toasts em sequencia fiquem em stack
+         acho que pra isso precisa criar um elemento .toast pra cada em vez de dar show() no mesmo -->
+    <div area-live="polite" aria-atomic="true">
+        <div class="toast-container position-absolute p-3 bottom-0 end-0">
+            <div id="alerta-excluir-usuario" class="toast bg-warning" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">Não foi possível excluir o usuário</div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script type="text/javascript">
 
         // TODO refatorar
         // - criar modal com createDocument pra poder ser criado um para cada clique
         // - colocar dentro de uma função
+
+        //
+        // Deletar usuário
+        //
+
+        // TODO investigar como alterar as exceções do xdebug
+        // atualmente qdo acontece uma PDOException ele transorma em html e fica impossível de pegar o código e mostrar uma mensagem apropriada
+        // tipo quando se tenta deletar um usuário que é professor de uma turma e dá uma violação de foreign key
+        // seria melhor se fosse possível inspecionar o código do erro da exceção retornada como json
+        // e mostrar uma mensagem tipo "Não foi possível deletar o usuário porque ..."
 
         const elemModalExcluir = document.querySelector('#modal-excluir-usuario');
         const modalExcluir     = new bootstrap.Modal(elemModalExcluir);
@@ -123,39 +146,51 @@
             const idUsuario = elemModalExcluir.querySelector('[name=id-usuario]').value;
             if (idUsuario) {
                 const promExcluir = fetch('excluir', {method: 'POST', body: JSON.stringify({id: idUsuario})});
-                const promBody = promExcluir.then(response => {
+                promExcluir.then(response => {
                     if (response.status == 200) {
+                    // TODO toast com mensagem 'Usuário excluído com sucesso' na página recarregada
                         window.location.reload();
                         return null;
                     } else {
+                        (new bootstrap.Toast(document.querySelector('#alerta-excluir-usuario'))).show();
                         return response.json();
                     }
-                });
-                promBody?.then(console.log);
+                }).then(body => { if (body) console.log(body); });
             }
             modalExcluir.hide();
             inputIdUsuario.value = null;
         });
 
+        //
+        // Criar usuário
+        //
 
+        // TODO evento keydown no campo login (com debounce) pra verificar se o login já está o uso
+        //   e, se for o caso, avisar o usuário e bloquear o botão "Criar"
+        //   (nvdd o ideal seria deixar esse botão bloqueado e só habilitar quando os campos estiverem ok --
+        //    login não está em uso, senha é forte o suficiente etc.)
 
-
-
-        /*
         const formUsuario = document.getElementById('form-novo-usuario');
 
         formUsuario.addEventListener('submit', event => {
             event.preventDefault();
-            let data = {
-                nome: formUsuario.nome.value,
-                tipo: formUsuario.tipo.value,
+            const data = {
+                nome:  formUsuario.nome.value,
+                tipo:  formUsuario.tipo.value,
                 login: formUsuario.login.value,
-                senha: formUsuario.senha.value,
+                senha: formUsuario.senha.value
             };
-            fetch('http://localhost/usuarios/criar', {method: 'POST', body: data})
-                .then(response => console.log(response));
+            const promCriar = fetch('criar', {method: 'POST', body: JSON.stringify(data)});
+            promCriar.then(response => {
+                if (response.status == 201) {
+                    // TODO toast com mensagem 'Usuário criado com sucesso' na página recarregada
+                    window.location.reload();
+                    return null;
+                } else {
+                    return response.json();
+                }
+            }).then(body => { if (body) console.log(body); });
         });
-        */
     </script>
 
 
