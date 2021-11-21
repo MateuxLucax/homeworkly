@@ -2,7 +2,7 @@
 
 class Usuario
 {
-    private int $id_usuario;
+    private int $id;
     private string $tipo;
     private string $nome;
     private string $login;
@@ -10,14 +10,14 @@ class Usuario
     private DateTime $cadastro;
     private DateTime $ultimo_acesso;
 
-    public function getIdUsuario(): int
+    public function getId(): int
     {
-        return $this->id_usuario;
+        return $this->id;
     }
 
-    public function setIdUsuario(int $id_usuario): Usuario
+    public function setId(int $id): Usuario
     {
-        $this->id_usuario = $id_usuario;
+        $this->id = $id;
         return $this;
     }
 

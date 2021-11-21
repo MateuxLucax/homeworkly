@@ -1,7 +1,7 @@
 <?php
 
 require_once $_SERVER['DOCUMENT_ROOT'] . "/../models/Usuario.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/../database/StatementBuilder.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/../database/Query.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/../utils/PasswordUtil.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/../exceptions/UnauthorizedException.php";
 
@@ -13,13 +13,13 @@ class UsuarioDAO
                 VALUES (:tipo, :nome, :login, :hash_senha)";
 
         $params = [
-            'tipo' => $usuario->getTipo(),
-            'nome' => $usuario->getNome(),
-            'login' => $usuario->getLogin(),
-            'hash_senha' => PasswordUtil::hash($usuario->getHashSenha())
+            ':tipo' => $usuario->getTipo(),
+            ':nome' => $usuario->getNome(),
+            ':login' => $usuario->getLogin(),
+            ':hash_senha' => PasswordUtil::hash($usuario->getHashSenha())
         ];
 
-        return StatementBuilder::insert($sql, $params);
+        return Query::execute($sql, $params);
     }
 
     /**
@@ -29,10 +29,10 @@ class UsuarioDAO
         $sql = "SELECT * FROM usuario WHERE login = :login";
 
         $params = [
-            'login' => $usuario->getLogin()
+            ':login' => $usuario->getLogin()
         ];
 
-        $foundUser = StatementBuilder::select($sql, $params);
+        $foundUser = Query::select($sql, $params);
 
         if (!PasswordUtil::validate($usuario->getHashSenha(), $foundUser['hash_senha'])) {
             throw new UnauthorizedException();
@@ -44,7 +44,7 @@ class UsuarioDAO
     private static function Populate(array $usuario) : Usuario {
         $usuario = new Usuario;
 
-        $usuario->setIdUsuario($usuario['id_usuario']);
+        $usuario->setId($usuario['id_usuario']);
         $usuario->setTipo($usuario['tipo']);
         $usuario->setNome($usuario['nome']);
         $usuario->setLogin($usuario['login']);
@@ -57,6 +57,6 @@ class UsuarioDAO
     public static function ListarTodos() : array {
         $sql = "SELECT id_usuario AS id, nome, tipo, login FROM usuario";
 
-        return StatementBuilder::select($sql);
+        return Query::select($sql);
     }
 }
