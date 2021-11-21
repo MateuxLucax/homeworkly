@@ -1,13 +1,14 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . "/../models/Usuario.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/../database/StatementBuilder.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/../utils/PasswordUtil.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/../exceptions/UnauthorizedException.php";
+$root = $_SERVER['DOCUMENT_ROOT'] . "/../";
 
-class UsuarioDAO
+require_once  $root ."models/Usuario.php";
+require_once $root . "database/StatementBuilder.php";
+require_once $root . "utils/PasswordUtil.php";
+require_once $root . "exceptions/UnauthorizedException.php";
+
+class UsuarioController
 {
-
     public static function Registrar(Usuario $usuario) : bool {
         $sql = "INSERT INTO usuario(tipo, nome, login, hash_senha)
                 VALUES (:tipo, :nome, :login, :hash_senha)";
