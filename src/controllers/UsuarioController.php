@@ -2,8 +2,8 @@
 
 $root = $_SERVER['DOCUMENT_ROOT'] . "/../";
 
-require_once $root ."models/Usuario.php";
-require_once $root . "database/StatementBuilder.php";
+require_once $root . "models/Usuario.php";
+require_once $root . "database/Query.php";
 require_once $root . "utils/PasswordUtil.php";
 require_once $root . "exceptions/UnauthorizedException.php";
 
