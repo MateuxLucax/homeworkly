@@ -96,6 +96,10 @@
 
     <script type="text/javascript">
 
+        // TODO refatorar
+        // - criar modal com createDocument pra poder ser criado um para cada clique
+        // - colocar dentro de uma função
+
         const elemModalExcluir = document.querySelector('#modal-excluir-usuario');
         const modalExcluir     = new bootstrap.Modal(elemModalExcluir);
         const inputIdUsuario   = document.querySelector('[name=id-usuario]');
