@@ -8,7 +8,7 @@
         <table class="table">
             <?php if ($view['pode-modificar-usuarios']): ?>
                 <tr>
-                    <td colspan="4" class="text-center">
+                    <td colspan="5" class="text-center">
                         <button type="button" class="btn btn-success"
                                 data-bs-toggle="modal" data-bs-target="#modal-novo-usuario">Novo usuário</button>
                     </td>
@@ -16,7 +16,7 @@
             <?php endif; ?>
         <?php if (count($view['usuarios']) == 0): ?>
             <tr>
-                <td colspan="4" class="text-center">
+                <td colspan="5" class="text-center">
                     Nenhum usuário encontrado
                 </td>
             </tr>
