@@ -1,26 +1,26 @@
--- A senha de todos é senha123 passado pelo PasswordUtil lá
+-- A senha de todos � 123 passado pelo PasswordUtil
 insert into usuario (tipo, nome, login, hash_senha) values
   ('administrador', 'Lucas Moraes Schwambach', 'lucas',
-   '$2y$10$0J2S3EgU8eixWf6STLwAuugD1ga8aFXr9YfN9pN4u8b7A2OnLzpj.')
+   '$2y$10$mekCC3F6vhnFz1kaYKFA0.n1vMZbYMnpeLeBAmEMsIbUttdJAcwEK')
 , ('administrador', 'Mateus Lucas Cruz Brandt', 'mateus',
-   '$2y$10$FGbDjNE.Lg/S5rAezIrw8OEOBZMItWumvl/it/yICBKxdiAGQNYae')
+   '$2y$10$mekCC3F6vhnFz1kaYKFA0.n1vMZbYMnpeLeBAmEMsIbUttdJAcwEK')
 , ('aluno', 'Fulano da Silva', 'fulano',
-   '$2y$10$9IYPzKVxW0P52vToQM2OE.4fxu49IyagZmgNFxn8kBYFUqViZcQGO')
+   '$2y$10$mekCC3F6vhnFz1kaYKFA0.n1vMZbYMnpeLeBAmEMsIbUttdJAcwEK')
 , ('aluno', 'Beltrano de Oliveira', 'beltrano',
-   '$2y$10$lx1sJTolZ7Znr938ZwKgpuSeQxpWY221H3HSZc7TZYLZy.FrJ8GYe')
+   '$2y$10$mekCC3F6vhnFz1kaYKFA0.n1vMZbYMnpeLeBAmEMsIbUttdJAcwEK')
 , ('aluno', 'Sicrano de Souza', 'sicrano',
-   '$2y$10$bLz8st1BtkhYBODLxU9v4uq0/fDyccGJ05lRmH6KXmKY1hnm7iJ/G')
+   '$2y$10$mekCC3F6vhnFz1kaYKFA0.n1vMZbYMnpeLeBAmEMsIbUttdJAcwEK')
 , ('professor', 'John Doe', 'john.doe',
-   '$2y$10$OLbwrTzoPAO.oJALIove5umq2PYdtlKusA5PEpvPt01BR1S9EwNUq')
+   '$2y$10$mekCC3F6vhnFz1kaYKFA0.n1vMZbYMnpeLeBAmEMsIbUttdJAcwEK')
 , ('professor', 'Jane Doe', 'jane.doe',
-   '$2y$10$CwysAF9RO2juurQzCfFEJ.SWx2522do5uSQflLJRxQzcxHArr8NP2')
+   '$2y$10$mekCC3F6vhnFz1kaYKFA0.n1vMZbYMnpeLeBAmEMsIbUttdJAcwEK')
 , ('administrador', 'Asdf Qwerty', 'asdf',
-   '$2y$10$MSUlaK2AWNzfgbiM1vymfOMRJymGANVWpQ7MJHHITHTxmq4ZGRunC');
+   '$2y$10$mekCC3F6vhnFz1kaYKFA0.n1vMZbYMnpeLeBAmEMsIbUttdJAcwEK');
 
 insert into turma (nome, ano) values
-  ('6Âº Ano 2020', 2020)
-, ('7Âº Ano 2021', 2021)
-, ('8Âº Ano 2021', 2021)
+  ('6� Ano 2020', 2020)
+, ('7� Ano 2021', 2021)
+, ('8� Ano 2021', 2021)
 on conflict do nothing;
 
 insert into aluno_em_turma (id_aluno, id_turma) values
@@ -32,10 +32,10 @@ insert into aluno_em_turma (id_aluno, id_turma) values
 on conflict do nothing;
 
 insert into disciplina (id_turma, nome) values
-  (1, 'MatemÃ¡tica')
-, (2, 'MatemÃ¡tica')
-, (2, 'HistÃ³ria')
-, (3, 'MatemÃ¡tica')
+  (1, 'Matem�tica')
+, (2, 'Matem�tica')
+, (2, 'Hist�ria')
+, (3, 'Matem�tica')
 , (3, 'Geografia')
 on conflict do nothing;
 
@@ -54,6 +54,6 @@ on conflict do nothing;
 
 insert into entrega (id_tarefa, id_aluno, visto, nota, data_hora, conteudo, comentario) values
   (1, 3, null, 8.0, current_timestamp + interval '3' hour, '2, 4, 6, 40, 9, 1', null)
-, (1, 4, null, 0.0, current_timestamp + interval '2' day, '1, 2, 3, 4, 5, 6', 'O quÃª??')
-, (1, 5, null, 10.0, current_timestamp, '2, 4, 6, 35, 9, indeterminado', 'ParabÃ©ns!')
+, (1, 4, null, 0.0, current_timestamp + interval '2' day, '1, 2, 3, 4, 5, 6', 'O qu�??')
+, (1, 5, null, 10.0, current_timestamp, '2, 4, 6, 35, 9, indeterminado', 'Parab�ns!')
 on conflict do nothing;
