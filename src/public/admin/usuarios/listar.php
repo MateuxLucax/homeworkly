@@ -11,4 +11,4 @@ $view['title'] = 'Usuários';
 $view['pode-modificar-usuarios'] = true;  // TODO true quando o tipo do usuário logado for 'Administrador'
 $view['usuarios'] = UsuarioController::listarTodos();
 
-require $root.'/views/usuarios/listar.php';
+require $root.'/views/admin/usuarios/listar.php';
