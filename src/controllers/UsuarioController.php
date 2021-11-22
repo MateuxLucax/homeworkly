@@ -60,6 +60,7 @@ class UsuarioController
     private static function Populate(array $data) : Usuario {
         $usuario = new Usuario;
 
+        // TODO: Parse timestamp to dateTime
         $usuario->setId($data['id_usuario']);
         $usuario->setTipo($data['tipo']);
         $usuario->setNome($data['nome']);

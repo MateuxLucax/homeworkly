@@ -108,7 +108,6 @@
                 });
             } else {
                 response.json().then(json => {
-                    console.log(json);
                     insertFailedToLoginToast(json.message);
                 });
             }
