@@ -2,20 +2,27 @@
 <html lang="pt-BR">
 <?php require $root.'/views/componentes/head.php'; ?>
 
+<?php
+$view['usuarios'] = [];
+?>
 <body>
 
     <main class="container">
 
         <table class="table">
             <?php if ($view['pode-modificar-usuarios']): ?>
-                <tr colspan="4" class="text-center">
-                    <button type="button" class="btn btn-success"
-                            data-bs-toggle="modal" data-bs-target="#modal-novo-usuario">Novo usuário</button>
+                <tr>
+                    <td colspan="4" class="text-center">
+                        <button type="button" class="btn btn-success"
+                                data-bs-toggle="modal" data-bs-target="#modal-novo-usuario">Novo usuário</button>
+                    </td>
                 </tr>
             <?php endif; ?>
         <?php if (count($view['usuarios']) == 0): ?>
-            <tr colspan="4" class="text-center">
-                Nenhum usuário encontrado
+            <tr>
+                <td colspan="4" class="text-center">
+                    Nenhum usuário encontrado
+                </td>
             </tr>
         <?php else: ?>
                 <tr>
