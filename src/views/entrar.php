@@ -4,7 +4,7 @@
     require $root . 'views/componentes/head.php';
 ?>
 
-<body class="position-relative">
+<body class="position-relative" style="height: 100vh;">
 
 <main class="container-fluid d-flex flex-column align-items-center justify-content-center h-100">
 
