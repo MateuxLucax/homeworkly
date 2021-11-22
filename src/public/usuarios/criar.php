@@ -21,7 +21,7 @@ try {
     $usuario->setHashSenha($data['senha']);
     $usuario->setLogin($data['login']);
 
-    $registrado = UsuarioController::Registrar($usuario);
+    $registrado = UsuarioController::registrar($usuario);
 
     http_response_code($registrado ? 201 : 400);
     die(json_encode(["registrado" => $registrado]));

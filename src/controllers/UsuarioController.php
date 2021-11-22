@@ -10,7 +10,7 @@ require_once $root . "exceptions/UserNotFoundException.php";
 
 class UsuarioController
 {
-    public static function Registrar(Usuario $usuario) : bool {
+    public static function registrar(Usuario $usuario) : bool {
         $sql = "INSERT INTO usuario(tipo, nome, login, hash_senha)
                 VALUES (:tipo, :nome, :login, :hash_senha)";
 
@@ -28,7 +28,7 @@ class UsuarioController
      * @throws UnauthorizedException
      * @throws UserNotFoundException
      */
-    public static function Login(Usuario $usuario) : Usuario {
+    public static function login(Usuario $usuario) : Usuario {
         $sql = "SELECT * FROM usuario WHERE login = :login";
 
         $params = [
@@ -47,17 +47,14 @@ class UsuarioController
             throw new UnauthorizedException();
         }
 
-        $foundUser = self::Populate($foundUser);
+        $foundUser = self::populate($foundUser);
 
-        session_start();
-        $_SESSION['id_usuario'] = $foundUser->getId();
-        $_SESSION['nome'] = $foundUser->getNome();
-        $_SESSION['tipo'] = $foundUser->getTipo();
+        self::criarSessao($foundUser);
 
         return $foundUser;
     }
 
-    private static function Populate(array $data) : Usuario {
+    private static function populate(array $data) : Usuario {
         $usuario = new Usuario;
 
         // TODO: Parse timestamp to dateTime
@@ -75,5 +72,37 @@ class UsuarioController
         $sql = "SELECT id_usuario AS id, nome, tipo, login FROM usuario";
 
         return Query::select($sql);
+    }
+
+    public static function validaSessao() : bool {
+        session_start();
+        if (isset($_SESSION['id_usuario'])) {
+            return true;
+        }
+
+        header("location: " . $_SERVER['DOCUMENT_ROOT'] . "/entrar");
+        return false;
+    }
+
+    public static function sair() : bool {
+        self::removerSessao();
+
+        header("location: " . $_SERVER['DOCUMENT_ROOT'] . "/");
+        return true;
+    }
+
+    private static function criarSessao(Usuario $usuario) : void {
+        session_start();
+        $_SESSION['id_usuario'] = $usuario->getId();
+        $_SESSION['nome'] = $usuario->getNome();
+        $_SESSION['tipo'] = $usuario->getTipo();
+    }
+
+    private static function removerSessao() : void {
+        session_start();
+        unset($_SESSION['id_usuario']);
+        unset($_SESSION['nome']);
+        unset($_SESSION['tipo']);
+        session_destroy();
     }
 }

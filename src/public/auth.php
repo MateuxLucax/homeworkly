@@ -19,7 +19,7 @@ try {
     $usuario->setLogin($data['login']);
     $usuario->setHashSenha($data['senha']);
 
-    $loggedInUser = UsuarioController::Login($usuario);
+    $loggedInUser = UsuarioController::login($usuario);
     $response = array();
 
     if (!empty($loggedInUser)) {
