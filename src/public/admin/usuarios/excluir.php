@@ -8,7 +8,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    $root = $_SERVER['DOCUMENT_ROOT'].'/..';
+    $root = $_SERVER['DOCUMENT_ROOT'].'/../../';
+
+    require_once $root.'controllers/UsuarioController.php';
+    require_once $root.'models/TipoUsuario.php';
+
+    UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
     $data = json_decode(file_get_contents('php://input'));
     $id = $data->id;

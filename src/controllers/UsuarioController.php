@@ -68,7 +68,7 @@ class UsuarioController
         return $usuario;
     }
 
-    public static function ListarTodos() : array {
+    public static function listarTodos() : array {
         $sql = "SELECT id_usuario AS id, nome, tipo, login FROM usuario";
 
         return Query::select($sql);
@@ -80,14 +80,14 @@ class UsuarioController
             return true;
         }
 
-        header("location: " . $_SERVER['DOCUMENT_ROOT'] . "/entrar");
+        header("location: http://" .  $_SERVER["HTTP_HOST"] . "/entrar");
         return false;
     }
 
     public static function sair() : bool {
         self::removerSessao();
 
-        header("location: " . $_SERVER['DOCUMENT_ROOT'] . "/");
+        header("location: http://" . $_SERVER["HTTP_HOST"]);
         return true;
     }
 
@@ -104,5 +104,14 @@ class UsuarioController
         unset($_SESSION['nome']);
         unset($_SESSION['tipo']);
         session_destroy();
+    }
+
+    public static function validaSessaoTipo(string $tipo) : void {
+        if (self::validaSessao()) {
+            $tipoSessao = (string) $_SESSION['tipo'];
+            if (!($tipoSessao == TipoUsuario::ADMINISTRADOR) || !($tipoSessao == $tipo)) {
+                self::sair();
+            }
+        }
     }
 }
