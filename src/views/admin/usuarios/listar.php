@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <?php require $root.'/views/componentes/head.php'; ?>
-
-<?php
-$view['usuarios'] = [];
-?>
 <body>
 
     <main class="container">
