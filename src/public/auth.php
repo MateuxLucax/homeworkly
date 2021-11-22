@@ -11,6 +11,7 @@ try {
     $root = $_SERVER['DOCUMENT_ROOT'] . '/../';
 
     require_once $root. 'models/Usuario.php';
+    require_once $root. 'models/TipoUsuario.php';
     require_once $root. 'controllers/UsuarioController.php';
 
     $data = json_decode(file_get_contents('php://input'), true);
@@ -23,8 +24,15 @@ try {
     $response = array();
 
     if (!empty($loggedInUser)) {
+        $whereIGo = match ($loggedInUser->getTipo()) {
+            TipoUsuario::ALUNO => "/aluno",
+            TipoUsuario::ADMINISTRADOR => "/admin",
+            TipoUsuario::PROFESSOR => "/professor",
+            default => "",
+        };
+
         $response = [
-            "location" => 'usuarios/listar'
+            "location" => $whereIGo
         ];
     }
 
