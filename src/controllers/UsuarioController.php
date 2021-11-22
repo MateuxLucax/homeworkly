@@ -6,6 +6,7 @@ require_once $root . "models/Usuario.php";
 require_once $root . "database/Query.php";
 require_once $root . "utils/PasswordUtil.php";
 require_once $root . "exceptions/UnauthorizedException.php";
+require_once $root . "exceptions/UserNotFoundException.php";
 
 class UsuarioController
 {
@@ -25,6 +26,7 @@ class UsuarioController
 
     /**
      * @throws UnauthorizedException
+     * @throws UserNotFoundException
      */
     public static function Login(Usuario $usuario) : Usuario {
         $sql = "SELECT * FROM usuario WHERE login = :login";
@@ -35,22 +37,35 @@ class UsuarioController
 
         $foundUser = Query::select($sql, $params);
 
+        if (empty($foundUser)) {
+            throw new UserNotFoundException();
+        }
+
+        $foundUser = $foundUser[0];
+
         if (!PasswordUtil::validate($usuario->getHashSenha(), $foundUser['hash_senha'])) {
             throw new UnauthorizedException();
         }
 
-        return self::Populate($foundUser);
+        $foundUser = self::Populate($foundUser);
+
+        session_start();
+        $_SESSION['id_usuario'] = $foundUser->getId();
+        $_SESSION['nome'] = $foundUser->getNome();
+        $_SESSION['tipo'] = $foundUser->getTipo();
+
+        return $foundUser;
     }
 
-    private static function Populate(array $usuario) : Usuario {
+    private static function Populate(array $data) : Usuario {
         $usuario = new Usuario;
 
-        $usuario->setId($usuario['id_usuario']);
-        $usuario->setTipo($usuario['tipo']);
-        $usuario->setNome($usuario['nome']);
-        $usuario->setLogin($usuario['login']);
-        $usuario->setCadastro($usuario['cadastro']);
-        $usuario->setUltimoAcesso($usuario['ultimo_acesso']);
+        $usuario->setId($data['id_usuario']);
+        $usuario->setTipo($data['tipo']);
+        $usuario->setNome($data['nome']);
+        $usuario->setLogin($data['login']);
+      //  $usuario->setCadastro(DateUtil::parseTimestamp($data['cadastro']));
+      //  $usuario->setUltimoAcesso($data['ultimo_acesso']);
 
         return $usuario;
     }
