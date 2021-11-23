@@ -8,18 +8,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    $root = $_SERVER['DOCUMENT_ROOT'].'/../../';
+    $root = '../../..';
 
-    require_once $root.'controllers/UsuarioController.php';
-    require_once $root.'models/TipoUsuario.php';
+    require_once $root.'/database/Connection.php';
+    require_once $root.'/database/Query.php';
+    require_once $root.'/controllers/UsuarioController.php';
+    require_once $root.'/models/TipoUsuario.php';
 
     UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
     $data = json_decode(file_get_contents('php://input'));
     $id = $data->id;
-
-    require $root.'/database/Connection.php';
-    require $root.'/database/Query.php';
 
     Query::execute('DELETE FROM usuario WHERE id_usuario = :id', [':id' => $id]);
 
