@@ -48,23 +48,21 @@
 
             <?php endif; ?>
             </tbody>
-            <?php if ($view['pode-modificar-usuarios']): ?>
-                <tfoot>
-                    <tr>
-                        <td colspan="5">
-                            <div class="d-flex justify-content-end">
-                                <button type="button"
-                                        class="btn btn-primary ms-auto"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-novo-usuario"
-                                >
-                                    <i class="bi bi-person-plus-fill"></i> Adicionar usuário
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tfoot>
-            <?php endif; ?>
+            <tfoot>
+                <tr>
+                    <td colspan="5">
+                        <div class="d-flex justify-content-end">
+                            <button type="button"
+                                    class="btn btn-primary ms-auto"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-novo-usuario"
+                            >
+                                <i class="bi bi-person-plus-fill"></i> Adicionar usuário
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
 
     </main>
