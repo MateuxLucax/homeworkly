@@ -31,30 +31,24 @@
                         <td><?=$usuario['nome']?></td>
                         <td><?=ucfirst($usuario['tipo'])?></td>
                         <td><?=$usuario['login']?></td>
-                        <td>
-                            
-                            <!-- TODO melhorar layout, tá um em cima do outro em vez de um do lado do outro -->
-                            <!-- também trocar o ícone do editar -->
-                            
+                        <td style="width: 0;">
                             <div class="d-flex justify-content-end">
+                                <button type="button"
+                                        class="btn btn-primary btn-editar-usuario me-4"
+                                        title="Editar usuário"
+                                        data-id="<?=$usuario['id']?>"
+                                        data-nome="<?=$usuario['nome']?>"
+                                        data-login="<?=$usuario['login']?>"
+                                >
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
                                 <button type="button"
                                         class="btn btn-danger btn-excluir-usuario"
                                         title="Remover usuário"
                                         data-id-usuario="<?=$usuario['id']?>"
                                         data-nome-usuario="<?=$usuario['nome']?>"
                                 >
-                                    <i class="bi bi-person-dash-fill"></i>
-                                </button>
-                            </div>
-                            <div class="d-flex justify-content-end">
-                                <button type="button"
-                                        class="btn btn-primary btn-editar-usuario"
-                                        title="Editar usuário"
-                                        data-id="<?=$usuario['id']?>"
-                                        data-nome="<?=$usuario['nome']?>"
-                                        data-login="<?=$usuario['login']?>"
-                                >
-                                    <i class="bi bi-person-dash-fill"></i>
+                                    <i class="bi bi-trash-fill"></i>
                                 </button>
                             </div>
                         </td>
@@ -68,7 +62,7 @@
                     <td colspan="5">
                         <div class="d-flex justify-content-end">
                             <button type="button"
-                                    class="btn btn-primary ms-auto"
+                                    class="btn btn-success ms-auto"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-novo-usuario"
                             >
