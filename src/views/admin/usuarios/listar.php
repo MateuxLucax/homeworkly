@@ -5,41 +5,66 @@
 
     <main class="container">
 
-        <table class="table">
-            <?php if ($view['pode-modificar-usuarios']): ?>
-                <tr>
-                    <td colspan="5" class="text-center">
-                        <button type="button" class="btn btn-success"
-                                data-bs-toggle="modal" data-bs-target="#modal-novo-usuario">Novo usuário</button>
-                    </td>
-                </tr>
-            <?php endif; ?>
-        <?php if (count($view['usuarios']) == 0): ?>
-            <tr>
-                <td colspan="5" class="text-center">
-                    Nenhum usuário encontrado
-                </td>
-            </tr>
-        <?php else: ?>
+        <h1 class="my-4"><?=$view['title'];?></h1>
+
+        <table class="table table-striped table-hover table-bordered">
+            <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nome</th>
                     <th>Tipo</th>
                     <th>Login</th>
-                    <th></th>
+                    <th>Ações</th>
                 </tr>
+            </thead>
+            <tbody>
+            <?php if (empty($view['usuarios'])): ?>
+                <tr>
+                    <td colspan="5" class="text-center">
+                        Nenhum usuário encontrado
+                    </td>
+                </tr>
+            <?php else: ?>
                 <?php foreach ($view['usuarios'] as $usuario): ?>
-                    <tr>
+                    <tr class="align-middle">
                         <td><?=$usuario['id']?></td>
                         <td><?=$usuario['nome']?></td>
                         <td><?=ucfirst($usuario['tipo'])?></td>
                         <td><?=$usuario['login']?></td>
-                        <td><button type="button" class="btn btn-link btn-excluir-usuario"
-                                    data-id-usuario="<?=$usuario['id']?>"
-                                    data-nome-usuario="<?=$usuario['nome']?>">Excluir</button></td>
+                        <td>
+                            <div class="d-flex justify-content-end">
+                                <button type="button"
+                                        class="btn btn-danger btn-excluir-usuario"
+                                        title="Remover usuário"
+                                        data-id-usuario="<?=$usuario['id']?>"
+                                        data-nome-usuario="<?=$usuario['nome']?>"
+                                >
+                                    <i class="bi bi-person-dash-fill"></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
-        <?php endif; ?>
+
+            <?php endif; ?>
+            </tbody>
+            <?php if ($view['pode-modificar-usuarios']): ?>
+                <tfoot>
+                    <tr>
+                        <td colspan="5">
+                            <div class="d-flex justify-content-end">
+                                <button type="button"
+                                        class="btn btn-primary ms-auto"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-novo-usuario"
+                                >
+                                    <i class="bi bi-person-plus-fill"></i> Adicionar usuário
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            <?php endif; ?>
         </table>
 
     </main>
