@@ -35,7 +35,8 @@
                         <td><?=ucfirst($usuario['tipo'])?></td>
                         <td><?=$usuario['login']?></td>
                         <td><button type="button" class="btn btn-link btn-excluir-usuario"
-                                    data-id-usuario="<?=$usuario['id']?>">Excluir</button></td>
+                                    data-id-usuario="<?=$usuario['id']?>"
+                                    data-nome-usuario="<?=$usuario['nome']?>">Excluir</button></td>
                     </tr>
                 <?php endforeach; ?>
         <?php endif; ?>
@@ -87,6 +88,7 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <input type="hidden" name="id-usuario">
+                    <input type="hidden" name="nome-usuario">
                     <p>Tem certeza que deseja excluir este usuário?</p>
                 </div>
                 <div class="modal-footer">
@@ -97,25 +99,28 @@
         </div>
     </div>
 
-    <!-- TODO permitir que toasts em sequencia fiquem em stack
-         acho que pra isso precisa criar um elemento .toast pra cada em vez de dar show() no mesmo -->
-    <div area-live="polite" aria-atomic="true">
-        <div class="toast-container position-absolute p-3 bottom-0 end-0">
-            <div id="alerta-excluir-usuario" class="toast bg-warning" role="alert">
-                <div class="d-flex">
-                    <div class="toast-body">Não foi possível excluir o usuário</div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+    <div class="toast-container position-absolute p-3 bottom-0 end-0" id="toast-container">
+        <div id="toast-excluir-falhou" class="toast bg-danger text-white" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Não foi possível excluir o usuário <span id="toast-excluir-falhou-nome"></span>
                 </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        <div id="toast-criar-falhou" class="toast bg-danger text-white" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Não foi possível criar o usuário
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
 
 
-    <script type="text/javascript">
 
-        // TODO refatorar
-        // - criar modal com createDocument pra poder ser criado um para cada clique
-        // - colocar dentro de uma função
+    <script type="text/javascript">
 
         //
         // Deletar usuário
@@ -129,17 +134,17 @@
 
         const elemModalExcluir = document.querySelector('#modal-excluir-usuario');
         const modalExcluir     = new bootstrap.Modal(elemModalExcluir);
-        const inputIdUsuario   = document.querySelector('[name=id-usuario]');
+
+        const inputIdUsuario   = elemModalExcluir.querySelector('[name=id-usuario]');
+        const inputNomeUsuario = elemModalExcluir.querySelector('[name=nome-usuario]');
 
         for (const btnExcluir of document.querySelectorAll('.btn-excluir-usuario')) {
             btnExcluir.addEventListener('click', () => {
-                inputIdUsuario.value = btnExcluir.dataset.idUsuario;
+                inputIdUsuario.value   = btnExcluir.dataset.idUsuario;
+                inputNomeUsuario.value = btnExcluir.dataset.nomeUsuario;
                 modalExcluir.show();
             });
         }
-
-        const btnCancelarExclusao  = document.querySelector('#btn-cancelar-exclusao');
-        const btnConfirmarExclusao = document.querySelector('#btn-confirmar-exclusao');
 
         document.querySelector('#btn-cancelar-exclusao').addEventListener('click', () => {
             modalExcluir.hide();
@@ -147,19 +152,19 @@
         });
 
         document.querySelector('#btn-confirmar-exclusao').addEventListener('click', () => {
-            const idUsuario = elemModalExcluir.querySelector('[name=id-usuario]').value;
+            const idUsuario = inputIdUsuario.value;
             if (idUsuario) {
-                const promExcluir = fetch('excluir', {method: 'POST', body: JSON.stringify({id: idUsuario})});
-                promExcluir.then(response => {
+                fetch('excluir', {method: 'POST', body: JSON.stringify({id: idUsuario})})
+                .then(response => {
                     if (response.status == 200) {
-                    // TODO toast com mensagem 'Usuário excluído com sucesso' na página recarregada
+                        // TODO toast com mensagem 'Usuário excluído com sucesso' na página recarregada
                         window.location.reload();
-                        return null;
                     } else {
-                        (new bootstrap.Toast(document.querySelector('#alerta-excluir-usuario'))).show();
-                        return response.json();
+                        document.getElementById('toast-excluir-falhou-nome').innerText = inputNomeUsuario.value;
+                        (new bootstrap.Toast(document.getElementById('toast-excluir-falhou'))).show();
                     }
-                }).then(body => { if (body) console.log(body); });
+                    return response.json();
+                }).then(console.log);
             }
             modalExcluir.hide();
             inputIdUsuario.value = null;
@@ -175,6 +180,7 @@
         //    login não está em uso, senha é forte o suficiente etc.)
 
         const formUsuario = document.getElementById('form-novo-usuario');
+        const modalNovo = new bootstrap.Modal(document.getElementById('modal-novo-usuario'));
 
         formUsuario.addEventListener('submit', event => {
             event.preventDefault();
@@ -184,16 +190,17 @@
                 login: formUsuario.login.value,
                 senha: formUsuario.senha.value
             };
-            const promCriar = fetch('criar', {method: 'POST', body: JSON.stringify(data)});
-            promCriar.then(response => {
+            fetch('criar', {method: 'POST', body: JSON.stringify(data)})
+            .then(response => {
                 if (response.status == 201) {
                     // TODO toast com mensagem 'Usuário criado com sucesso' na página recarregada
                     window.location.reload();
-                    return null;
                 } else {
-                    return response.json();
+                    modalNovo.hide();
+                    (new bootstrap.Toast(document.getElementById('toast-criar-falhou'))).show();
                 }
-            }).then(body => { if (body) console.log(body); });
+                return response.json();
+            }).then(console.log);
         });
     </script>
 
