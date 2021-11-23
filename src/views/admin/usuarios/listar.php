@@ -32,12 +32,27 @@
                         <td><?=ucfirst($usuario['tipo'])?></td>
                         <td><?=$usuario['login']?></td>
                         <td>
+                            
+                            <!-- TODO melhorar layout, tá um em cima do outro em vez de um do lado do outro -->
+                            <!-- também trocar o ícone do editar -->
+                            
                             <div class="d-flex justify-content-end">
                                 <button type="button"
                                         class="btn btn-danger btn-excluir-usuario"
                                         title="Remover usuário"
                                         data-id-usuario="<?=$usuario['id']?>"
                                         data-nome-usuario="<?=$usuario['nome']?>"
+                                >
+                                    <i class="bi bi-person-dash-fill"></i>
+                                </button>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button"
+                                        class="btn btn-primary btn-editar-usuario"
+                                        title="Editar usuário"
+                                        data-id="<?=$usuario['id']?>"
+                                        data-nome="<?=$usuario['nome']?>"
+                                        data-login="<?=$usuario['login']?>"
                                 >
                                     <i class="bi bi-person-dash-fill"></i>
                                 </button>
@@ -106,6 +121,40 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modal-editar-usuario">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar usuário</h5>
+                </div>
+
+                <form id="form-editar-usuario">
+
+                    <input type="hidden" name="id">
+
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" name="nome" id="nome" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="login" class="form-label">Login</label>
+                            <input type="text" name="login" id="login" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- TODO botão para alterar senha que abre um outro modal pra fazer isso
+                         https://getbootstrap.com/docs/5.0/components/modal/#toggle-between-modals -->
+                    
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Editar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modal-excluir-usuario">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -121,6 +170,9 @@
             </div>
         </div>
     </div>
+
+    <!-- FIXME toast fica em cima de outros componentes, impedindo que possam ser clicado (e.g. botão)
+         talvez nem usar toast, adicionar uma div num lugar interessante e manualmente fazer um setTimeout pra tirar ela -->
 
     <div class="toast-container position-absolute p-3 bottom-0 end-0" id="toast-container">
         <div id="toast-excluir-falhou" class="toast bg-danger text-white" role="alert">
@@ -139,6 +191,14 @@
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
+        <div id="toast-editar-falhou" class="toast bg-danger text-white" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Não foi possível editar o usuário <span id="toast-editar-falhou-nome"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
     </div>
 
 
@@ -149,33 +209,27 @@
         // Deletar usuário
         //
 
-        // TODO investigar como alterar as exceções do xdebug
-        // atualmente qdo acontece uma PDOException ele transorma em html e fica impossível de pegar o código e mostrar uma mensagem apropriada
-        // tipo quando se tenta deletar um usuário que é professor de uma turma e dá uma violação de foreign key
-        // seria melhor se fosse possível inspecionar o código do erro da exceção retornada como json
-        // e mostrar uma mensagem tipo "Não foi possível deletar o usuário porque ..."
-
         const elemModalExcluir = document.querySelector('#modal-excluir-usuario');
         const modalExcluir     = new bootstrap.Modal(elemModalExcluir);
 
-        const inputIdUsuario   = elemModalExcluir.querySelector('[name=id-usuario]');
-        const inputNomeUsuario = elemModalExcluir.querySelector('[name=nome-usuario]');
+        const excluirInputId   = elemModalExcluir.querySelector('[name=id-usuario]');
+        const excluirInputNome = elemModalExcluir.querySelector('[name=nome-usuario]');
 
         for (const btnExcluir of document.querySelectorAll('.btn-excluir-usuario')) {
             btnExcluir.addEventListener('click', () => {
-                inputIdUsuario.value   = btnExcluir.dataset.idUsuario;
-                inputNomeUsuario.value = btnExcluir.dataset.nomeUsuario;
+                excluirInputId.value   = btnExcluir.dataset.idUsuario;
+                excluirInputNome.value = btnExcluir.dataset.nomeUsuario;
                 modalExcluir.show();
             });
         }
 
         document.querySelector('#btn-cancelar-exclusao').addEventListener('click', () => {
             modalExcluir.hide();
-            inputIdUsuario.value = null;
+            excluirInputId.value = null;
         });
 
         document.querySelector('#btn-confirmar-exclusao').addEventListener('click', () => {
-            const idUsuario = inputIdUsuario.value;
+            const idUsuario = excluirInputId.value;
             if (idUsuario) {
                 fetch('excluir', {method: 'POST', body: JSON.stringify({id: idUsuario})})
                 .then(response => {
@@ -183,14 +237,14 @@
                         // TODO toast com mensagem 'Usuário excluído com sucesso' na página recarregada
                         window.location.reload();
                     } else {
-                        document.getElementById('toast-excluir-falhou-nome').innerText = inputNomeUsuario.value;
+                        document.getElementById('toast-excluir-falhou-nome').innerText = excluirInputNome.value;
                         (new bootstrap.Toast(document.getElementById('toast-excluir-falhou'))).show();
                     }
                     return response.json();
                 }).then(console.log);
             }
             modalExcluir.hide();
-            inputIdUsuario.value = null;
+            excluirInputId.value = null;
         });
 
         //
@@ -202,16 +256,16 @@
         //   (nvdd o ideal seria deixar esse botão bloqueado e só habilitar quando os campos estiverem ok --
         //    login não está em uso, senha é forte o suficiente etc.)
 
-        const formUsuario = document.getElementById('form-novo-usuario');
-        const modalNovo = new bootstrap.Modal(document.getElementById('modal-novo-usuario'));
+        const formNovoUsuario = document.getElementById('form-novo-usuario');
+        const modalNovoUsuario = new bootstrap.Modal(document.getElementById('modal-novo-usuario'));
 
-        formUsuario.addEventListener('submit', event => {
+        formNovoUsuario.addEventListener('submit', event => {
             event.preventDefault();
             const data = {
-                nome:  formUsuario.nome.value,
-                tipo:  formUsuario.tipo.value,
-                login: formUsuario.login.value,
-                senha: formUsuario.senha.value
+                nome:  formNovoUsuario.nome.value,
+                tipo:  formNovoUsuario.tipo.value,
+                login: formNovoUsuario.login.value,
+                senha: formNovoUsuario.senha.value
             };
             fetch('criar', {method: 'POST', body: JSON.stringify(data)})
             .then(response => {
@@ -219,8 +273,46 @@
                     // TODO toast com mensagem 'Usuário criado com sucesso' na página recarregada
                     window.location.reload();
                 } else {
-                    modalNovo.hide();
+                    modalNovoUsuario.hide();
                     (new bootstrap.Toast(document.getElementById('toast-criar-falhou'))).show();
+                }
+                return response.json();
+            }).then(console.log);
+        });
+
+        //
+        // Editar usuário
+        //
+
+        const formEditarUsuario = document.getElementById('form-editar-usuario');
+        const editarInputId    = formEditarUsuario.querySelector('[name=id]');
+        const editarInputNome  = formEditarUsuario.querySelector('[name=nome]');
+        const editarInputLogin = formEditarUsuario.querySelector('[name=login]');
+
+        for (const btnEditar of document.getElementsByClassName('btn-editar-usuario')) {
+            btnEditar.addEventListener('click', () => {
+                editarInputId.value    = btnEditar.dataset.id;
+                editarInputNome.value  = btnEditar.dataset.nome;
+                editarInputLogin.value = btnEditar.dataset.login;
+                (new bootstrap.Modal(document.getElementById('modal-editar-usuario'))).show();
+            });
+        }
+
+        formEditarUsuario.addEventListener('submit', event => {
+            event.preventDefault();
+            const payload = {
+                id:    formEditarUsuario.id.value,
+                nome:  formEditarUsuario.nome.value,
+                login: formEditarUsuario.login.value,
+            };
+            fetch('editar', {method: 'PUT', body: JSON.stringify(payload)})
+            .then(response => {
+                if (response.status == 200) {
+                    // TODO toast com mensagem 'Usuário editado com sucesso' na página recarregada
+                    window.location.reload();
+                } else {
+                    modalEditar.hide();
+                    (new bootstrap.Toast(document.getElementById('toast-editar-falhou'))).show();
                 }
                 return response.json();
             }).then(console.log);
