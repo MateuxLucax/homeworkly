@@ -1,6 +1,7 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . "/../database/Connection.php";
+require_once $root.'/database/Connection.php';
+require_once $root.'/exceptions/QueryException.php';
 
 class Query
 {
@@ -11,7 +12,7 @@ class Query
             $statement->execute($params);
             return $statement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            self::returnError($e, $sql, $params);
+            throw new QueryException($sql, $params, $e);
         }
 
         return false;
@@ -23,24 +24,9 @@ class Query
             $statement = Connection::getInstance()->prepare($sql);
             return $statement->execute($params);
         } catch (PDOException $e) {
-            self::returnError($e, $sql, $params);
+            throw new QueryException($sql, $params, $e);
         }
 
         return false;
-    }
-
-    private static function returnError(
-        PDOException $e,
-        string $sql,
-        array $paramBinds
-    ) : void {
-        $response = [
-            "message"   => "Não foi possível executar a query.",
-            "sql"       => $sql,
-            "params"    => $paramBinds,
-            "exception" => $e
-        ];
-        http_response_code(400);
-        die(json_encode($response));
     }
 }
