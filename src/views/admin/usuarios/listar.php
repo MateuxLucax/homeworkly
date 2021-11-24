@@ -165,46 +165,14 @@
         </div>
     </div>
 
-    <!-- FIXME toast fica em cima de outros componentes, impedindo que possam ser clicado (e.g. botão)
-         talvez nem usar toast, adicionar uma div num lugar interessante e manualmente fazer um setTimeout pra tirar ela -->
-
-    <div class="toast-container position-absolute p-3 bottom-0 end-0" id="toast-container">
-        <div id="toast-excluir-falhou" class="toast bg-danger text-white" role="alert">
-            <div class="d-flex">
-                <div class="toast-body">
-                    Não foi possível excluir o usuário <span id="toast-excluir-falhou-nome"></span>
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-        <div id="toast-criar-falhou" class="toast bg-danger text-white" role="alert">
-            <div class="d-flex">
-                <div class="toast-body">
-                    Não foi possível criar o usuário
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-        <div id="toast-editar-falhou" class="toast bg-danger text-white" role="alert">
-            <div class="d-flex">
-                <div class="toast-body">
-                    Não foi possível editar o usuário <span id="toast-editar-falhou-nome"></span>
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
-
-
-
     <script type="text/javascript">
 
         //
         // Deletar usuário
         //
 
-        const elemModalExcluir = document.querySelector('#modal-excluir-usuario');
-        const modalExcluir     = new bootstrap.Modal(elemModalExcluir);
+        const elemModalExcluir    = document.querySelector('#modal-excluir-usuario');
+        const modalExcluirUsuario = new bootstrap.Modal(elemModalExcluir);
 
         const excluirInputId   = elemModalExcluir.querySelector('[name=id-usuario]');
         const excluirInputNome = elemModalExcluir.querySelector('[name=nome-usuario]');
@@ -213,13 +181,14 @@
             btnExcluir.addEventListener('click', () => {
                 excluirInputId.value   = btnExcluir.dataset.idUsuario;
                 excluirInputNome.value = btnExcluir.dataset.nomeUsuario;
-                modalExcluir.show();
+                modalExcluirUsuario.show();
             });
         }
 
         document.querySelector('#btn-cancelar-exclusao').addEventListener('click', () => {
-            modalExcluir.hide();
-            excluirInputId.value = null;
+            modalExcluirUsuario.hide();
+            excluirInputId.value   = null;
+            excluirInputNome.value = null;
         });
 
         document.querySelector('#btn-confirmar-exclusao').addEventListener('click', () => {
@@ -231,14 +200,14 @@
                         // TODO toast com mensagem 'Usuário excluído com sucesso' na página recarregada
                         window.location.reload();
                     } else {
-                        document.getElementById('toast-excluir-falhou-nome').innerText = excluirInputNome.value;
-                        (new bootstrap.Toast(document.getElementById('toast-excluir-falhou'))).show();
+                        // TODO usar alert em vez de toast
                     }
                     return response.json();
                 }).then(console.log);
             }
-            modalExcluir.hide();
-            excluirInputId.value = null;
+            modalExcluirUsuario.hide();
+            excluirInputId.value   = null;
+            excluirInputNome.value = null;
         });
 
         //
@@ -267,9 +236,9 @@
                     // TODO toast com mensagem 'Usuário criado com sucesso' na página recarregada
                     window.location.reload();
                 } else {
-                    modalNovoUsuario.hide();
-                    (new bootstrap.Toast(document.getElementById('toast-criar-falhou'))).show();
+                    // TODO usar alert em vez de toast
                 }
+                modalNovoUsuario.hide();
                 return response.json();
             }).then(console.log);
         });
@@ -278,7 +247,8 @@
         // Editar usuário
         //
 
-        const formEditarUsuario = document.getElementById('form-editar-usuario');
+        const formEditarUsuario  = document.getElementById('form-editar-usuario');
+        const modalEditarUsuario = new bootstrap.Modal(document.getElementById('modal-editar-usuario'));
         const editarInputId    = formEditarUsuario.querySelector('[name=id]');
         const editarInputNome  = formEditarUsuario.querySelector('[name=nome]');
         const editarInputLogin = formEditarUsuario.querySelector('[name=login]');
@@ -288,7 +258,7 @@
                 editarInputId.value    = btnEditar.dataset.id;
                 editarInputNome.value  = btnEditar.dataset.nome;
                 editarInputLogin.value = btnEditar.dataset.login;
-                (new bootstrap.Modal(document.getElementById('modal-editar-usuario'))).show();
+                modalEditarUsuario.show();
             });
         }
 
@@ -305,9 +275,9 @@
                     // TODO toast com mensagem 'Usuário editado com sucesso' na página recarregada
                     window.location.reload();
                 } else {
-                    modalEditar.hide();
-                    (new bootstrap.Toast(document.getElementById('toast-editar-falhou'))).show();
+                    // TODO usar alert em vez de toast
                 }
+                modalEditarUsuario.hide();
                 return response.json();
             }).then(console.log);
         });
