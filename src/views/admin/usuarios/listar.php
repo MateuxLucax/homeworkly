@@ -168,6 +168,38 @@
     <script type="text/javascript">
 
         //
+        // Alertas
+        //
+
+        <?php
+            $alertas = [
+                'usuario-excluido-sucesso' => [
+                    'tipo'   => 'success',
+                    'titulo' => 'Excluído',
+                    'texto'  => 'Usuário excluído com sucesso;'
+                ],
+                'usuario-criado-sucesso' => [
+                    'tipo'   => 'success',
+                    'titulo' => 'Criado',
+                    'texto'  => 'Usuário criado com sucesso;'
+                ],
+                'usuario-editado-sucesso' => [
+                    'tipo'   => 'success',
+                    'titulo' => 'Criado',
+                    'texto'  => 'Usuário editado com sucesso;'
+                ]
+            ];
+        ?>
+
+        <?php if (isset($_GET['alerta'])): ?>
+            Swal.fire(
+                "<?=$alertas[$_GET['alerta']]['titulo']?>",
+                "<?=$alertas[$_GET['alerta']]['texto']?>",
+                "<?=$alertas[$_GET['alerta']]['tipo']?>"
+            );
+        <?php endif; ?>
+
+        //
         // Deletar usuário
         //
 
@@ -192,15 +224,20 @@
         });
 
         document.querySelector('#btn-confirmar-exclusao').addEventListener('click', () => {
-            const idUsuario = excluirInputId.value;
+            const idUsuario   = excluirInputId.value;
+            const nomeUsuario = excluirInputNome.value;
             if (idUsuario) {
-                fetch('excluir', {method: 'POST', body: JSON.stringify({id: idUsuario})})
+                fetch('excluir', { method: 'POST', body: JSON.stringify({ id: idUsuario }) })
                 .then(response => {
+                    console.log(response);
                     if (response.status == 200) {
-                        // TODO toast com mensagem 'Usuário excluído com sucesso' na página recarregada
-                        window.location.reload();
+                        window.location.assign('listar?alerta=usuario-excluido-sucesso');
                     } else {
-                        // TODO usar alert em vez de toast
+                        Swal.fire(
+                            'Erro',
+                            `Não foi possível excluir o usuário ${nomeUsuario}`,
+                            'error'
+                        );
                     }
                     return response.json();
                 }).then(console.log);
@@ -230,13 +267,16 @@
                 login: formNovoUsuario.login.value,
                 senha: formNovoUsuario.senha.value
             };
-            fetch('criar', {method: 'POST', body: JSON.stringify(data)})
+            fetch('criar', { method: 'POST', body: JSON.stringify(data) })
             .then(response => {
                 if (response.status == 201) {
-                    // TODO toast com mensagem 'Usuário criado com sucesso' na página recarregada
-                    window.location.reload();
+                    window.location.assign('listar?alerta=usuario-criado-sucesso');
                 } else {
-                    // TODO usar alert em vez de toast
+                    Swal.fire(
+                        'Erro',
+                        'Não foi possível criar o usuário',
+                        'error'
+                    );
                 }
                 modalNovoUsuario.hide();
                 return response.json();
@@ -272,10 +312,13 @@
             fetch('editar', {method: 'PUT', body: JSON.stringify(payload)})
             .then(response => {
                 if (response.status == 200) {
-                    // TODO toast com mensagem 'Usuário editado com sucesso' na página recarregada
-                    window.location.reload();
+                    window.location.assign('listar?alerta=usuario-editado-sucesso');
                 } else {
-                    // TODO usar alert em vez de toast
+                    Swal.fire(
+                        'Erro',
+                        'Não foi possível editar o usuário',
+                        'error'
+                    );
                 }
                 modalEditarUsuario.hide();
                 return response.json();

@@ -98,7 +98,7 @@
 
         const payload = {
             login: form.login.value,
-            senha:  form.senha.value
+            senha: form.senha.value
         };
 
         fetch('auth', { method: 'POST', body: JSON.stringify(payload) })
@@ -109,6 +109,7 @@
                 });
             } else {
                 response.json().then(json => {
+                    // TODO usar sweetalert
                     insertFailedToLoginToast(json.message);
                 });
             }
