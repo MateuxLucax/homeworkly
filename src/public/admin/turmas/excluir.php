@@ -21,11 +21,11 @@ try {
     require_once $root.'database/Query.php';
 
     $ok = Query::execute('DELETE FROM turma WHERE id_turma = :id', [
-        ':id'   => $data['id'],
+        ':id' => $data['id'],
     ]);
 
     http_response_code($ok ? 201 : 400);
-    die('{"excluido": '. $ok ? 'true' : 'false' .'}');
+    die('{"excluido": '. ($ok ? 'true' : 'false') .'}');
 } catch (Exception $e) {
     http_response_code(400);
     die(json_encode(['exception' => $e]));

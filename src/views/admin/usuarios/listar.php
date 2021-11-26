@@ -174,17 +174,17 @@
                 'usuario-excluido-sucesso' => [
                     'tipo'   => 'success',
                     'titulo' => 'Excluído',
-                    'texto'  => 'Usuário excluído com sucesso;'
+                    'texto'  => 'Usuário excluído com sucesso'
                 ],
                 'usuario-criado-sucesso' => [
                     'tipo'   => 'success',
                     'titulo' => 'Criado',
-                    'texto'  => 'Usuário criado com sucesso;'
+                    'texto'  => 'Usuário criado com sucesso'
                 ],
                 'usuario-editado-sucesso' => [
                     'tipo'   => 'success',
-                    'titulo' => 'Criado',
-                    'texto'  => 'Usuário editado com sucesso;'
+                    'titulo' => 'Editado',
+                    'texto'  => 'Usuário editado com sucesso'
                 ]
             ];
         ?>
@@ -223,7 +223,6 @@
             if (idUsuario) {
                 fetch('excluir', { method: 'POST', body: JSON.stringify({ id: idUsuario }) })
                 .then(response => {
-                    console.log(response);
                     if (response.status == 200) {
                         window.location.assign('listar?alerta=usuario-excluido-sucesso');
                     } else {
@@ -271,9 +270,9 @@
                         'error'
                     );
                 }
-                modalNovoUsuario.hide();
                 return response.json();
             }).then(console.log);
+            modalNovoUsuario.hide();
         });
 
         //
@@ -313,9 +312,9 @@
                         'error'
                     );
                 }
-                modalEditarUsuario.hide();
                 return response.json();
             }).then(console.log);
+            modalEditarUsuario.hide();
         });
     </script>
 
