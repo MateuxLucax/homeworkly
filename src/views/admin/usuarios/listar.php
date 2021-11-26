@@ -153,7 +153,6 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <input type="hidden" name="id-usuario">
-                    <input type="hidden" name="nome-usuario">
                     <p>Tem certeza que deseja excluir este usuário?</p>
                 </div>
                 <div class="modal-footer">
@@ -206,7 +205,6 @@
         const modalExcluirUsuario = new bootstrap.Modal(elemModalExcluir);
 
         const excluirInputId   = elemModalExcluir.querySelector('[name=id-usuario]');
-        const excluirInputNome = elemModalExcluir.querySelector('[name=nome-usuario]');
 
         for (const btnExcluir of document.querySelectorAll('.btn-excluir-usuario')) {
             btnExcluir.addEventListener('click', () => {
@@ -240,7 +238,6 @@
             }
             modalExcluirUsuario.hide();
             excluirInputId.value   = null;
-            excluirInputNome.value = null;
         });
 
         //
