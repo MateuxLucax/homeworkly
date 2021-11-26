@@ -46,7 +46,6 @@
                                         class="btn btn-danger btn-excluir-usuario"
                                         title="Remover usuário"
                                         data-id-usuario="<?=$usuario['id']?>"
-                                        data-nome-usuario="<?=$usuario['nome']?>"
                                 >
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
@@ -212,7 +211,6 @@
         for (const btnExcluir of document.querySelectorAll('.btn-excluir-usuario')) {
             btnExcluir.addEventListener('click', () => {
                 excluirInputId.value   = btnExcluir.dataset.idUsuario;
-                excluirInputNome.value = btnExcluir.dataset.nomeUsuario;
                 modalExcluirUsuario.show();
             });
         }
@@ -220,12 +218,10 @@
         document.querySelector('#btn-cancelar-exclusao').addEventListener('click', () => {
             modalExcluirUsuario.hide();
             excluirInputId.value   = null;
-            excluirInputNome.value = null;
         });
 
         document.querySelector('#btn-confirmar-exclusao').addEventListener('click', () => {
             const idUsuario   = excluirInputId.value;
-            const nomeUsuario = excluirInputNome.value;
             if (idUsuario) {
                 fetch('excluir', { method: 'POST', body: JSON.stringify({ id: idUsuario }) })
                 .then(response => {
@@ -235,7 +231,7 @@
                     } else {
                         Swal.fire(
                             'Erro',
-                            `Não foi possível excluir o usuário ${nomeUsuario}`,
+                            `Não foi possível excluir o usuário`,
                             'error'
                         );
                     }
