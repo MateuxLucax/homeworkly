@@ -14,7 +14,7 @@ RUN apt-get update; \
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN install-php-extensions gd curl mbstring pgsql zip xml pdo_pgsql
+RUN install-php-extensions pgsql pdo_pgsql
 
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug

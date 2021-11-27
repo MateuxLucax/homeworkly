@@ -38,14 +38,14 @@
                                         data-nome="<?=$turma['nome']?>"
                                         data-ano="<?=$turma['ano']?>"
                                 >
-                                    <i class="bi bi-pencil-square"></i>
+                                    <i class="fas fa-edit"></i>
                                 </button>
                                 <button type="button"
                                         class="btn btn-danger btn-excluir-turma"
                                         title="Remover turma"
                                         data-id="<?=$turma['id']?>"
                                 >
-                                    <i class="bi bi-trash-fill"></i>
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
@@ -63,7 +63,7 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-nova-turma"
                             >
-                                <i class="bi bi-plus-square"></i> Adicionar turma
+                                <i class="far fa-plus-square"></i> Adicionar turma
                             </button>
                         </div>
                     </td>

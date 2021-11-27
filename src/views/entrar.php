@@ -4,9 +4,9 @@
     require $root . 'views/componentes/head.php';
 ?>
 
-<body class="position-relative" style="height: 100vh;">
+<body>
 
-<main class="container-fluid d-flex flex-column align-items-center justify-content-center h-100">
+<main class="container-fluid min-vh-100 d-flex flex-column align-items-center justify-content-center h-100">
 
     <form onsubmit="submitLogin(event)" method="post">
         <img src="/static/images/full-logo.svg" class="img-fluid mx-auto d-block mb-5" alt="HomeWorkly logo">
@@ -15,7 +15,7 @@
             <label for="login" class="form-label">Usuário</label>
             <div class="input-group">
                 <span class="input-group-text">
-                    <i class="bi bi-person-fill"></i>
+                    <i class="fas fa-user"></i>
                 </span>
                 <input type="text"
                        class="form-control"
@@ -31,7 +31,7 @@
             <label for="senha" class="form-label">Senha</label>
             <div class="input-group">
                 <span class="input-group-text">
-                <i class="bi bi-lock-fill"></i>
+                    <i class="fas fa-lock"></i>
             </span>
                 <input type="password"
                        class="form-control"
@@ -40,7 +40,7 @@
                        placeholder="Senha"
                        aria-label="Usuário"
                        required />
-                <button class="btn btn-outline-secondary" onclick="toggleVisibility()" type="button"><i id="icone-senha" class="bi bi-eye-slash-fill"></i></button>
+                <button class="btn btn-outline-secondary" onclick="toggleVisibility()" type="button"><i id="icone-senha" class="fas fa-eye-slash"></i></button>
             </div>
         </div>
 
@@ -62,35 +62,16 @@
 
 <script>
     const form = document.querySelector('form');
-    const body = document.querySelector('body');
 
     const toggleVisibility = () => {
         const passwordIcon = document.querySelector('#icone-senha');
         const password = document.querySelector('#senha');
 
         const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-        const icon = passwordIcon.classList.contains('bi-eye-fill') ? 'bi-eye-slash-fill' : 'bi-eye-fill';
+        const icon = passwordIcon.classList.contains('fa-eye') ? 'fa-eye-slash' : 'fa-eye';
 
         password.setAttribute('type', type);
         passwordIcon.classList.toggle(icon);
-    }
-
-    const insertFailedToLoginToast = (message) => {
-        const toast = document.querySelector("#failed-login-toast");
-        if (toast) toast.remove();
-
-        const html = `<div style="margin-top: 32px; margin-right: 32px;" id="failed-login-toast" class="position-absolute top-0 end-0 toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                          <div class="d-flex">
-                            <div class="toast-body">
-                              ${message}
-                            </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                          </div>
-                        </div>`;
-
-        body.insertAdjacentHTML("beforeend", html);
-
-        (new bootstrap.Toast(document.querySelector('#failed-login-toast'))).show();
     }
 
     const submitLogin = (event) => {
@@ -109,8 +90,11 @@
                 });
             } else {
                 response.json().then(json => {
-                    // TODO usar sweetalert
-                    insertFailedToLoginToast(json.message);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: json.message
+                    });
                 });
             }
         });

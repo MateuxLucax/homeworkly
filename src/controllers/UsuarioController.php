@@ -25,6 +25,7 @@ class UsuarioController
     /**
      * @throws UnauthorizedException
      * @throws UserNotFoundException
+     * @throws QueryException
      */
     public static function login(Usuario $usuario) : Usuario {
         $sql = "SELECT * FROM usuario WHERE login = :login";
@@ -66,6 +67,9 @@ class UsuarioController
         return $usuario;
     }
 
+    /**
+     * @throws QueryException
+     */
     public static function listarTodos() : array {
         $sql = "SELECT id_usuario AS id, nome, tipo, login FROM usuario";
 

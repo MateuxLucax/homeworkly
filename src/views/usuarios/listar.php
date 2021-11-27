@@ -40,14 +40,14 @@
                                         data-nome="<?=$usuario['nome']?>"
                                         data-login="<?=$usuario['login']?>"
                                 >
-                                    <i class="bi bi-pencil-square"></i>
+                                    <i class="fas fa-edit"></i>
                                 </button>
                                 <button type="button"
                                         class="btn btn-danger btn-excluir-usuario"
                                         title="Remover usuário"
                                         data-id-usuario="<?=$usuario['id']?>"
                                 >
-                                    <i class="bi bi-trash-fill"></i>
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
@@ -65,7 +65,7 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-novo-usuario"
                             >
-                                <i class="bi bi-person-plus-fill"></i> Adicionar usuário
+                                <i class="fas fa-user-plus"></i> Adicionar usuário
                             </button>
                         </div>
                     </td>
