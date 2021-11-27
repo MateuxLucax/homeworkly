@@ -24,7 +24,7 @@ try {
         ':id' => $data['id'],
     ]);
 
-    http_response_code($ok ? 201 : 400);
+    http_response_code($ok ? 200 : 400);
     die('{"excluido": '. ($ok ? 'true' : 'false') .'}');
 } catch (Exception $e) {
     http_response_code(400);
