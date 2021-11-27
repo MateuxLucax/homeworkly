@@ -36,6 +36,7 @@ if (count($resTurma) == 0) {
 
 $turma = $resTurma[0];
 
+$view['id']   = $id;
 $view['nome'] = $turma['nome'];
 $view['ano']  = $turma['ano'];
 
@@ -74,4 +75,5 @@ foreach ($view['disciplinas'] as &$disciplina) {
 
 $view['title'] = 'Turma';
 
-var_dump($view);
+//var_dump($view);
+require_once $root.'views/turmas/turma.php';
