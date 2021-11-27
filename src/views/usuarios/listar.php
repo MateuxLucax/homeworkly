@@ -166,38 +166,6 @@
     <script type="text/javascript">
 
         //
-        // Alertas
-        //
-
-        <?php
-            $alertas = [
-                'usuario-excluido-sucesso' => [
-                    'tipo'   => 'success',
-                    'titulo' => 'Excluído',
-                    'texto'  => 'Usuário excluído com sucesso'
-                ],
-                'usuario-criado-sucesso' => [
-                    'tipo'   => 'success',
-                    'titulo' => 'Criado',
-                    'texto'  => 'Usuário criado com sucesso'
-                ],
-                'usuario-editado-sucesso' => [
-                    'tipo'   => 'success',
-                    'titulo' => 'Editado',
-                    'texto'  => 'Usuário editado com sucesso'
-                ]
-            ];
-        ?>
-
-        <?php if (isset($_GET['alerta'])): ?>
-            Swal.fire(
-                "<?=$alertas[$_GET['alerta']]['titulo']?>",
-                "<?=$alertas[$_GET['alerta']]['texto']?>",
-                "<?=$alertas[$_GET['alerta']]['tipo']?>"
-            );
-        <?php endif; ?>
-
-        //
         // Deletar usuário
         //
 
@@ -224,13 +192,16 @@
                 fetch('excluir', { method: 'POST', body: JSON.stringify({ id: idUsuario }) })
                 .then(response => {
                     if (response.status == 200) {
-                        window.location.assign('listar?alerta=usuario-excluido-sucesso');
+                        agendarAlertaSwal({
+                            icon: 'success',
+                            text: 'O usuário foi excluído com sucesso'
+                        });
+                        window.location.reload();
                     } else {
-                        Swal.fire(
-                            'Erro',
-                            `Não foi possível excluir o usuário`,
-                            'error'
-                        );
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Não foi possível excluir o usuário'
+                        });
                     }
                     return response.json();
                 }).then(console.log);
@@ -262,13 +233,16 @@
             fetch('criar', { method: 'POST', body: JSON.stringify(data) })
             .then(response => {
                 if (response.status == 201) {
-                    window.location.assign('listar?alerta=usuario-criado-sucesso');
+                    agendarAlertaSwal({
+                        icon: 'success',
+                        text: 'O usuário foi criado com sucesso'
+                    });
+                    window.location.reload();
                 } else {
-                    Swal.fire(
-                        'Erro',
-                        'Não foi possível criar o usuário',
-                        'error'
-                    );
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Não foi possível criar o usuário'
+                    });
                 }
                 return response.json();
             }).then(console.log);
@@ -304,13 +278,16 @@
             fetch('editar', {method: 'PUT', body: JSON.stringify(payload)})
             .then(response => {
                 if (response.status == 200) {
-                    window.location.assign('listar?alerta=usuario-editado-sucesso');
+                    agendarAlertaSwal({
+                        icon: 'success',
+                        text: 'O usuário foi alterado com sucesso'
+                    });
+                    window.location.reload();
                 } else {
-                    Swal.fire(
-                        'Erro',
-                        'Não foi possível editar o usuário',
-                        'error'
-                    );
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Não foi possível alterar o usuário'
+                    });
                 }
                 return response.json();
             }).then(console.log);

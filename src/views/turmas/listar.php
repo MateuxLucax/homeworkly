@@ -150,38 +150,6 @@
     <script type="text/javascript">
 
         //
-        // Alertas
-        //
-
-        <?php
-            $alertas = [
-                'turma-excluida-sucesso' => [
-                    'tipo'   => 'success',
-                    'titulo' => 'Excluída',
-                    'texto'  => 'Turma excluída com sucesso'
-                ],
-                'turma-criada-sucesso' => [
-                    'tipo'   => 'success',
-                    'titulo' => 'Criada',
-                    'texto'  => 'Turma criada com sucesso'
-                ],
-                'turma-editada-sucesso' => [
-                    'tipo'   => 'success',
-                    'titulo' => 'Editada',
-                    'texto'  => 'Turma editada com sucesso'
-                ]
-            ];
-        ?>
-
-        <?php if (isset($_GET['alerta'])): ?>
-            Swal.fire(
-                "<?=$alertas[$_GET['alerta']]['titulo']?>",
-                "<?=$alertas[$_GET['alerta']]['texto']?>",
-                "<?=$alertas[$_GET['alerta']]['tipo']?>"
-            );
-        <?php endif; ?>
-
-        //
         // Excluir turma
         //
 
@@ -207,13 +175,16 @@
                 fetch('excluir', { method: 'POST', body: JSON.stringify({ id }) })
                 .then(response => {
                     if (response.status == 200) {
-                        window.location.assign('listar?alerta=turma-excluida-sucesso');
+                        agendarAlertaSwal({
+                            icon: 'success',
+                            text: 'Turma excluída com sucesso'
+                        });
+                        window.location.reload();
                     } else {
-                        Swal.fire(
-                            'Erro',
-                            'Não foi possível excluir a turma',
-                            'error'
-                        );
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Não foi possível excluir a turma'
+                        });
                     }
                     response.text().then(console.log);
                 });
@@ -238,13 +209,16 @@
             fetch('criar', { method: 'POST', body: JSON.stringify(payload) })
             .then(response => {
                 if (response.status == 201) {
-                    window.location.assign('listar?alerta=turma-criada-sucesso')
+                    agendarAlertaSwal({
+                        icon: 'success',
+                        text: 'A turma foi criada com sucesso'
+                    });
+                    window.location.reload();
                 } else {
-                    Swal.fire(
-                        'Erro',
-                        'Não foi possível criar a turma',
-                        'error'
-                    );
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Não foi possível criar a turma'
+                    });
                 }
                 response.text().then(console.log);
             });
@@ -282,13 +256,16 @@
             fetch('editar', { method: 'POST', body: JSON.stringify(payload) })
             .then(response => {
                 if (response.status == 200) {
-                    window.location.assign('listar?alerta=turma-editada-sucesso');
+                    agendarAlertaSwal({
+                        icon: 'success',
+                        text: 'Turma alterada com sucesso'
+                    });
+                    window.location.reload();
                 } else {
-                    Swal.fire(
-                        'Erro',
-                        'Não foi possível editar a turma',
-                        'error'
-                    );
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Não foi possível alterar a turma'
+                    });
                 }
                 response.text().then(console.log);
             });
