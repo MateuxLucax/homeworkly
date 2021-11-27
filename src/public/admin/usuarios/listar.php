@@ -10,4 +10,4 @@ UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 $view['title'] = 'Usuários';
 $view['usuarios'] = UsuarioController::listarTodos();
 
-require $root.'/views/admin/usuarios/listar.php';
+require $root.'/views/usuarios/listar.php';

@@ -13,4 +13,4 @@ require_once $root.'database/Query.php';
 $view['title'] = 'Turmas';
 $view['turmas'] = Query::select('SELECT id_turma AS id, nome, ano FROM turma');
 
-require $root.'/views/admin/turmas/listar.php';
+require $root.'/views/turmas/listar.php';

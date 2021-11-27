@@ -34,7 +34,7 @@ try {
         */
 
         // HACK enquanto não tivermos index.php nesses diretórios
-        $whereIGo = '/admin/usuarios/listar';
+        $whereIGo = '/usuarios/listar';
 
         $response = [
             "location" => $whereIGo
