@@ -6,15 +6,8 @@ require_once $root.'database/Connection.php';
 require_once $root.'database/Query.php';
 require_once $root.'models/TipoUsuario.php';
 require_once $root.'controllers/UsuarioController.php';
-
-function responseNaoEncontrada($mensagem) {
-    global $root;
-    $view['title'] = 'Turma não encontrada';
-    $view['mensagem'] = $mensagem;
-    http_response_code(404);
-    require_once $root.'views/nao-encontrado.php';
-    die();
-}
+require_once $root.'utils/response-utils.php';
+require_once $root.'utils/HttpCodes.php';
 
 UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
@@ -25,13 +18,13 @@ if (!isset($_GET['id'])) {
 $id = $_GET['id'];
 
 if (!is_numeric($id)) {
-    responseNaoEncontrada("<b>$id</b> não é um id válido.");
+    respondWithNotFoundPage("<b>$id</b> não é um id válido.");
 }
 
 $resTurma = Query::select('SELECT nome, ano FROM turma WHERE id_turma = :id', [':id' => $id]);
 
 if (count($resTurma) == 0) {
-    responseNaoEncontrada("A turma de id <b>$id</b> não foi encontrada.");
+    respondWithNotFoundPage("A turma de id <b>$id</b> não foi encontrada.");
 }
 
 $turma = $resTurma[0];
