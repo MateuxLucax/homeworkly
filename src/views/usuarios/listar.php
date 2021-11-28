@@ -189,7 +189,7 @@
         document.querySelector('#btn-confirmar-exclusao').addEventListener('click', () => {
             const idUsuario   = excluirInputId.value;
             if (idUsuario) {
-                fetch('excluir', { method: 'POST', body: JSON.stringify({ id: idUsuario }) })
+                fetch('excluir', { method: 'DELETE', body: JSON.stringify({ id: idUsuario }) })
                 .then(response => {
                     if (response.status == 200) {
                         agendarAlertaSwal({
@@ -203,8 +203,8 @@
                             text: 'Não foi possível excluir o usuário'
                         });
                     }
-                    return response.json();
-                }).then(console.log);
+                    response.text().then(console.log);
+                });
             }
             modalExcluirUsuario.hide();
             excluirInputId.value   = null;
@@ -244,8 +244,8 @@
                         text: 'Não foi possível criar o usuário'
                     });
                 }
-                return response.json();
-            }).then(console.log);
+                response.text().then(console.log);
+            });
             modalNovoUsuario.hide();
         });
 
@@ -289,8 +289,8 @@
                         text: 'Não foi possível alterar o usuário'
                     });
                 }
-                return response.json();
-            }).then(console.log);
+                response.text().then(console.log);
+            });
             modalEditarUsuario.hide();
         });
     </script>

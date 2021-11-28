@@ -1,37 +1,33 @@
 <?php
 
-header('Content-Type: application/json; charset=utf-8');
+$root = '../../../';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-    http_response_code(405);
-    die('{"mensagem": "Método não permitido"}');
-}
+require_once $root.'utils/response-utils.php';
 
-$root = '../../..';
+forbidMethodsNot('PUT');
 
-require_once $root.'/database/Connection.php';
-require_once $root.'/database/Query.php';
-require_once $root.'/controllers/UsuarioController.php';
-require_once $root.'/models/TipoUsuario.php';
+require_once $root.'database/Query.php';
+require_once $root.'controllers/UsuarioController.php';
+require_once $root.'models/TipoUsuario.php';
 
-
-try {
+try
+{
     UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
-    $dados = json_decode(file_get_contents('php://input'));
+    $dados = readRequestBody();
 
     $editado = Query::execute(
         'UPDATE usuario SET nome = :nome, login = :login WHERE id_usuario = :id',
         [
-            ':id'    => $dados->id,
-            ':nome'  => $dados->nome,
-            ':login' => $dados->login,
+            ':id'    => $dados['id'],
+            ':nome'  => $dados['nome'],
+            ':login' => $dados['login']
         ]
     );
 
-    http_response_code($editado ? 200 : 400);
-    die('{"editado": '.($editado ? 'true' : 'false').'}');
-} catch (Exception $e) {
-    http_response_code(400);
-    die(json_encode(['exception' => $e]));
+    respond($editado ? HttpCodes::OK : HttpCodes::BAD_REQUEST);
+}
+catch (Exception $e)
+{
+    respond(HttpCodes::BAD_REQUEST, ['exception' => $e]);
 }

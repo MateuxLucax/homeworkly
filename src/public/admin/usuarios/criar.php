@@ -1,24 +1,20 @@
 <?php
 
-header('Content-Type: application/json; charset=utf-8');
+$root = '../../../';
 
-if (!($_SERVER['REQUEST_METHOD'] === 'POST')) {
-    http_response_code(405);
-    die(json_encode(["erro" => "metodo nao permitido"]));
-}
+require_once $root.'utils/response-utils.php';
 
-try {
-    $root = '../../..';
+forbidMethodsNot('POST');
 
-    require_once $root.'/controllers/UsuarioController.php';
-    require_once $root.'/models/TipoUsuario.php';
+require_once $root.'controllers/UsuarioController.php';
+require_once $root.'models/TipoUsuario.php';
+require_once $root.'models/Usuario.php';
 
+try
+{
     UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
-    require_once $root.'/models/Usuario.php';
-    require_once $root.'/controllers/UsuarioController.php';
-
-    $data = json_decode(file_get_contents('php://input'), true);
+    $data = readRequestBody();
 
     $usuario = new Usuario();
     $usuario->setNome($data['nome']);
@@ -28,9 +24,9 @@ try {
 
     $registrado = UsuarioController::registrar($usuario);
 
-    http_response_code($registrado ? 201 : 400);
-    die(json_encode(["registrado" => $registrado]));
-} catch (Exception $e) {
-    http_response_code(400);
-    die(json_encode(['exception' => $e]));
+    respond($registrado ? HttpCodes::CREATED : HttpCodes::BAD_REQUEST);
+}
+catch (Exception $e)
+{
+    respond(HttpCodes::BAD_REQUEST, ['exception' => $e]);
 }
