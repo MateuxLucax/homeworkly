@@ -27,7 +27,11 @@
                 <?php foreach ($view['turmas'] as $turma): ?>
                     <tr class="align-middle">
                         <td><?=$turma['id']?></td>
-                        <td><?=$turma['nome']?></td>
+                        <td>
+                            <a href="turma?id=<?=$turma['id']?>" class="btn btn-link" role="button" >
+                                <?=$turma['nome']?>
+                            </a>
+                        </td>
                         <td><?=$turma['ano']?></td>
                         <td style="width: 0;">
                             <div class="d-flex justify-content-end">
