@@ -55,14 +55,14 @@ $view['disciplinas'] = Query::select(
     , [':id' => $id]
 );
 
-foreach ($view['disciplinas'] as &$disciplina) {
-    $disciplina['professores'] = Query::select(
+for ($i = 0; $i < count($view['disciplinas']); $i++) {
+  $view['disciplinas'][$i]['professores'] = Query::select(
           'SELECT p.id_usuario AS id, p.nome, p.login, p.ultimo_acesso
              FROM usuario p
              JOIN professor_de_disciplina pd
                ON pd.id_professor = p.id_usuario
               AND pd.id_disciplina = :id'
-        , [':id' => $disciplina['id']]
+        , [':id' => $view['disciplinas'][$i]['id']]
     );
 }
 
