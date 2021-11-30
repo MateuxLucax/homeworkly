@@ -62,13 +62,10 @@
                 <tr>
                     <td colspan="5">
                         <div class="d-flex justify-content-end">
-                            <button type="button"
-                                    class="btn btn-success ms-auto"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-nova-turma"
-                            >
-                                <i class="far fa-plus-square"></i> Adicionar turma
-                            </button>
+                            <a href="criar" type="button" class="btn btn-success ms-auto" role="button">
+                                <i class="fas fa-plus-circle m-0"></i>
+                                Adicionar turma
+                            </a>
                         </div>
                     </td>
                 </tr>
@@ -76,34 +73,6 @@
         </table>
 
     </main>
-
-    <div class="modal fade" id="modal-nova-turma">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Nova turma</h5>
-                </div>
-
-                <form id="form-nova-turma">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="nome" class="form-label">Nome</label>
-                            <input type="text" name="nome" id="nome" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label for="ano" class="form-label">Ano</label>
-                            <input type="number" name="ano" id="ano" class="form-control" value="<?=date('Y')?>">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Criar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-    </div>
 
     <div class="modal fade" id="modal-editar-turma">
         <div class="modal-dialog">
@@ -195,38 +164,6 @@
             }
             modalExcluir.hide();
             inputIdExcluir.value = null;
-        });
-
-        //
-        // Criar turma
-        //
-
-        const formNova = document.getElementById('form-nova-turma');
-        const modalNova = new bootstrap.Modal(document.getElementById('modal-nova-turma'));
-
-        formNova.addEventListener('submit', event => {
-            event.preventDefault();
-            const payload = {
-                nome: formNova.nome.value,
-                ano:  formNova.ano.value,
-            };
-            fetch('criar', { method: 'POST', body: JSON.stringify(payload) })
-            .then(response => {
-                if (response.status == 201) {
-                    agendarAlertaSwal({
-                        icon: 'success',
-                        text: 'A turma foi criada com sucesso'
-                    });
-                    window.location.reload();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        text: 'Não foi possível criar a turma'
-                    });
-                }
-                response.text().then(console.log);
-            });
-            modalNova.hide();
         });
 
         //
