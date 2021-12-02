@@ -15,15 +15,15 @@ try
 {
     UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
-    $data = readRequestBody();
+    $data = readJsonRequestBody();
     $id = $data['id'];
 
     Query::execute('DELETE FROM usuario WHERE id_usuario = :id', [':id' => $id]);
 
-    respond(HttpCodes::OK);
+    respondJson(HttpCodes::OK);
 }
 catch (Exception $e)
 {
-    respond(HttpCodes::BAD_REQUEST, ['exception' => $e]);
+    respondJson(HttpCodes::BAD_REQUEST, ['exception' => $e]);
 }
 

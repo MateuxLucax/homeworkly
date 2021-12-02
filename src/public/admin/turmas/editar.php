@@ -15,15 +15,15 @@ try
 {
     UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
-    $data = readRequestBody();
+    $data = readJsonRequestBody();
     $ok = Query::execute('UPDATE turma SET nome = :nome, ano = :ano WHERE id_turma = :id', [
         ':id'   => $data['id'],
         ':nome' => $data['nome'],
         ':ano'  => $data['ano']
     ]);
-    respond($ok ? HttpCodes::OK : HttpCodes::BAD_REQUEST);
+    respondJson($ok ? HttpCodes::OK : HttpCodes::BAD_REQUEST);
 }
 catch (Exception $e)
 {
-    respond(HttpCodes::BAD_REQUEST, ['exception' => $e]);
+    respondJson(HttpCodes::BAD_REQUEST, ['exception' => $e]);
 }

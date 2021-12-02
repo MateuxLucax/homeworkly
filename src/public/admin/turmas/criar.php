@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 }
 else if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-    $data = readRequestBody();
+    $data = readJsonRequestBody();
 
     try {
         $pdo->beginTransaction();
@@ -50,13 +50,13 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST')
         $pdo->prepare($sqlCriarDisciplinas)->execute($paramsCriarDisciplinas);
 
         $pdo->commit();
-        respond(HttpCodes::CREATED, ['id' => $idTurma]);
+        respondJson(HttpCodes::CREATED, ['id' => $idTurma]);
     } catch(Exception $e) {
         $pdo->rollBack();
-        respond(HttpCodes::BAD_REQUEST, ['exception' => $e]);
+        respondJson(HttpCodes::BAD_REQUEST, ['exception' => $e]);
     }
 }
 else
 {
-    respond(HttpCodes::METHOD_NOT_ALLOWED);
+    respondJson(HttpCodes::METHOD_NOT_ALLOWED);
 }

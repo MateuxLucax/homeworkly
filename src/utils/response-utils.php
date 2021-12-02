@@ -9,7 +9,7 @@ require_once $root.'utils/HttpCodes.php';
  * @param mixed $body valor a ser codificado em JSON a ser enviado como corpo da resposta
  * @return void
  */
-function respond(int $code, mixed $body = ''): void
+function respondJson(int $code, mixed $body = ''): void
 {
     // PHP 8.1: mudar de void pra never
     header('Content-Type: application/json; charset=utf-8');
@@ -44,10 +44,10 @@ function forbidMethodsNot(string|array $methods): void
 {
     if (is_string($methods)) {
         if ($_SERVER['REQUEST_METHOD'] != $methods) {
-            respond(HttpCodes::METHOD_NOT_ALLOWED);
+            respondJson(HttpCodes::METHOD_NOT_ALLOWED);
         }
     } else if (!in_array($_SERVER['REQUEST_METHOD'], $methods)) {
-        respond(HttpCodes::METHOD_NOT_ALLOWED);
+        respondJson(HttpCodes::METHOD_NOT_ALLOWED);
     }
 }
 
@@ -56,7 +56,7 @@ function forbidMethodsNot(string|array $methods): void
  * 
  * @return array Corpo da request decodificado como array associativo
  */
-function readRequestBody(): array
+function readJsonRequestBody(): array
 {
     return json_decode(file_get_contents('php://input'), true);
 }

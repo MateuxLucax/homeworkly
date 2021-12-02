@@ -14,7 +14,7 @@ try
 {
     UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
-    $data = readRequestBody();
+    $data = readJsonRequestBody();
 
     $usuario = new Usuario();
     $usuario->setNome($data['nome']);
@@ -24,9 +24,9 @@ try
 
     $registrado = UsuarioController::registrar($usuario);
 
-    respond($registrado ? HttpCodes::CREATED : HttpCodes::BAD_REQUEST);
+    respondJson($registrado ? HttpCodes::CREATED : HttpCodes::BAD_REQUEST);
 }
 catch (Exception $e)
 {
-    respond(HttpCodes::BAD_REQUEST, ['exception' => $e]);
+    respondJson(HttpCodes::BAD_REQUEST, ['exception' => $e]);
 }

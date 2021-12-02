@@ -15,11 +15,11 @@ try
 {
     UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
-    $data = readRequestBody();
+    $data = readJsonRequestBody();
     $ok = Query::execute('DELETE FROM turma WHERE id_turma = :id', [':id' => $data['id']]);
-    respond($ok ? HttpCodes::OK : HttpCodes::BAD_REQUEST);
+    respondJson($ok ? HttpCodes::OK : HttpCodes::BAD_REQUEST);
 }
 catch (Exception $e)
 {
-    respond(HttpCodes::BAD_REQUEST, ['exception' => $e]);
+    respondJson(HttpCodes::BAD_REQUEST, ['exception' => $e]);
 }

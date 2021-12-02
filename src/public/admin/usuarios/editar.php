@@ -14,7 +14,7 @@ try
 {
     UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
-    $dados = readRequestBody();
+    $dados = readJsonRequestBody();
 
     $editado = Query::execute(
         'UPDATE usuario SET nome = :nome, login = :login WHERE id_usuario = :id',
@@ -25,9 +25,9 @@ try
         ]
     );
 
-    respond($editado ? HttpCodes::OK : HttpCodes::BAD_REQUEST);
+    respondJson($editado ? HttpCodes::OK : HttpCodes::BAD_REQUEST);
 }
 catch (Exception $e)
 {
-    respond(HttpCodes::BAD_REQUEST, ['exception' => $e]);
+    respondJson(HttpCodes::BAD_REQUEST, ['exception' => $e]);
 }
