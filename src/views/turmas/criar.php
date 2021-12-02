@@ -35,16 +35,36 @@
                 </div>
             </div>
 
+            <div id="alunos-container" style="display: hidden">
+            </div>
+
             <div class="card mb-3">
                 <div class="card-header">
                     Alunos
                 </div>
                 <div class="card-body" id="alunos-container">
-
-                    <button type="button" style="width: 100%" id="btn-adicionar-aluno" class="btn btn-outline-success">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Login</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-alunos">
+                        </tbody>
+                    </table>
+                    <button
+                        type="button"
+                        style="width: 100%"
+                        id="btn-adicionar-aluno"
+                        class="btn btn-outline-success"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-adicionar-aluno"
+                    >
                         <i class="fas fa-plus-circle"></i>
                     </button>
-
                 </div>
             </div>
 
@@ -58,6 +78,50 @@
         </form>
     </main>
 
+    <div class="modal" id="modal-adicionar-aluno">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Adicionar aluno
+                </div>
+                <div class="modal-body">
+
+                    <div class="input-group mb-3">
+                        <input type="search" class="form-control" id="input-pesquisa-aluno" />
+                        <button class="btn btn-primary" id="btn-pesquisar-alunos">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <table class="table table-hover mb-3">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Login</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-alunos-pesquisa">
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="btn-fechar-modal-adicionar-aluno"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-adicionar-aluno"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
     <script>
         const form = document.getElementById('form-criar-turma');
 
@@ -69,7 +133,8 @@
             const payload = {
                 nome: form['turma-nome'].value,
                 ano:  form['turma-ano'].value,
-                disciplinas: Array.from(form['disciplina-nome[]']).map(i => i.value)
+                disciplinas: Array.from(form['disciplina[]'] ?? []).map(i => i.value),
+                alunos: Array.from(form['aluno[]'] ?? []).map(i => i.value)
             };
 
             console.log(payload);
@@ -115,7 +180,7 @@
             const input = document.createElement('input');
             Object.assign(input, {
                 type: 'text',
-                name: 'disciplina-nome[]'
+                name: 'disciplina[]'
             })
             input.classList.add('disciplina-nome', 'form-control');
             group.appendChild(input);
@@ -140,8 +205,112 @@
         // Adicionar alunos dinamicamente
         //
 
-        // Aqui o botão de adicionar aluno abre um modal onde o admin pode pesquisar por nome ou código do aluno,
-        // selecionar do resultado da pesquisa, e o aluno selecionado é posto no DOM como input
+        const btnPesquisarAluno = document.getElementById('btn-pesquisar-alunos');
+        const tbodyAlunosPesquisa = document.getElementById('tbody-alunos-pesquisa');
+
+        btnPesquisarAluno.onclick = () => {
+            const pesquisa = document.getElementById('input-pesquisa-aluno').value;
+            while (tbodyAlunosPesquisa.firstChild) {
+                tbodyAlunosPesquisa.firstChild.remove();
+            }
+            fetch('/admin/usuarios/listar', {
+                headers: { 'Accept': 'application/json' },
+                method: 'POST',
+                body: JSON.stringify({ filtros: { nome: pesquisa, tipo: 'aluno' } })
+            }).then(resp => {
+                if (resp.status == 200) return resp.json();
+                else throw {};
+            }).then(alunos => {
+                tbodyAlunosPesquisa.append(...alunos.map(criarAlunoResultadoPesquisa));
+            }, () => {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Não foi possível realizar a pesquisa'
+                });
+            });
+        };
+
+        function criarAlunoResultadoPesquisa({id_usuario, nome, login}) {
+            const trAluno = document.createElement('tr');
+
+            const tdId = document.createElement('td');
+            tdId.innerText = id_usuario;
+            const tdNome = document.createElement('td');
+            tdNome.innerText = nome;
+            const tdLogin = document.createElement('td');
+            tdLogin.innerText = login;
+
+            const btnAdd = document.createElement('button');
+            btnAdd.classList.add('btn', 'btn-success');
+            const iconeAdd = document.createElement('i');
+            iconeAdd.classList.add('fas', 'fa-plus');
+            btnAdd.append(iconeAdd);
+
+            const tdBtnAdd = document.createElement('td');
+            tdBtnAdd.append(btnAdd);
+
+            trAluno.append(tdId, tdNome, tdLogin, tdBtnAdd);
+
+            btnAdd.onclick = () => {
+                document.getElementById('btn-fechar-modal-adicionar-aluno').click();
+                criarAlunoTurma(id_usuario, nome, login);
+            };
+
+            return trAluno;
+        }
+
+        const alunosContainer = document.getElementById('alunos-container');
+        const tbodyAlunos = document.getElementById('tbody-alunos');
+
+        const alunosInseridos = new Set();
+
+        function criarAlunoTurma(id, nome, login) {
+            if (alunosInseridos.has(id)) {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Aluno já adicionado a turma'
+                });
+                return;
+            }
+
+            alunosInseridos.add(id);
+
+            const inputAluno = document.createElement('input');
+            Object.assign(inputAluno, {
+                name: 'aluno[]',
+                type: 'hidden',
+                value: id
+            });
+            alunosContainer.append(inputAluno);
+
+            const trAluno = document.createElement('tr');
+
+            const tdId = document.createElement('td');
+            tdId.innerText = id;
+            const tdNome = document.createElement('td');
+            tdNome.innerText = nome;
+            const tdLogin = document.createElement('td');
+            tdLogin.innerText = login;
+
+            const btnRemover = document.createElement('button');
+            btnRemover.classList.add('btn', 'btn-outline-danger');
+            const iconeRemover = document.createElement('i');
+            iconeRemover.classList.add('fas', 'fa-minus-circle');
+            btnRemover.append(iconeRemover);
+
+            const tdBtnRemover = document.createElement('td');
+            tdBtnRemover.append(btnRemover);
+
+            trAluno.append(tdId, tdNome, tdLogin, tdBtnRemover);
+
+            tbodyAlunos.append(trAluno);
+
+            btnRemover.onclick = () => {
+                alunosInseridos.delete(id);
+                inputAluno.remove();
+                trAluno.remove();
+            };
+        }
     </script>
 
 </body>
