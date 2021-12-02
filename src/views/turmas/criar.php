@@ -35,6 +35,19 @@
                 </div>
             </div>
 
+            <div class="card mb-3">
+                <div class="card-header">
+                    Alunos
+                </div>
+                <div class="card-body" id="alunos-container">
+
+                    <button type="button" style="width: 100%" id="btn-adicionar-aluno" class="btn btn-outline-success">
+                        <i class="fas fa-plus-circle"></i>
+                    </button>
+
+                </div>
+            </div>
+
             <div class="text-end">
                 <button type="submit" class="btn btn-outline-primary btn-lg">
                     <i class="fas fa-paper-plane"></i>&nbsp;
@@ -122,6 +135,13 @@
 
             return group;
         }
+
+        //
+        // Adicionar alunos dinamicamente
+        //
+
+        // Aqui o botão de adicionar aluno abre um modal onde o admin pode pesquisar por nome ou código do aluno,
+        // selecionar do resultado da pesquisa, e o aluno selecionado é posto no DOM como input
     </script>
 
 </body>
