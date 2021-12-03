@@ -231,32 +231,17 @@
         };
 
         function criarAlunoResultadoPesquisa({id_usuario, nome, login}) {
-            const trAluno = document.createElement('tr');
-
-            const tdId = document.createElement('td');
-            tdId.innerText = id_usuario;
-            const tdNome = document.createElement('td');
-            tdNome.innerText = nome;
-            const tdLogin = document.createElement('td');
-            tdLogin.innerText = login;
-
             const btnAdd = document.createElement('button');
             btnAdd.classList.add('btn', 'btn-success');
             const iconeAdd = document.createElement('i');
             iconeAdd.classList.add('fas', 'fa-plus');
             btnAdd.append(iconeAdd);
-
-            const tdBtnAdd = document.createElement('td');
-            tdBtnAdd.append(btnAdd);
-
-            trAluno.append(tdId, tdNome, tdLogin, tdBtnAdd);
-
             btnAdd.onclick = () => {
                 document.getElementById('btn-fechar-modal-adicionar-aluno').click();
                 criarAlunoTurma(id_usuario, nome, login);
             };
 
-            return trAluno;
+            return criarTr(id_usuario, nome, login, btnAdd);
         }
 
         const alunosContainer = document.getElementById('alunos-container');
@@ -283,33 +268,20 @@
             });
             alunosContainer.append(inputAluno);
 
-            const trAluno = document.createElement('tr');
-
-            const tdId = document.createElement('td');
-            tdId.innerText = id;
-            const tdNome = document.createElement('td');
-            tdNome.innerText = nome;
-            const tdLogin = document.createElement('td');
-            tdLogin.innerText = login;
 
             const btnRemover = document.createElement('button');
             btnRemover.classList.add('btn', 'btn-outline-danger');
             const iconeRemover = document.createElement('i');
             iconeRemover.classList.add('fas', 'fa-minus-circle');
+            const trAluno = criarTr(id, nome, login, btnRemover);
             btnRemover.append(iconeRemover);
-
-            const tdBtnRemover = document.createElement('td');
-            tdBtnRemover.append(btnRemover);
-
-            trAluno.append(tdId, tdNome, tdLogin, tdBtnRemover);
-
-            tbodyAlunos.append(trAluno);
-
             btnRemover.onclick = () => {
                 alunosInseridos.delete(id);
                 inputAluno.remove();
                 trAluno.remove();
             };
+
+            tbodyAlunos.append(trAluno);
         }
     </script>
 
