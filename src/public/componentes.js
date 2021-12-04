@@ -7,3 +7,11 @@ function criarTr(conteudos, tag = 'td') {
     }
     return tr;
 }
+
+function criarElemento(tag, classes=[], pai=null, atributos={}) {
+    const elem = document.createElement(tag);
+    pai?.append(elem);
+    elem.classList.add(...classes);
+    Object.assign(elem, atributos);
+    return elem;
+}

@@ -173,72 +173,40 @@
         };
 
         function criarDisciplina() {
-            const card = document.createElement('div');
-            card.classList.add('card', 'mb-3', 'bg-dark');
-            const cardBody = document.createElement('div');
-            cardBody.classList.add('card-body');
-            card.append(cardBody);
+            const card = criarElemento('div', ['card', 'mb-3', 'bg-dark']);
+            const cardBody = criarElemento('div', ['card-body'], card);
 
-            const inputGroup = document.createElement('div');
-            inputGroup.classList.add('input-group', 'mb-3');
+            const inputGroup = criarElemento('div', ['input-group', 'mb-3'], cardBody);
 
-            const input = document.createElement('input');
-            Object.assign(input, {
+            criarElemento('input', ['disciplina-nome', 'form-control'], inputGroup, {
                 type: 'text',
                 name: 'disciplina[]'
-            })
-            input.classList.add('disciplina-nome', 'form-control');
-            inputGroup.append(input);
+            });
 
-            const iconeRemover = document.createElement('i');
-            iconeRemover.classList.add('fas', 'fa-minus-circle');
-
-            const btnRemover = document.createElement('button');
-            Object.assign(btnRemover, {
+            const btnRemover = criarElemento('button', ['btn', 'btn-danger'], inputGroup, {
                 type: 'button',
                 onclick: () => { card.remove() }
             });
-            btnRemover.classList.add('btn', 'btn-outline-danger', 'bg-light')
-            btnRemover.append(iconeRemover);
-            inputGroup.append(btnRemover);
 
-            cardBody.append(inputGroup);
+            criarElemento('i', ['fas', 'fa-minus-circle'], btnRemover);
 
-            const cardProfessores = document.createElement('card');
-            cardBody.append(cardProfessores);
-            cardProfessores.classList.add('card');
-            const cardHeaderProfessores = document.createElement('div');
-            cardHeaderProfessores.classList.add('card-header');
-            cardHeaderProfessores.append('Professor(es)')
-            cardProfessores.append(cardHeaderProfessores);
-            const cardBodyProfessores = document.createElement('div');
-            cardBodyProfessores.classList.add('card-body');
-            cardProfessores.append(cardBodyProfessores);
+            const cardProfessores = criarElemento('div', ['card'], cardBody);
+            const cardHeaderProfessores = criarElemento('div', ['card-header'], cardProfessores);
+            cardHeaderProfessores.append('Professor(es)');
+            const cardBodyProfessores = criarElemento('div', ['card-body'], cardProfessores);
 
-            const tableProfessores = document.createElement('table');
-            tableProfessores.classList.add('table', 'table-hover', 'd-none');
-            const theadProfessores = document.createElement('thead');
-            tableProfessores.append(theadProfessores);
+            const tableProfessores = criarElemento('table', ['table', 'table-hover', 'd-none'], cardBodyProfessores);
+            const theadProfessores = criarElemento('thead', [], tableProfessores);
             theadProfessores.append(criarTr(['ID', 'Nome', 'Login', ''], 'th'));
-            const tbodyProfessores = document.createElement('tbody');
-            tableProfessores.append(tbodyProfessores);
+            const tbodyProfessores = criarElemento('tbody', [], tableProfessores);
 
-            const btnAddProfessor = document.createElement('button');
-            btnAddProfessor.classList.add('btn', 'btn-outline-success');
-            const iconeAddProfessor = document.createElement('i');
-            iconeAddProfessor.classList.add('fas', 'fa-search');
-            btnAddProfessor.append(iconeAddProfessor);
-            Object.assign(btnAddProfessor, {
-                type: 'button',
-                style: 'width: 100%',
-            });
+            const btnAddProfessor = criarElemento('button', ['btn', 'btn-outline-success'], cardBodyProfessores, { type: 'button', });
+            const iconeAddProfessor = criarElemento('i', ['fas', 'fa-search'], btnAddProfessor);
+            btnAddProfessor.style.width = '100%';
             btnAddProfessor.setAttribute('data-bs-toggle', 'modal');
             btnAddProfessor.setAttribute('data-bs-target', '#modal-adicionar-professor');
 
             // TODO fazer esse modal
-
-            cardBodyProfessores.append(tableProfessores);
-            cardBodyProfessores.append(btnAddProfessor);
 
             return card;
         }
@@ -278,11 +246,8 @@
         };
 
         function criarAlunoResultadoPesquisa({id_usuario, nome, login}) {
-            const btnAdd = document.createElement('button');
-            btnAdd.classList.add('btn', 'btn-success');
-            const iconeAdd = document.createElement('i');
-            iconeAdd.classList.add('fas', 'fa-plus');
-            btnAdd.append(iconeAdd);
+            const btnAdd = criarElemento('button', ['btn', 'btn-success'], null, { type: 'button' });
+            const iconeAdd = criarElemento('i', ['fas', 'fa-plus'], btnAdd);
             btnAdd.onclick = () => {
                 document.getElementById('btn-fechar-modal-adicionar-aluno').click();
                 criarAlunoTurma(id_usuario, nome, login);
@@ -307,22 +272,18 @@
 
             alunosInseridos.add(id);
 
-            const inputAluno = document.createElement('input');
-            Object.assign(inputAluno, {
+            const inputAluno = criarElemento('input', [], alunosContainer, {
                 name: 'aluno[]',
                 type: 'hidden',
                 value: id
             });
-            alunosContainer.append(inputAluno);
 
             const tableAlunos = document.getElementById('table-alunos');
 
-            const btnRemover = document.createElement('button');
-            btnRemover.classList.add('btn', 'btn-outline-danger');
-            const iconeRemover = document.createElement('i');
-            iconeRemover.classList.add('fas', 'fa-minus-circle');
+            const btnRemover = criarElemento('button', ['btn', 'btn-outline-danger'], null, { type: 'button' });
+            const iconeRemover = criarElemento('i', ['fas', 'fa-minus-circle'], btnRemover);
+
             const trAluno = criarTr([id, nome, login, btnRemover]);
-            btnRemover.append(iconeRemover);
             btnRemover.onclick = () => {
                 alunosInseridos.delete(id);
                 if (alunosInseridos.size == 0) {
