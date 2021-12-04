@@ -62,7 +62,7 @@
                         data-bs-toggle="modal"
                         data-bs-target="#modal-adicionar-aluno"
                     >
-                        <i class="fas fa-plus-circle"></i>
+                        <i class="fas fa-search"></i>
                     </button>
                 </div>
             </div>
@@ -167,14 +167,20 @@
 
         btnAdicionarDisciplina.onclick = () => {
             disciplinasContainer.insertBefore(
-                criarInputDisciplina(),
+                criarDisciplina(),
                 btnAdicionarDisciplina
             );
         };
 
-        function criarInputDisciplina() {
-            const group = document.createElement('div');
-            group.classList.add('mb-3', 'input-group');
+        function criarDisciplina() {
+            const card = document.createElement('div');
+            card.classList.add('card', 'mb-3', 'bg-dark');
+            const cardBody = document.createElement('div');
+            cardBody.classList.add('card-body');
+            card.append(cardBody);
+
+            const inputGroup = document.createElement('div');
+            inputGroup.classList.add('input-group', 'mb-3');
 
             const input = document.createElement('input');
             Object.assign(input, {
@@ -182,7 +188,7 @@
                 name: 'disciplina[]'
             })
             input.classList.add('disciplina-nome', 'form-control');
-            group.appendChild(input);
+            inputGroup.append(input);
 
             const iconeRemover = document.createElement('i');
             iconeRemover.classList.add('fas', 'fa-minus-circle');
@@ -190,14 +196,51 @@
             const btnRemover = document.createElement('button');
             Object.assign(btnRemover, {
                 type: 'button',
-                tabIndex: -1,
-                onclick: () => { group.remove() }
+                onclick: () => { card.remove() }
             });
-            btnRemover.classList.add('btn', 'btn-outline-danger')
-            btnRemover.appendChild(iconeRemover);
-            group.appendChild(btnRemover);
+            btnRemover.classList.add('btn', 'btn-outline-danger', 'bg-light')
+            btnRemover.append(iconeRemover);
+            inputGroup.append(btnRemover);
 
-            return group;
+            cardBody.append(inputGroup);
+
+            const cardProfessores = document.createElement('card');
+            cardBody.append(cardProfessores);
+            cardProfessores.classList.add('card');
+            const cardHeaderProfessores = document.createElement('div');
+            cardHeaderProfessores.classList.add('card-header');
+            cardHeaderProfessores.append('Professor(es)')
+            cardProfessores.append(cardHeaderProfessores);
+            const cardBodyProfessores = document.createElement('div');
+            cardBodyProfessores.classList.add('card-body');
+            cardProfessores.append(cardBodyProfessores);
+
+            const tableProfessores = document.createElement('table');
+            tableProfessores.classList.add('table', 'table-hover', 'd-none');
+            const theadProfessores = document.createElement('thead');
+            tableProfessores.append(theadProfessores);
+            theadProfessores.append(criarTr(['ID', 'Nome', 'Login', ''], 'th'));
+            const tbodyProfessores = document.createElement('tbody');
+            tableProfessores.append(tbodyProfessores);
+
+            const btnAddProfessor = document.createElement('button');
+            btnAddProfessor.classList.add('btn', 'btn-outline-success');
+            const iconeAddProfessor = document.createElement('i');
+            iconeAddProfessor.classList.add('fas', 'fa-search');
+            btnAddProfessor.append(iconeAddProfessor);
+            Object.assign(btnAddProfessor, {
+                type: 'button',
+                style: 'width: 100%',
+            });
+            btnAddProfessor.setAttribute('data-bs-toggle', 'modal');
+            btnAddProfessor.setAttribute('data-bs-target', '#modal-adicionar-professor');
+
+            // TODO fazer esse modal
+
+            cardBodyProfessores.append(tableProfessores);
+            cardBodyProfessores.append(btnAddProfessor);
+
+            return card;
         }
 
         //
@@ -245,7 +288,7 @@
                 criarAlunoTurma(id_usuario, nome, login);
             };
 
-            return criarTr(id_usuario, nome, login, btnAdd);
+            return criarTr([id_usuario, nome, login, btnAdd]);
         }
 
         const alunosContainer = document.getElementById('alunos-container');
@@ -278,7 +321,7 @@
             btnRemover.classList.add('btn', 'btn-outline-danger');
             const iconeRemover = document.createElement('i');
             iconeRemover.classList.add('fas', 'fa-minus-circle');
-            const trAluno = criarTr(id, nome, login, btnRemover);
+            const trAluno = criarTr([id, nome, login, btnRemover]);
             btnRemover.append(iconeRemover);
             btnRemover.onclick = () => {
                 alunosInseridos.delete(id);
