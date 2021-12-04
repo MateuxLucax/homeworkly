@@ -43,7 +43,7 @@
                     Alunos
                 </div>
                 <div class="card-body" id="alunos-container">
-                    <table class="table table-striped table-hover">
+                    <table class="table table-striped table-hover d-none" id="table-alunos">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -268,6 +268,7 @@
             });
             alunosContainer.append(inputAluno);
 
+            const tableAlunos = document.getElementById('table-alunos');
 
             const btnRemover = document.createElement('button');
             btnRemover.classList.add('btn', 'btn-outline-danger');
@@ -277,11 +278,16 @@
             btnRemover.append(iconeRemover);
             btnRemover.onclick = () => {
                 alunosInseridos.delete(id);
+                if (alunosInseridos.size == 0) {
+                    tableAlunos.classList.add('d-none');
+                }
                 inputAluno.remove();
                 trAluno.remove();
             };
 
             tbodyAlunos.append(trAluno);
+
+            tableAlunos.classList.remove('d-none');
         }
     </script>
 
