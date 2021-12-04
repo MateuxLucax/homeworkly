@@ -32,7 +32,7 @@ if ($headers['Accept'] == 'application/json')
         }
     }
 
-    $sql = 'SELECT id_usuario, nome, login FROM usuario';
+    $sql = 'SELECT id_usuario, nome, login, tipo FROM usuario';
 
     if (count($condicoes) > 0) {
         $sql .= ' WHERE ';

@@ -77,6 +77,48 @@
         </form>
     </main>
 
+    <div class="modal" id="modal-adicionar-professor">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Adicionar professor
+                </div>
+                <div class="modal-body">
+
+                    <div class="input-group mb-3">
+                        <input type="search" class="form-control" id="input-pesquisa-professores" />
+                        <button class="btn btn-primary" id="btn-pesquisar-professores">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <table class="table table-hover mb-3 d-none" id="table-pesquisa-professores">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Login</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-pesquisa-professores">
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="btn-fechar-modal-adicionar-professor"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
     <div class="modal" id="modal-adicionar-aluno">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -132,7 +174,12 @@
             const payload = {
                 nome: form['turma-nome'].value,
                 ano:  form['turma-ano'].value,
-                disciplinas: Array.from(form['disciplina[]'] ?? []).map(i => i.value),
+                disciplinas: Array.from(document.getElementsByClassName('card-disciplina')).map(d => {
+                    return {
+                        nome: d.getElementsByClassName('disciplina-nome')[0].value,
+                        professores: Array.from(d.getElementsByClassName('professor-id')).map(i => i.value)
+                    }
+                }),
                 alunos: Array.from(form['aluno[]'] ?? []).map(i => i.value)
             };
 
@@ -162,6 +209,10 @@
         // Adicionar disciplinas dinamicamente
         //
 
+        let idProxDisciplina = 1;
+        // Usado para gerar atributos ID para os elementos das disciplinas
+        // que por sua vez são usados para adicionar os professores na disciplina correta
+
         const disciplinasContainer   = document.getElementById('disciplinas-container');
         const btnAdicionarDisciplina = document.getElementById('btn-adicionar-disciplina');
 
@@ -172,22 +223,20 @@
             );
         };
 
+        const elemModalAdicionarProfessor = document.getElementById('modal-adicionar-professor');
+        const modalAdicionarProfessor = new bootstrap.Modal(elemModalAdicionarProfessor);
+
         function criarDisciplina() {
-            const card = criarElemento('div', ['card', 'mb-3', 'bg-dark']);
+            const idDisciplina = `disciplina-${idProxDisciplina++}`;
+            const card = criarElemento('div', ['card-disciplina', 'card', 'mb-3', 'bg-dark'], null, { id: idDisciplina });
             const cardBody = criarElemento('div', ['card-body'], card);
 
             const inputGroup = criarElemento('div', ['input-group', 'mb-3'], cardBody);
-
-            criarElemento('input', ['disciplina-nome', 'form-control'], inputGroup, {
-                type: 'text',
-                name: 'disciplina[]'
-            });
-
+            criarElemento('input', ['disciplina-nome', 'form-control'], inputGroup, { type: 'text' });
             const btnRemover = criarElemento('button', ['btn', 'btn-danger'], inputGroup, {
                 type: 'button',
                 onclick: () => { card.remove() }
             });
-
             criarElemento('i', ['fas', 'fa-minus-circle'], btnRemover);
 
             const cardProfessores = criarElemento('div', ['card'], cardBody);
@@ -195,20 +244,115 @@
             cardHeaderProfessores.append('Professor(es)');
             const cardBodyProfessores = criarElemento('div', ['card-body'], cardProfessores);
 
-            const tableProfessores = criarElemento('table', ['table', 'table-hover', 'd-none'], cardBodyProfessores);
+            const tableProfessores = criarElemento('table', ['table-professores', 'table', 'table-hover', 'd-none'], cardBodyProfessores);
             const theadProfessores = criarElemento('thead', [], tableProfessores);
             theadProfessores.append(criarTr(['ID', 'Nome', 'Login', ''], 'th'));
-            const tbodyProfessores = criarElemento('tbody', [], tableProfessores);
+            const tbodyProfessores = criarElemento('tbody', ['tbody-professores'], tableProfessores);
 
-            const btnAddProfessor = criarElemento('button', ['btn', 'btn-outline-success'], cardBodyProfessores, { type: 'button', });
+            const btnAddProfessor = criarElemento('button', ['btn', 'btn-outline-success'], cardBodyProfessores, {
+                type: 'button',
+                onclick: () => {
+                    elemModalAdicionarProfessor.setAttribute('data-id-disciplina', idDisciplina)
+                    modalAdicionarProfessor.show();
+                }
+            });
+            document.getElementById('btn-fechar-modal-adicionar-professor').onclick = () => { modalAdicionarProfessor.hide(); }
             const iconeAddProfessor = criarElemento('i', ['fas', 'fa-search'], btnAddProfessor);
             btnAddProfessor.style.width = '100%';
-            btnAddProfessor.setAttribute('data-bs-toggle', 'modal');
-            btnAddProfessor.setAttribute('data-bs-target', '#modal-adicionar-professor');
-
-            // TODO fazer esse modal
 
             return card;
+        }
+
+        //
+        // Adicionar professores às disciplinas dinamicamente
+        //
+
+        const btnPesquisarProfessores = document.getElementById('btn-pesquisar-professores');
+        const tablePesquisaProfessores = document.getElementById('table-pesquisa-professores');
+        const tbodyPesquisaProfessores = document.getElementById('tbody-pesquisa-professores');
+
+        btnPesquisarProfessores.onclick = () => {
+            tablePesquisaProfessores.classList.add('d-none');
+            const pesquisa = document.getElementById('input-pesquisa-professores').value;
+
+            while (tbodyPesquisaProfessores.firstChild) {
+                tbodyPesquisaProfessores.firstChild.remove();
+            }
+
+            fetch('/admin/usuarios/listar', {
+                headers: { Accept: 'application/json' },
+                method: 'POST',
+                body: JSON.stringify({
+                    filtros: {
+                        nome: pesquisa,
+                        tipo: 'professor'
+                    }
+                })
+            }).then(resp => {
+                if (resp.status == 200) return resp.json();
+                else throw {};
+            }).then(professores => {
+                console.log(professores);
+                if (professores.length > 0) {
+                    tablePesquisaProfessores.classList.remove('d-none');
+                    tbodyPesquisaProfessores.append(...professores.map(criarProfessorResultadoPesquisa))
+                }
+            }, erro => {
+                console.err(erro);
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Não foi possível realizar a pesquisa'
+                });
+            })
+        };
+
+        function criarProfessorResultadoPesquisa({ id_usuario, nome, login }) {
+            const btnAdd = criarElemento('button', ['btn', 'btn-success'], null, {
+                type: 'button',
+                onclick: () => {
+                    modalAdicionarProfessor.hide();
+                    adicionarProfessorDisciplina(id_usuario, nome, login);
+                }
+            });
+            criarElemento('i', ['fas', 'fa-plus'], btnAdd);
+
+            return criarTr([ id_usuario, nome, login, btnAdd ]);
+        }
+
+        function adicionarProfessorDisciplina(id, nome, login) {
+            const idDisciplina = elemModalAdicionarProfessor.getAttribute('data-id-disciplina');
+            const disciplina = document.getElementById(idDisciplina);
+
+            const inputsAdicionados = disciplina.getElementsByClassName('professor-id');
+            if (Array.from(inputsAdicionados).some(i => i.value == id)) {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Professor já adicionado nessa disciplina'
+                });
+                return;
+            }
+
+            const input = criarElemento('input', ['professor-id'], disciplina, {
+                type: 'hidden',
+                value: id
+            });
+
+            const table = disciplina.getElementsByClassName('table-professores')[0];
+            table.classList.remove('d-none');
+
+            const btnRemover = criarElemento('button', ['btn', 'btn-outline-danger'], null, { type: 'button', });
+            criarElemento('i', ['fas', 'fa-minus-circle'], btnRemover);
+            const tbody = disciplina.getElementsByClassName('tbody-professores')[0];
+            const tr = criarTr([id, nome, login, btnRemover]);
+            tbody.append(tr);
+
+            btnRemover.onclick = () => {
+                input.remove();
+                tr.remove();
+                if (inputsAdicionados.length == 0) {
+                    table.classList.add('d-none');
+                }
+            };
         }
 
         //
@@ -250,19 +394,18 @@
             const iconeAdd = criarElemento('i', ['fas', 'fa-plus'], btnAdd);
             btnAdd.onclick = () => {
                 document.getElementById('btn-fechar-modal-adicionar-aluno').click();
-                criarAlunoTurma(id_usuario, nome, login);
+                adicionarAlunoTurma(id_usuario, nome, login);
             };
-
             return criarTr([id_usuario, nome, login, btnAdd]);
         }
 
         const alunosContainer = document.getElementById('alunos-container');
         const tbodyAlunos = document.getElementById('tbody-alunos');
 
-        const alunosInseridos = new Set();
+        const alunosAdicionados = new Set();
 
-        function criarAlunoTurma(id, nome, login) {
-            if (alunosInseridos.has(id)) {
+        function adicionarAlunoTurma(id, nome, login) {
+            if (alunosAdicionados.has(id)) {
                 Swal.fire({
                     icon: 'warning',
                     text: 'Aluno já adicionado a turma'
@@ -270,7 +413,7 @@
                 return;
             }
 
-            alunosInseridos.add(id);
+            alunosAdicionados.add(id);
 
             const inputAluno = criarElemento('input', [], alunosContainer, {
                 name: 'aluno[]',
@@ -285,8 +428,8 @@
 
             const trAluno = criarTr([id, nome, login, btnRemover]);
             btnRemover.onclick = () => {
-                alunosInseridos.delete(id);
-                if (alunosInseridos.size == 0) {
+                alunosAdicionados.delete(id);
+                if (alunosAdicionados.size == 0) {
                     tableAlunos.classList.add('d-none');
                 }
                 inputAluno.remove();

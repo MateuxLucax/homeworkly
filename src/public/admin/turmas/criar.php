@@ -40,23 +40,22 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST')
         $idTurma = $pdo->lastInsertId();
 
         //
-        // Criar disciplinas da turma
+        // Criar disciplinas da turma, com professores
         //
 
-        $disciplinas = $data['disciplinas'];
+        foreach ($data['disciplinas'] as $disciplina) {
+            $pdo->prepare('INSERT INTO disciplina (nome, id_turma) VALUES (:nome, :idTurma)')->execute([
+                ':nome'    => $disciplina['nome'],
+                ':idTurma' => $idTurma
+            ]);
+            $idDisciplina = $pdo->lastInsertId();
 
-        if (count($disciplinas) > 0) {
-            $sqlCriarDisciplinas =
-            'INSERT INTO disciplina (nome, id_turma)
-            VALUES '. join(',', array_fill(0, count($disciplinas), '(?,?)'));
-
-            $paramsCriarDisciplinas = [];
-            foreach ($disciplinas as $disciplina) {
-                $paramsCriarDisciplinas[] = $disciplina;
-                $paramsCriarDisciplinas[] = $idTurma;
+            foreach ($disciplina['professores'] as $professor) {
+                $pdo->prepare('INSERT INTO professor_de_disciplina (id_professor, id_disciplina) VALUES (:idProf, :idDisc)')->execute([
+                    ':idProf' => $professor,
+                    ':idDisc' => $idDisciplina
+                ]);
             }
-            
-            $pdo->prepare($sqlCriarDisciplinas)->execute($paramsCriarDisciplinas);
         }
 
         //
