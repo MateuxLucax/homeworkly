@@ -58,7 +58,6 @@
                     <button
                         type="button"
                         style="width: 100%"
-                        id="btn-adicionar-aluno"
                         class="btn btn-outline-success"
                         data-bs-toggle="modal"
                         data-bs-target="#modal-adicionar-aluno"
@@ -92,7 +91,7 @@
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
-                    <table class="table table-hover mb-3">
+                    <table class="table table-hover mb-3 d-none" id="table-pesquisa-alunos">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -101,7 +100,7 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-alunos-pesquisa">
+                        <tbody id="tbody-pesquisa-alunos">
                         </tbody>
                     </table>
 
@@ -205,13 +204,15 @@
         // Adicionar alunos dinamicamente
         //
 
-        const btnPesquisarAluno = document.getElementById('btn-pesquisar-alunos');
-        const tbodyAlunosPesquisa = document.getElementById('tbody-alunos-pesquisa');
+        const btnPesquisarAlunos = document.getElementById('btn-pesquisar-alunos');
+        const tablePesquisaAlunos = document.getElementById('table-pesquisa-alunos')
+        const tbodyPesquisaAlunos = document.getElementById('tbody-pesquisa-alunos');
 
-        btnPesquisarAluno.onclick = () => {
+        btnPesquisarAlunos.onclick = () => {
+            tablePesquisaAlunos.classList.add('d-none');
             const pesquisa = document.getElementById('input-pesquisa-aluno').value;
-            while (tbodyAlunosPesquisa.firstChild) {
-                tbodyAlunosPesquisa.firstChild.remove();
+            while (tbodyPesquisaAlunos.firstChild) {
+                tbodyPesquisaAlunos.firstChild.remove();
             }
             fetch('/admin/usuarios/listar', {
                 headers: { 'Accept': 'application/json' },
@@ -221,7 +222,10 @@
                 if (resp.status == 200) return resp.json();
                 else throw {};
             }).then(alunos => {
-                tbodyAlunosPesquisa.append(...alunos.map(criarAlunoResultadoPesquisa));
+                if (alunos.length > 0) {
+                    tablePesquisaAlunos.classList.remove('d-none');
+                    tbodyPesquisaAlunos.append(...alunos.map(criarAlunoResultadoPesquisa));
+                }
             }, () => {
                 Swal.fire({
                     icon: 'error',
