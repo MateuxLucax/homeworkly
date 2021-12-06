@@ -49,7 +49,8 @@ create table if not exists tarefa (
     , fechamento    timestamp
     , fechada       boolean   not null default false
     , foreign key (id_professor, id_disciplina) references professor_de_disciplina (id_professor, id_disciplina)
-    , check (entrega > abertura and (fechamento is null or fechamento > entrega))
+    , check (entrega is null or entrega > abertura)
+    , check (fechamento is null or entrega is null or fechamento > entrega)
     );
 
 create table if not exists entrega (
