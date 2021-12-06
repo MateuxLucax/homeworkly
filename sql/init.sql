@@ -8,6 +8,7 @@ create table if not exists usuario (
     , hash_senha    text         not null
     , cadastro      timestamp    not null default current_timestamp
     , ultimo_acesso timestamp
+    , check (ultimo_acesso is null or ultimo_acesso >= cadastro)
 );
 
 create table if not exists turma (
