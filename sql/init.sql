@@ -57,7 +57,7 @@ create table if not exists entrega (
     , id_tarefa  bigint    references tarefa
     , id_aluno   bigint    references usuario
     , visto      boolean
-    , nota       real      check (nota >= 0 and nota <= 10)
+    , nota       real      check (nota is null or (nota >= 0 and nota <= 10))
     , data_hora  timestamp not null
     , conteudo   text      not null
     , comentario text
