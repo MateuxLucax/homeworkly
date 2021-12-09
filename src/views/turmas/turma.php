@@ -3,6 +3,7 @@
 <?php require $root.'views/componentes/head.php' ?>
 
 <body>
+    <?php $turma = $view['turma'] ?>
 
     <!-- TODO botões pro administrador poder editar -- adicionar alunos, disciplinas (criar tb) etc. -->
 
@@ -11,7 +12,7 @@
         <!-- TODO deve ter uma forma mais bonita de mostrar todas essas informações na mesma linha -->
 
         <h1 class="mt-3 mb-3">
-            <?=$view['ano']?> / <b><?=$view['nome']?></b> <small class="text-muted">#<?=$view['id']?></small>
+            <?=$turma['ano']?> / <b><?=$turma['nome']?></b> <small class="text-muted">#<?=$turma['id']?></small>
         </h1>
     
         <ul class="nav nav-tabs" role="tablist">
@@ -31,7 +32,7 @@
             <div class="tab-pane fade show active" id="alunos" role="tabpanel" aria-labelledby="tab-alunos">
 
                 <div class="mt-3">
-                    <?php if (count($view['alunos']) == 0): ?>
+                    <?php if (count($turma['alunos']) == 0): ?>
                         <div class="alert alert-warning">
                             Não há alunos nessa turma
                         </div>
@@ -44,7 +45,7 @@
                                 <th>Último acesso</th>
                             </thead>
                             <tbody>
-                                <?php foreach ($view['alunos'] as $aluno): ?>
+                                <?php foreach ($turma['alunos'] as $aluno): ?>
                                     <tr>
                                         <td><?=$aluno['id']?></td>
                                         <td><?=$aluno['nome']?></td>
@@ -64,7 +65,7 @@
             <div class="tab-pane fade" id="disciplinas" role="tabpanel" aria-labelledby="tab-disciplinas">
 
                 <div class="mt-3">
-                    <?php if (count($view['disciplinas']) == 0): ?>
+                    <?php if (count($turma['disciplinas']) == 0): ?>
                         <div class="alert alert-warning">
                             Não há disciplinas nessa turma
                         </div>
@@ -76,7 +77,7 @@
                                 <th>Professor(es)</th>
                             </thead>
                             <tbody>
-                                <?php foreach ($view['disciplinas'] as $disciplina): ?>
+                                <?php foreach ($turma['disciplinas'] as $disciplina): ?>
                                     <tr>
                                         <td><?=$disciplina['id']?></td>
                                         <td><?=$disciplina['nome']?></td>
