@@ -14,7 +14,8 @@ function respondJson(int $code, mixed $body = ''): void
     // PHP 8.1: mudar de void pra never
     header('Content-Type: application/json; charset=utf-8');
     http_response_code($code);
-    die(json_encode($body));
+    if (!empty($body)) echo json_encode($body);
+    die();
 }
 
 /**
