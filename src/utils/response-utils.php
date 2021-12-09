@@ -1,6 +1,6 @@
 <?php
 
-require_once $root.'utils/HttpCodes.php';
+require_once $root.'/utils/HttpCodes.php';
 
 /**
  * Gera resposta do tipo JSON com o código dado e com o corpo sendo a codificação JSON do valor $body dado.
