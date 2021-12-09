@@ -33,14 +33,6 @@ $view['id']   = $id;
 $view['nome'] = $turma['nome'];
 $view['ano']  = $turma['ano'];
 
-$sqlAlunos = '
-  SELECT u.id_usuario, u.nome, u.login, u.ultimo_acesso
-    FROM usuario u
-    JOIN aluno_em_turma ut
-      ON ut.id_aluno = u.id_aluno
-     AND ut.id_turma = :id
-';
-
 $view['alunos'] = Query::select(
       'SELECT al.id_usuario AS id, al.nome, al.login, al.ultimo_acesso
          FROM usuario al
