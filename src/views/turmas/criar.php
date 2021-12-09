@@ -12,25 +12,34 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="turma-nome" class="form-label">Nome</label>
-                        <input type="text" name="turma-nome" id="turma-nome" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="turma-ano" class="form-label">Ano</label>
-                        <input type="number" name="turma-ano" id="turma-ano" class="form-control" value="<?=date('Y')?>">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="turma-nome" class="form-label">Nome</label>
+                                <input type="text" name="turma-nome" id="turma-nome" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="turma-ano" class="form-label">Ano</label>
+                                <input type="number" name="turma-ano" id="turma-ano" class="form-control" value="<?=date('Y')?>">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="card mb-3">
                 <div class="card-header">
-                    Disciplinas
+                    <div class="row">
+                        <div class="col-sm-10 my-auto">
+                            Disciplinas
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="button" id="btn-adicionar-disciplina" class="btn btn-success float-end">
+                                <i class="fas fa-plus-circle"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body" id="disciplinas-container">
-
-                    <button type="button" style="width: 100%" id="btn-adicionar-disciplina" class="btn btn-outline-success">
-                        <i class="fas fa-plus-circle"></i>
-                    </button>
 
                 </div>
             </div>
@@ -40,7 +49,21 @@
 
             <div class="card mb-3">
                 <div class="card-header">
-                    Alunos
+                    <div class="row">
+                        <div class="col-sm-10 my-auto">
+                            Alunos
+                        </div>
+                        <div class="col-sm-2">
+                            <button
+                                type="button"
+                                class="btn btn-success float-end"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-adicionar-aluno"
+                            >
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body" id="alunos-container">
                     <table class="table table-striped table-hover d-none" id="table-alunos">
@@ -55,15 +78,6 @@
                         <tbody id="tbody-alunos">
                         </tbody>
                     </table>
-                    <button
-                        type="button"
-                        style="width: 100%"
-                        class="btn btn-outline-success"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-adicionar-aluno"
-                    >
-                        <i class="fas fa-search"></i>
-                    </button>
                 </div>
             </div>
 
@@ -217,10 +231,7 @@
         const btnAdicionarDisciplina = document.getElementById('btn-adicionar-disciplina');
 
         btnAdicionarDisciplina.onclick = () => {
-            disciplinasContainer.insertBefore(
-                criarDisciplina(),
-                btnAdicionarDisciplina
-            );
+            disciplinasContainer.appendChild(criarDisciplina());
         };
 
         const elemModalAdicionarProfessor = document.getElementById('modal-adicionar-professor');
@@ -228,7 +239,7 @@
 
         function criarDisciplina() {
             const idDisciplina = `disciplina-${idProxDisciplina++}`;
-            const card = criarElemento('div', ['card-disciplina', 'card', 'mb-3', 'bg-dark'], null, { id: idDisciplina });
+            const card = criarElemento('div', ['card-disciplina', 'card', 'mb-3', 'bg-dark', 'bg-gradient'], null, { id: idDisciplina });
             const cardBody = criarElemento('div', ['card-body'], card);
 
             const inputGroup = criarElemento('div', ['input-group', 'mb-3'], cardBody);
@@ -241,15 +252,14 @@
 
             const cardProfessores = criarElemento('div', ['card'], cardBody);
             const cardHeaderProfessores = criarElemento('div', ['card-header'], cardProfessores);
-            cardHeaderProfessores.append('Professor(es)');
             const cardBodyProfessores = criarElemento('div', ['card-body'], cardProfessores);
 
-            const tableProfessores = criarElemento('table', ['table-professores', 'table', 'table-hover', 'd-none'], cardBodyProfessores);
-            const theadProfessores = criarElemento('thead', [], tableProfessores);
-            theadProfessores.append(criarTr(['ID', 'Nome', 'Login', ''], 'th'));
-            const tbodyProfessores = criarElemento('tbody', ['tbody-professores'], tableProfessores);
+            const headerProfsRow = criarElemento('div', ['row'], cardHeaderProfessores);
+            const headerProfsColTitulo = criarElemento('div', ['col-sm-10', 'my-auto'], headerProfsRow);
+            headerProfsColTitulo.append('Professor(es)');
+            const headerProfsColBtn = criarElemento('div', ['col-sm-2'], headerProfsRow);
 
-            const btnAddProfessor = criarElemento('button', ['btn', 'btn-outline-success'], cardBodyProfessores, {
+            const btnAddProfessor = criarElemento('button', ['btn', 'btn-success', 'float-end'], headerProfsColBtn, {
                 type: 'button',
                 onclick: () => {
                     elemModalAdicionarProfessor.setAttribute('data-id-disciplina', idDisciplina)
@@ -258,7 +268,11 @@
             });
             document.getElementById('btn-fechar-modal-adicionar-professor').onclick = () => { modalAdicionarProfessor.hide(); }
             const iconeAddProfessor = criarElemento('i', ['fas', 'fa-search'], btnAddProfessor);
-            btnAddProfessor.style.width = '100%';
+
+            const tableProfessores = criarElemento('table', ['table-professores', 'table', 'table-hover', 'd-none'], cardBodyProfessores);
+            const theadProfessores = criarElemento('thead', [], tableProfessores);
+            theadProfessores.append(criarTr(['ID', 'Nome', 'Login', ''], 'th'));
+            const tbodyProfessores = criarElemento('tbody', ['tbody-professores'], tableProfessores);
 
             return card;
         }
