@@ -13,8 +13,6 @@ require_once $root.'database/Connection.php';
 require_once $root.'database/Query.php';
 require_once $root.'utils/HttpCodes.php';
 
-// TODO voltar a usar Query no lugar do pdo aqui
-
 $pdo = Connection::getInstance();
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
