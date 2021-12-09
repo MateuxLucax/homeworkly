@@ -2,11 +2,11 @@
 
 $root = '../../../';
 
-require_once $root . 'controllers/UsuarioController.php';
+require_once $root . 'controllers/UsuarioDAO.php';
 require_once $root . 'models/TipoUsuario.php';
 require_once $root . 'utils/response-utils.php';
 
-UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
+UsuarioDAO::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
 $headers = getallheaders();
 
@@ -46,7 +46,7 @@ if ($headers['Accept'] == 'application/json')
 else
 {
     $view['title'] = 'Usuários';
-    $view['usuarios'] = UsuarioController::listarTodos();
+    $view['usuarios'] = UsuarioDAO::listarTodos();
 
     require $root.'/views/usuarios/listar.php';
 }

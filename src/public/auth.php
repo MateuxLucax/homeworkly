@@ -12,7 +12,7 @@ try {
 
     require_once $root. 'models/Usuario.php';
     require_once $root. 'models/TipoUsuario.php';
-    require_once $root. 'controllers/UsuarioController.php';
+    require_once $root. 'controllers/UsuarioDAO.php';
 
     $data = json_decode(file_get_contents('php://input'), true);
 
@@ -20,7 +20,7 @@ try {
     $usuario->setLogin($data['login']);
     $usuario->setHashSenha($data['senha']);
 
-    $loggedInUser = UsuarioController::login($usuario);
+    $loggedInUser = UsuarioDAO::login($usuario);
     $response = array();
 
     if (!empty($loggedInUser)) {

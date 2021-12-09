@@ -3,10 +3,10 @@
 $root = '../../..';
 
 require_once $root.'/utils/response-utils.php';
-require_once $root.'/controllers/UsuarioController.php';
+require_once $root.'/controllers/UsuarioDAO.php';
 require_once $root.'/models/TipoUsuario.php';
 
-UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
+UsuarioDAO::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
 require_once $root.'/database/Connection.php';
 

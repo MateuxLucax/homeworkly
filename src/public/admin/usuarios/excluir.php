@@ -8,12 +8,12 @@ forbidMethodsNot('DELETE');
 
 require_once $root.'/database/Connection.php';
 require_once $root.'/database/Query.php';
-require_once $root.'/controllers/UsuarioController.php';
+require_once $root.'/controllers/UsuarioDAO.php';
 require_once $root.'/models/TipoUsuario.php';
 
 try
 {
-    UsuarioController::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
+    UsuarioDAO::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
     $data = readJsonRequestBody();
     $id = $data['id'];

@@ -6,7 +6,7 @@ require_once $root."/utils/PasswordUtil.php";
 require_once $root."/exceptions/UnauthorizedException.php";
 require_once $root."/exceptions/UserNotFoundException.php";
 
-class UsuarioController
+class UsuarioDAO
 {
     public static function registrar(Usuario $usuario) : bool {
         $sql = "INSERT INTO usuario(tipo, nome, login, hash_senha)
