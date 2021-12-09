@@ -51,7 +51,9 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST')
             $idDisciplina = $pdo->lastInsertId();
 
             foreach ($disciplina['professores'] as $professor) {
-                $pdo->prepare('INSERT INTO professor_de_disciplina (id_professor, id_disciplina) VALUES (:idProf, :idDisc)')->execute([
+                $pdo->prepare(
+                    'INSERT INTO professor_de_disciplina (id_professor, id_disciplina) VALUES (:idProf, :idDisc)'
+                )->execute([
                     ':idProf' => $professor,
                     ':idDisc' => $idDisciplina
                 ]);
