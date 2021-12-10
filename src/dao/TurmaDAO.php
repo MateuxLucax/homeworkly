@@ -7,6 +7,18 @@ require_once $root.'/dao/DisciplinaDAO.php';
 
 class TurmaDao
 {
+    public static function buscarTodas(): array
+    {
+        $rows = Query::select('SELECT id_turma AS id, nome, ano FROM turma');
+        return array_map(
+            fn($row) => (new Turma)
+                ->setId($row['id'])
+                ->setNome($row['nome'])
+                ->setAno($row['ano']),
+            $rows
+        );
+    }
+
     public static function buscar(int $id): Turma
     {
         $res = Query::select(

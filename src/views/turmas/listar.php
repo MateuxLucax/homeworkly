@@ -26,29 +26,29 @@
             <?php else: ?>
                 <?php foreach ($view['turmas'] as $turma): ?>
                     <tr class="align-middle">
-                        <td><?=$turma['id']?></td>
+                        <td><?=$turma->getId()?></td>
                         <td>
-                            <a href="turma?id=<?=$turma['id']?>" class="btn btn-link" role="button" >
-                                <?=$turma['nome']?>
+                            <a href="turma?id=<?=$turma->getId()?>" class="btn btn-link" role="button" >
+                                <?=$turma->getNome()?>
                             </a>
                         </td>
-                        <td><?=$turma['ano']?></td>
+                        <td><?=$turma->getAno()?></td>
                         <td style="width: 0;">
                             <div class="d-flex justify-content-end">
                                 <!-- TODO Mudar para um link para /admin/turmas/alterar?id quando essa página existir -->
                                 <!-- <button type="button"
                                         class="btn btn-primary btn-editar-turma me-4"
                                         title="Editar turma"
-                                        data-id="<?=$turma['id']?>"
-                                        data-nome="<?=$turma['nome']?>"
-                                        data-ano="<?=$turma['ano']?>"
+                                        data-id="<?=$turma->getId()?>"
+                                        data-nome="<?=$turma->getNome()?>"
+                                        data-ano="<?=$turma->getAno()?>"
                                 >
                                     <i class="fas fa-edit"></i>
                                 </button> -->
                                 <button type="button"
                                         class="btn btn-danger btn-excluir-turma"
                                         title="Remover turma"
-                                        data-id="<?=$turma['id']?>"
+                                        data-id="<?=$turma->getId()?>"
                                 >
                                     <i class="fas fa-trash"></i>
                                 </button>
