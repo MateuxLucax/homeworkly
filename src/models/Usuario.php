@@ -8,7 +8,7 @@ class Usuario
     private string $login;
     private string $hash_senha;
     private DateTime $cadastro;
-    private DateTime $ultimo_acesso;
+    private ?DateTime $ultimo_acesso;
 
     public function getId(): int
     {
@@ -76,12 +76,12 @@ class Usuario
         return $this;
     }
 
-    public function getUltimoAcesso(): DateTime
+    public function getUltimoAcesso(): ?DateTime
     {
         return $this->ultimo_acesso;
     }
 
-    public function setUltimoAcesso(DateTime $ultimo_acesso): Usuario
+    public function setUltimoAcesso(?DateTime $ultimo_acesso): Usuario
     {
         $this->ultimo_acesso = $ultimo_acesso;
         return $this;
