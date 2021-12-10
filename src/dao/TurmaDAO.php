@@ -53,4 +53,27 @@ class TurmaDao
         foreach ($turma->getDisciplinas() as $d) $d->setTurma($turma);
         return $turma;
     }
+
+    public static function criar(Turma $turma): Turma
+    {
+        $pdo = Connection::getInstance();
+        $pdo->prepare('INSERT INTO turma (nome, ano) VALUES (:nome, :ano)')->execute([
+            ':nome' => $turma->getNome(),
+            ':ano'  => $turma->getAno()
+        ]);
+        $turma->setId($pdo->lastInsertId());
+
+        foreach ($turma->getDisciplinas() as $disciplina) {
+            DisciplinaDAO::criar($disciplina);
+        }
+
+        foreach ($turma->getAlunos() as $aluno) {
+            $pdo->prepare('INSERT INTO aluno_em_turma (id_aluno, id_turma) VALUES (:idAluno, :idTurma)')->execute([
+                ':idAluno' => $aluno->getId(),
+                ':idTurma' => $turma->getId()
+            ]);
+        }
+
+        return $turma;
+    }
 }
