@@ -116,4 +116,48 @@ class UsuarioDAO
             }
         }
     }
+
+    public static function buscarAlunosDeTurma(int $idTurma): array
+    {
+        $rows = Query::select(
+            'SELECT al.id_usuario AS id, al.nome, al.login, al.ultimo_acesso
+               FROM usuario al
+               JOIN aluno_em_turma alt
+                 ON alt.id_aluno = al.id_usuario
+                AND alt.id_turma = :idTurma',
+            [':idTurma' => $idTurma]
+        );
+
+        return array_map(function($row) {
+            $aluno = (new Usuario)
+                ->setId($row['id'])
+                ->setNome($row['nome'])
+                ->setLogin($row['login'])
+                ->setUltimoAcesso($row['ultimo_acesso'])
+                ->setTipo(TipoUsuario::ALUNO);
+            return $aluno;
+        }, $rows);
+    }
+
+    public static function buscarProfessoresDeDisciplina(int $idDisciplina): array
+    {
+        $rows = Query::select(
+            'SELECT p.id_usuario AS id, p.nome, p.login, p.ultimo_acesso
+               FROM usuario p
+               JOIN professor_de_disciplina pd
+                 ON pd.id_professor = p.id_usuario
+                AND pd.id_disciplina = :idDisciplina',
+            [':idDisciplina' => $idDisciplina]
+        );
+
+        return array_map(function($row) {
+            $aluno = (new Usuario)
+                ->setId($row['id'])
+                ->setNome($row['nome'])
+                ->setLogin($row['login'])
+                ->setUltimoAcesso($row['ultimo_acesso'])
+                ->setTipo(TipoUsuario::PROFESSOR);
+            return $aluno;
+        }, $rows);
+    }
 }

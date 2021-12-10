@@ -12,7 +12,7 @@
         <!-- TODO deve ter uma forma mais bonita de mostrar todas essas informações na mesma linha -->
 
         <h1 class="mt-3 mb-3">
-            <?=$turma['ano']?> / <b><?=$turma['nome']?></b> <small class="text-muted">#<?=$turma['id']?></small>
+            <?=$turma->getAno()?> / <b><?=$turma->getNome()?></b> <small class="text-muted">#<?=$turma->getId()?></small>
         </h1>
     
         <ul class="nav nav-tabs" role="tablist">
@@ -32,7 +32,7 @@
             <div class="tab-pane fade show active" id="alunos" role="tabpanel" aria-labelledby="tab-alunos">
 
                 <div class="mt-3">
-                    <?php if (count($turma['alunos']) == 0): ?>
+                    <?php if (count($turma->getAlunos()) == 0): ?>
                         <div class="alert alert-warning">
                             Não há alunos nessa turma
                         </div>
@@ -45,14 +45,14 @@
                                 <th>Último acesso</th>
                             </thead>
                             <tbody>
-                                <?php foreach ($turma['alunos'] as $aluno): ?>
+                                <?php foreach ($turma->getAlunos() as $aluno): ?>
                                     <tr>
-                                        <td><?=$aluno['id']?></td>
-                                        <td><?=$aluno['nome']?></td>
-                                        <td><?=$aluno['login']?></td>
-                                        <td><?=$aluno['ultimo_acesso'] === null 
+                                        <td><?=$aluno->getId()?></td>
+                                        <td><?=$aluno->getNome()?></td>
+                                        <td><?=$aluno->getLogin()?></td>
+                                        <td><?=$aluno->getUltimoAcesso() === null 
                                             ? 'Ainda não acessou o sistema'
-                                            : date('Y-m-d H:i', $aluno['ultimo_acesso'])?>
+                                            : date('Y-m-d H:i', $aluno->getUltimoAcesso())?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -65,7 +65,7 @@
             <div class="tab-pane fade" id="disciplinas" role="tabpanel" aria-labelledby="tab-disciplinas">
 
                 <div class="mt-3">
-                    <?php if (count($turma['disciplinas']) == 0): ?>
+                    <?php if (count($turma->getDisciplinas()) == 0): ?>
                         <div class="alert alert-warning">
                             Não há disciplinas nessa turma
                         </div>
@@ -77,16 +77,16 @@
                                 <th>Professor(es)</th>
                             </thead>
                             <tbody>
-                                <?php foreach ($turma['disciplinas'] as $disciplina): ?>
+                                <?php foreach ($turma->getDisciplinas() as $disciplina): ?>
                                     <tr>
-                                        <td><?=$disciplina['id']?></td>
-                                        <td><?=$disciplina['nome']?></td>
+                                        <td><?=$disciplina->getId()?></td>
+                                        <td><?=$disciplina->getNome()?></td>
                                         <td>
                                             <!-- TODO adicionar link em cada nome -->
                                             <?php
                                                 $nomesProfessores = [];
-                                                foreach ($disciplina['professores'] as $professor) {
-                                                    $nomesProfessores[] = $professor['nome'];
+                                                foreach ($disciplina->getProfessores() as $professor) {
+                                                    $nomesProfessores[] = $professor->getNome();
                                                 }
                                             ?>
                                             <?= implode(', ', $nomesProfessores) ?>
