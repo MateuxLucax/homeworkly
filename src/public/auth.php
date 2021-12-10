@@ -12,7 +12,7 @@ try {
 
     require_once $root. 'models/Usuario.php';
     require_once $root. 'models/TipoUsuario.php';
-    require_once $root. 'controllers/UsuarioDAO.php';
+    require_once $root. 'dao/UsuarioDAO.php';
 
     $data = json_decode(file_get_contents('php://input'), true);
 

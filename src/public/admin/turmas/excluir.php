@@ -6,7 +6,7 @@ require_once $root.'utils/response-utils.php';
 
 forbidMethodsNot('POST');
 
-require_once $root.'controllers/UsuarioDAO.php';
+require_once $root.'dao/UsuarioDAO.php';
 require_once $root.'models/TipoUsuario.php';
 require_once $root.'database/Query.php';
 require_once $root.'utils/HttpCodes.php';
