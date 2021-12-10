@@ -36,6 +36,8 @@ if (!is_numeric($id)) {
 try
 {
     $turma = TurmaDAO::buscar($id);
+    TurmaDao::popularComAlunos($turma);
+    TurmaDao::popularComDisciplinas($turma);
 
     if ($retornarJson) {
         respondJson(HttpCodes::OK, $turma);

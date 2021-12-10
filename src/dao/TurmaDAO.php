@@ -24,13 +24,21 @@ class TurmaDao
         $turma = (new Turma)
             ->setId($res['id'])
             ->setNome($res['nome'])
-            ->setAno($res['ano'])
-            ->setAlunos(UsuarioDAO::buscarAlunosDeTurma($id))
-            ->setDisciplinas(DisciplinaDAO::buscarDeTurma($id));
+            ->setAno($res['ano']);
 
-        foreach ($turma->getDisciplinas() as $d)
-            $d->setTurma($turma);
+        return $turma;
+    }
 
+    public static function popularComAlunos(Turma $turma): Turma
+    {
+        $turma->setAlunos(UsuarioDAO::buscarAlunosDeTurma($turma->getId()));
+        return $turma;
+    }
+
+    public static function popularComDisciplinas(Turma $turma): Turma
+    {
+        $turma->setDisciplinas(DisciplinaDAO::buscarDeTurma($turma->getId()));
+        foreach ($turma->getDisciplinas() as $d) $d->setTurma($turma);
         return $turma;
     }
 }
