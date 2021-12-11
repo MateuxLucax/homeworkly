@@ -128,15 +128,15 @@ class UsuarioDAO
             [':idTurma' => $idTurma]
         );
 
-        return array_map(function($row) {
-            $aluno = (new Usuario)
+        return array_map(
+            fn($row) => (new Usuario)
                 ->setId($row['id'])
                 ->setNome($row['nome'])
                 ->setLogin($row['login'])
                 ->setUltimoAcesso($row['ultimo_acesso'])
-                ->setTipo(TipoUsuario::ALUNO);
-            return $aluno;
-        }, $rows);
+                ->setTipo(TipoUsuario::ALUNO),
+            $rows
+        );
     }
 
     public static function buscarProfessoresDeDisciplina(int $idDisciplina): array
@@ -150,15 +150,15 @@ class UsuarioDAO
             [':idDisciplina' => $idDisciplina]
         );
 
-        return array_map(function($row) {
-            $aluno = (new Usuario)
+        return array_map(
+            fn($row) => (new Usuario)
                 ->setId($row['id'])
                 ->setNome($row['nome'])
                 ->setLogin($row['login'])
                 ->setUltimoAcesso($row['ultimo_acesso'])
-                ->setTipo(TipoUsuario::PROFESSOR);
-            return $aluno;
-        }, $rows);
+                ->setTipo(TipoUsuario::PROFESSOR),
+            $rows
+        );
     }
 
     public static function alterar(Usuario $usuario): Usuario

@@ -188,7 +188,6 @@
         const form = document.getElementById('form-criar-turma');
 
         function dadosForm() {
-            debugger;
             const dados = {
                 id:   form['id']?.value,
                 acao: form['acao'].value,
@@ -495,7 +494,7 @@
             fetch(`turma?id=${idTurmaAlterar}`, {headers: {'Accept': 'application/json'}})
             .then(resp => {
                 if (resp.status == 200) return resp.json();
-                else throw {};
+                else throw resp.text();
             }).then(turma => {
                 console.log(turma);
                 document.getElementById('turma-nome').value = turma.nome;
@@ -505,7 +504,8 @@
                 for (const disciplina of turma.disciplinas) {
                     disciplinasContainer.appendChild(criarDisciplina(disciplina));
                 }
-            }, () => {
+            }, erro => {
+                console.error(erro);
                 Swal.fire({
                     icon: 'warning',
                     text: 'Não foi possível carregar os dados da turma para alterá-la'
