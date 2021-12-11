@@ -16,16 +16,14 @@ try
 
     $dados = readJsonRequestBody();
 
-    $editado = Query::execute(
-        'UPDATE usuario SET nome = :nome, login = :login WHERE id_usuario = :id',
-        [
-            ':id'    => $dados['id'],
-            ':nome'  => $dados['nome'],
-            ':login' => $dados['login']
-        ]
-    );
+    $usuario = (new Usuario)
+        ->setId($dados['id'])
+        ->setNome($dados['nome'])
+        ->setLogin($dados['login']);
+    
+    UsuarioDao::alterar($usuario);
 
-    respondJson($editado ? HttpCodes::OK : HttpCodes::BAD_REQUEST);
+    respondJson(HttpCodes::OK);
 }
 catch (Exception $e)
 {

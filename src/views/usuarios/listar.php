@@ -275,7 +275,7 @@
                 nome:  formEditarUsuario.nome.value,
                 login: formEditarUsuario.login.value,
             };
-            fetch('editar', {method: 'PUT', body: JSON.stringify(payload)})
+            fetch('alterar', {method: 'PUT', body: JSON.stringify(payload)})
             .then(response => {
                 if (response.status == 200) {
                     agendarAlertaSwal({

@@ -15,10 +15,10 @@ try
 {
     UsuarioDAO::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
-    $data = readJsonRequestBody();
-    $id = $data['id'];
+    $dados = readJsonRequestBody();
 
-    Query::execute('DELETE FROM usuario WHERE id_usuario = :id', [':id' => $id]);
+    $usuario = (new Usuario)->setId($dados['id']);
+    UsuarioDAO::excluir($usuario);
 
     respondJson(HttpCodes::OK);
 }

@@ -16,11 +16,11 @@ try
 
     $data = readJsonRequestBody();
 
-    $usuario = new Usuario();
-    $usuario->setNome($data['nome']);
-    $usuario->setTipo($data['tipo']);
-    $usuario->setHashSenha($data['senha']);
-    $usuario->setLogin($data['login']);
+    $usuario = (new Usuario)
+        ->setNome($data['nome'])
+        ->setTipo($data['tipo'])
+        ->setHashSenha($data['senha'])
+        ->setLogin($data['login']);
 
     $registrado = UsuarioDAO::registrar($usuario);
 

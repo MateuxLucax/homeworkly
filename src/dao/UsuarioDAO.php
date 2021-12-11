@@ -160,4 +160,19 @@ class UsuarioDAO
             return $aluno;
         }, $rows);
     }
+
+    public static function alterar(Usuario $usuario): Usuario
+    {
+        Query::execute('UPDATE usuario SET nome = :nome, login = :login WHERE id_usuario = :id', [
+            ':id'    => $usuario->getId(),
+            ':nome'  => $usuario->getNome(),
+            ':login' => $usuario->getLogin()
+        ]);
+        return $usuario;
+    }
+
+    public static function excluir(Usuario $usuario): void
+    {
+        Query::execute('DELETE FROM usuario WHERE id_usuario = :id', [':id' => $usuario->getId()]);
+    }
 }

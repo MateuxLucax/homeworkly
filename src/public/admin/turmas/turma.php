@@ -35,7 +35,7 @@ if (!is_numeric($id)) {
 
 try
 {
-    $turma = TurmaDAO::buscar($id);
+    $turma = TurmaDao::buscar($id);
     TurmaDao::popularComAlunos($turma);
     TurmaDao::popularComDisciplinas($turma);
 
