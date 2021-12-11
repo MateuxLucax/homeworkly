@@ -22,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
     $view['title'] = 'Criar turma';
     require_once $root.'views/turmas/criar.php';
-    die();
 }
 else if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {

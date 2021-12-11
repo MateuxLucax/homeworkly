@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php require_once $root.'views/componentes/head.php'; ?>
+<?php require_once $root.'/views/componentes/head.php'; ?>
 <body>
 
     <main class="container">
         <form id="form-criar-turma">
 
+            <input type="hidden" name="acao" value="<?= isset($view['id-turma']) ? 'alterar' : 'criar' ?>" />
+
+            <?php if (isset($view['id-turma'])) echo '<input type="hidden" name="id" value="'.$view['id-turma'].'"/>'; ?>
+
             <div class="card mb-3 mt-3">
                 <div class="card-header">
                     Turma
+                    <?php if (isset($view['id-turma'])): ?>
+                        <small class="text-muted">#<?= $view['id-turma'] ?></small>
+                    <?php endif; ?>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -84,7 +91,7 @@
             <div class="text-end">
                 <button type="submit" class="btn btn-outline-primary btn-lg">
                     <i class="fas fa-paper-plane"></i>&nbsp;
-                    Criar
+                    <?= isset($view['id-turma']) ? 'Alterar' : 'Criar' ?>
                 </button>
             </div>
 
@@ -180,12 +187,11 @@
     <script>
         const form = document.getElementById('form-criar-turma');
 
-        form.onsubmit = event => {
-            event.preventDefault();
-
-            // TODO validação dos campos
-
-            const payload = {
+        function dadosForm() {
+            debugger;
+            const dados = {
+                id:   form['id']?.value,
+                acao: form['acao'].value,
                 nome: form['turma-nome'].value,
                 ano:  form['turma-ano'].value,
                 disciplinas: Array.from(document.getElementsByClassName('card-disciplina')).map(d => {
@@ -194,17 +200,37 @@
                         professores: Array.from(d.getElementsByClassName('professor-id')).map(i => i.value)
                     }
                 }),
-                alunos: Array.from(form['aluno[]'] ?? []).map(i => i.value)
+                alunos: Array.from(document.getElementsByClassName('aluno-id') ?? []).map(i => i.value)
             };
+            return dados;
+        }
 
-            console.log(payload);
+        form.onsubmit = event => {
+            event.preventDefault();
 
-            fetch('criar', {method: 'POST', body: JSON.stringify(payload)})
+            // TODO validação dos campos
+
+            const dados = dadosForm();
+
+            let target, alertaSucesso, alertaErro, statusEsperado;
+            if (dados.acao == 'criar') {
+                target = 'criar';
+                alertaSucesso = 'Turma criada com sucesso';
+                alertaErro = 'Não foi possível criar a turma';
+                statusEsperado = 201;
+            } else if (dados.acao == 'alterar') {
+                target = 'alterar';
+                alertaSucesso = 'Turma alterada com sucesso';
+                alertaErro = 'Não foi possível alterar a turma';
+                statusEsperado = 200;
+            }
+
+            fetch(target, {method: 'POST', body: JSON.stringify(dados)})
             .then(response => {
-                if (response.status == 201) {
+                if (response.status == statusEsperado) {
                     agendarAlertaSwal({
                         icon: 'success',
-                        text: 'Turma criada com sucesso'
+                        text: alertaSucesso
                     });
                     response.json().then(ret => {
                         window.location.assign(`turma?id=${ret.id}`);
@@ -212,7 +238,7 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        text: 'Não foi possível criar a turma'
+                        text: alertaErro
                     });
                     response.text().then(console.log);
                 }
@@ -223,7 +249,7 @@
         // Adicionar disciplinas dinamicamente
         //
 
-        let idProxDisciplina = 1;
+        let proxIdDOMDisciplina = 1;
         // Usado para gerar atributos ID para os elementos das disciplinas
         // que por sua vez são usados para adicionar os professores na disciplina correta
 
@@ -231,19 +257,19 @@
         const btnAdicionarDisciplina = document.getElementById('btn-adicionar-disciplina');
 
         btnAdicionarDisciplina.onclick = () => {
-            disciplinasContainer.appendChild(criarDisciplina());
+            disciplinasContainer.insertBefore(criarDisciplina(), disciplinasContainer.firstChild);
         };
 
         const elemModalAdicionarProfessor = document.getElementById('modal-adicionar-professor');
         const modalAdicionarProfessor = new bootstrap.Modal(elemModalAdicionarProfessor);
 
-        function criarDisciplina() {
-            const idDisciplina = `disciplina-${idProxDisciplina++}`;
-            const card = criarElemento('div', ['card-disciplina', 'card', 'mb-3', 'bg-dark', 'bg-gradient'], null, { id: idDisciplina });
+        function criarDisciplina(disciplina) {
+            const idDOMDisciplina = `disciplina-${proxIdDOMDisciplina++}`;  
+            const card = criarElemento('div', ['card-disciplina', 'card', 'mb-3', 'bg-dark', 'bg-gradient'], null, { id: idDOMDisciplina });
             const cardBody = criarElemento('div', ['card-body'], card);
 
             const inputGroup = criarElemento('div', ['input-group', 'mb-3'], cardBody);
-            criarElemento('input', ['disciplina-nome', 'form-control'], inputGroup, { type: 'text' });
+            const inputNome = criarElemento('input', ['disciplina-nome', 'form-control'], inputGroup, { type: 'text' });
             const btnRemover = criarElemento('button', ['btn', 'btn-danger'], inputGroup, {
                 type: 'button',
                 onclick: () => { card.remove() }
@@ -262,7 +288,7 @@
             const btnAddProfessor = criarElemento('button', ['btn', 'btn-success', 'float-end'], headerProfsColBtn, {
                 type: 'button',
                 onclick: () => {
-                    elemModalAdicionarProfessor.setAttribute('data-id-disciplina', idDisciplina)
+                    elemModalAdicionarProfessor.setAttribute('data-id-disciplina', idDOMDisciplina)
                     modalAdicionarProfessor.show();
                 }
             });
@@ -273,6 +299,13 @@
             const theadProfessores = criarElemento('thead', [], tableProfessores);
             theadProfessores.append(criarTr(['ID', 'Nome', 'Login', ''], 'th'));
             const tbodyProfessores = criarElemento('tbody', ['tbody-professores'], tableProfessores);
+
+            if (disciplina) {
+                inputNome.value = disciplina.nome;
+                for (const prof of disciplina.professores) {
+                    adicionarProfessorDisciplina(prof.id, prof.nome, prof.login, card);
+                }
+            }
 
             return card;
         }
@@ -324,8 +357,11 @@
             const btnAdd = criarElemento('button', ['btn', 'btn-success'], null, {
                 type: 'button',
                 onclick: () => {
+                    // Importante pegar esse cardDisciplina aqui dentro da callback, porque senão
+                    // o professor vai pra disciplina errada (fica retido o card da disciplina de uma pesquisa anterior)
+                    const cardDisciplina = document.getElementById(elemModalAdicionarProfessor.getAttribute('data-id-disciplina'));
                     modalAdicionarProfessor.hide();
-                    adicionarProfessorDisciplina(id_usuario, nome, login);
+                    adicionarProfessorDisciplina(id_usuario, nome, login, cardDisciplina);
                 }
             });
             criarElemento('i', ['fas', 'fa-plus'], btnAdd);
@@ -333,11 +369,8 @@
             return criarTr([ id_usuario, nome, login, btnAdd ]);
         }
 
-        function adicionarProfessorDisciplina(id, nome, login) {
-            const idDisciplina = elemModalAdicionarProfessor.getAttribute('data-id-disciplina');
-            const disciplina = document.getElementById(idDisciplina);
-
-            const inputsAdicionados = disciplina.getElementsByClassName('professor-id');
+        function adicionarProfessorDisciplina(id, nome, login, cardDisciplina) {
+            const inputsAdicionados = cardDisciplina.getElementsByClassName('professor-id');
             if (Array.from(inputsAdicionados).some(i => i.value == id)) {
                 Swal.fire({
                     icon: 'warning',
@@ -346,17 +379,17 @@
                 return;
             }
 
-            const input = criarElemento('input', ['professor-id'], disciplina, {
+            const input = criarElemento('input', ['professor-id'], cardDisciplina, {
                 type: 'hidden',
                 value: id
             });
 
-            const table = disciplina.getElementsByClassName('table-professores')[0];
+            const table = cardDisciplina.getElementsByClassName('table-professores')[0];
             table.classList.remove('d-none');
 
             const btnRemover = criarElemento('button', ['btn', 'btn-outline-danger'], null, { type: 'button', });
             criarElemento('i', ['fas', 'fa-minus-circle'], btnRemover);
-            const tbody = disciplina.getElementsByClassName('tbody-professores')[0];
+            const tbody = cardDisciplina.getElementsByClassName('tbody-professores')[0];
             const tr = criarTr([id, nome, login, btnRemover]);
             tbody.append(tr);
 
@@ -429,7 +462,7 @@
 
             alunosAdicionados.add(id);
 
-            const inputAluno = criarElemento('input', [], alunosContainer, {
+            const inputAluno = criarElemento('input', ['aluno-id'], alunosContainer, {
                 name: 'aluno[]',
                 type: 'hidden',
                 value: id
@@ -454,7 +487,33 @@
 
             tableAlunos.classList.remove('d-none');
         }
+
+
+        const idTurmaAlterar = <?= $view['id-turma'] ?? '-1' ?>;
+
+        if (idTurmaAlterar != -1) {
+            fetch(`turma?id=${idTurmaAlterar}`, {headers: {'Accept': 'application/json'}})
+            .then(resp => {
+                if (resp.status == 200) return resp.json();
+                else throw {};
+            }).then(turma => {
+                console.log(turma);
+                document.getElementById('turma-nome').value = turma.nome;
+                document.getElementById('turma-ano').value = turma.ano;
+                for (const aluno of turma.alunos)
+                    adicionarAlunoTurma(aluno.id, aluno.nome, aluno.login);
+                for (const disciplina of turma.disciplinas) {
+                    disciplinasContainer.appendChild(criarDisciplina(disciplina));
+                }
+            }, () => {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Não foi possível carregar os dados da turma para alterá-la'
+                });
+            });
+        }
     </script>
+    
 
 </body>
 </html>

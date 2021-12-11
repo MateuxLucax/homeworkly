@@ -14,10 +14,7 @@ require_once $root.'/database/Connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
-    $turma = TurmaDAO::buscar($_GET['id']);
-    TurmaDAO::popularComAlunos($turma);
-    TurmaDAO::popularComDisciplinas($turma);
-    $view['turma'] = $turma;
+    $view['id-turma'] = $_GET['id'];
     $view['title'] = 'Alterar turma';
     require_once $root.'/views/turmas/criar.php';
 }
@@ -51,7 +48,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST')
     try {
         TurmaDAO::alterar($turma);
         $pdo->commit();
-        respondJson(HttpCodes::OK);
+        respondJson(HttpCodes::OK, ['id' => $turma->getId()]);
     } catch (Exception $e) {
         $pdo->rollBack();
         respondJson(HttpCodes::BAD_REQUEST, ['exception' => $e]);

@@ -40,7 +40,7 @@ try
     TurmaDao::popularComDisciplinas($turma);
 
     if ($retornarJson) {
-        respondJson(HttpCodes::OK, $turma);
+        respondJson(HttpCodes::OK, $turma->toArray());
     } else {
         $view['turma'] = $turma;
         $view['title'] = 'Turma';
