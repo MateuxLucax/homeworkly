@@ -35,16 +35,14 @@
                         <td><?=$turma->getAno()?></td>
                         <td style="width: 0;">
                             <div class="d-flex justify-content-end">
-                                <!-- TODO Mudar para um link para /admin/turmas/alterar?id quando essa página existir -->
-                                <!-- <button type="button"
-                                        class="btn btn-primary btn-editar-turma me-4"
-                                        title="Editar turma"
-                                        data-id="<?=$turma->getId()?>"
-                                        data-nome="<?=$turma->getNome()?>"
-                                        data-ano="<?=$turma->getAno()?>"
+                                <a target="_blank"
+                                   role="button"
+                                   class="btn btn-primary btn-editar-turma me-4"
+                                   title="Editar turma"
+                                   href="alterar?id=<?=$turma->getId()?>"
                                 >
                                     <i class="fas fa-edit"></i>
-                                </button> -->
+                                </a>
                                 <button type="button"
                                         class="btn btn-danger btn-excluir-turma"
                                         title="Remover turma"
