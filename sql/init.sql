@@ -37,8 +37,8 @@ create table if not exists professor_de_disciplina (
 
 create table if not exists tarefa (
       id_tarefa     serial    primary key
-    , id_professor  bigint
-    , id_disciplina bigint
+    , id_professor  bigint    references usuario
+    , id_disciplina bigint    references disciplina
     , descricao     text      not null
     , esforco_horas real      not null check (esforco_horas > 0)
     , com_nota      boolean   not null
@@ -48,7 +48,6 @@ create table if not exists tarefa (
     -- tarefa fechada = data de fechamento já passou ou, se fechamento = null, fechada = true
     , fechamento    timestamp
     , fechada       boolean   not null default false
-    , foreign key (id_professor, id_disciplina) references professor_de_disciplina (id_professor, id_disciplina)
     , check (entrega is null or entrega > abertura)
     , check (fechamento is null or entrega is null or fechamento > entrega)
     );
