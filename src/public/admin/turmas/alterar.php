@@ -32,7 +32,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST')
             $dados['alunos']
         ));
     
-    foreach ($dados['disciplinas'] as $dadosDisciplina) {
+    foreach ($dados['disciplinas'] ?? [] as $dadosDisciplina) {
         $disciplina = (new Disciplina)
             ->setTurma($turma)
             ->setNome($dadosDisciplina['nome'])

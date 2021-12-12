@@ -159,7 +159,7 @@ class TurmaDAO
             // TODO nomear a restrição da tarefa lá no sql e em vez de ALL colocar o nome dela aqui
 
 
-            foreach ($turma->getDisciplinas() as $disciplina) {
+            foreach ($turma->getDisciplinas() ?? [] as $disciplina) {
                 $recriar = !is_null($disciplina->getId());
                 $sql = $recriar
                      ? 'INSERT INTO disciplina (id_disciplina, id_turma, nome) VALUES (:id, :idTurma, :nome)'
