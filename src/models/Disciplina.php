@@ -4,10 +4,10 @@ require_once $root.'/models/Turma.php';
 
 class Disciplina
 {
-    private int    $id;
-    private string $nome;
-    private Turma  $turma;
-    private array  $professores;
+    private ?int    $id          = null;
+    private ?string $nome        = null;
+    private ?Turma  $turma       = null;
+    private ?array  $professores = null;
 
     public function setId(int $id): Disciplina {
         $this->id = $id;
@@ -29,8 +29,8 @@ class Disciplina
         return $this;
     }
 
-    public function getId()         : int    { return $this->id; }
-    public function getNome()       : string { return $this->nome; }
-    public function getTurma()      : Turma  { return $this->turma; }
-    public function getProfessores(): array  { return $this->professores; }
+    public function getId()         : ?int    { return $this->id; }
+    public function getNome()       : ?string { return $this->nome; }
+    public function getTurma()      : ?Turma  { return $this->turma; }
+    public function getProfessores(): ?array  { return $this->professores; }
 }

@@ -65,27 +65,6 @@ class TurmaDAO
         return $turma;
     }
 
-    private static function criarDisciplinas(Turma $turma): Turma
-    {
-        $pdo = Connection::getInstance();
-        foreach ($turma->getDisciplinas() as $disciplina) {
-            $pdo->prepare('INSERT INTO disciplina (nome, id_turma) VALUES (:nome, :idTurma)')->execute([
-                ':nome'   => $disciplina->getNome(),
-                'idTurma' => $disciplina->getTurma()->getId()
-            ]);
-            $disciplina->setId($pdo->lastInsertId());
-
-            foreach ($disciplina->getProfessores() as $professor) {
-                $pdo->prepare('INSERT INTO professor_de_disciplina (id_professor, id_disciplina) VALUES (:idProf, :idDisc)')->execute([
-                    ':idProf' => $professor->getId(),
-                    ':idDisc' => $disciplina->getId()
-                ]);
-            }
-        }
-
-        return $turma;
-    }
-
     public static function criar(Turma $turma): Turma
     {
         $pdo = Connection::getInstance();
@@ -96,7 +75,25 @@ class TurmaDAO
         $turma->setId($pdo->lastInsertId());
 
         self::associarAlunos($turma);
-        self::criarDisciplinas($turma);
+
+        //
+        // Criar disciplinas
+        //
+
+        foreach ($turma->getDisciplinas() as $disciplina) {
+            $pdo->prepare('INSERT INTO disciplina (id_turma, nome) VALUES (:idTurma, :nome)')->execute([
+                ':idTurma' => $disciplina->getTurma()->getId(),
+                ':nome'    => $disciplina->getNome()
+            ]);
+            $disciplina->setId($pdo->lastInsertId());
+
+            foreach ($disciplina->getProfessores() as $professor) {
+                $pdo->prepare('INSERT INTO professor_de_disciplina (id_professor, id_disciplina) VALUES (:idProf, :idDisc)')->execute([
+                    ':idProf' => $professor->getId(),
+                    ':idDisc' => $disciplina->getId()
+                ]);
+            }
+        }
 
         return $turma;
     }
@@ -136,18 +133,60 @@ class TurmaDAO
     public static function alterar(Turma $turma): Turma
     {
         $pdo = Connection::getInstance();
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare('UPDATE turma SET nome = :nome, ano = :ano WHERE id_turma = :id')->execute([
+                ':id'   => $turma->getId(),
+                ':nome' => $turma->getNome(),
+                ':ano'  => $turma->getAno()
+            ]);
 
-        $pdo->prepare('UPDATE turma SET nome = :nome, ano = :ano WHERE id_turma = :id')->execute([
-            ':id'   => $turma->getId(),
-            ':nome' => $turma->getNome(),
-            ':ano'  => $turma->getAno()
-        ]);
+            self::removerAlunos($turma);
+            self::associarAlunos($turma);
 
-        self::removerAlunos($turma);
-        self::excluirDisciplinas($turma);
+            self::excluirDisciplinas($turma);
 
-        self::associarAlunos($turma);
-        self::criarDisciplinas($turma);
+            //
+            // Criar (ou recriar) disciplinas
+            //
+
+            // Recriamos as disciplinas (fazendo INSERT com o mesmo ID anterior) porque podem haver
+            // tarefas referenciando a disciplina excluída anteriormente.
+            // Mas para isso também precisamos deferir a verificação de restrições
+            // para o final da transação, porque senão o erro ocorre logo que excluirDisciplinas é chamado:
+            $pdo->exec('SET CONSTRAINTS ALL DEFERRED');
+
+            // TODO nomear a restrição da tarefa lá no sql e em vez de ALL colocar o nome dela aqui
+
+
+            foreach ($turma->getDisciplinas() as $disciplina) {
+                $recriar = !is_null($disciplina->getId());
+                $sql = $recriar
+                     ? 'INSERT INTO disciplina (id_disciplina, id_turma, nome) VALUES (:id, :idTurma, :nome)'
+                     : 'INSERT INTO disciplina (id_turma, nome) VALUES (:idTurma, :nome)';
+                $params = [
+                    ':idTurma' => $disciplina->getTurma()->getId(),
+                    ':nome'    => $disciplina->getNome()
+                ];
+                if ($recriar) $params[':id'] = $disciplina->getId();
+
+                $pdo->prepare($sql)->execute($params);
+
+                if (!$recriar) $disciplina->setId($pdo->lastInsertId());
+
+                foreach ($disciplina->getProfessores() as $professor) {
+                    $pdo->prepare('INSERT INTO professor_de_disciplina (id_professor, id_disciplina) VALUES (:idProf, :idDisc)')->execute([
+                        ':idProf' => $professor->getId(),
+                        ':idDisc' => $disciplina->getId()
+                    ]);
+                }
+            }
+
+            $pdo->commit();
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
 
         return $turma;
     }

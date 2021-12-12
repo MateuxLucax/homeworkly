@@ -39,6 +39,11 @@ class Turma
     public function getDisciplinas(): array { return $this->disciplinas; }
     public function getAlunos(): array { return $this->alunos; }
 
+    public function addDisciplina(Disciplina $disciplina): Turma {
+        $this->disciplinas[] = $disciplina;
+        return $this;
+    }
+
     public function toArray(): array {
         $arr = [];
         if (isset($this->id)) $arr['id'] = $this->id;

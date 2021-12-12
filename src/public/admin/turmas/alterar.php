@@ -20,37 +20,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 }
 else if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-    $data = readJsonRequestBody();
+    $dados = readJsonRequestBody();
 
     $turma = new Turma;
     $turma
-        ->setId($data['id'])
-        ->setNome($data['nome'])
-        ->setAno($data['ano'])
-        ->setDisciplinas(array_map(
-            fn($disc) => (new Disciplina)
-                ->setTurma($turma)
-                ->setNome($disc['nome'])
-                ->setProfessores(array_map(
-                    fn($idProf) => (new Usuario)->setId($idProf),
-                    $disc['professores']
-                )),
-            $data['disciplinas']
-        ))
+        ->setId($dados['id'])
+        ->setNome($dados['nome'])
+        ->setAno($dados['ano'])
         ->setAlunos(array_map(
             fn($idAluno) => (new Usuario)->setId($idAluno),
-            $data['alunos']
+            $dados['alunos']
         ));
+    
+    foreach ($dados['disciplinas'] as $dadosDisciplina) {
+        $disciplina = (new Disciplina)
+            ->setTurma($turma)
+            ->setNome($dadosDisciplina['nome'])
+            ->setProfessores(array_map(
+                fn($idProf) => (new Usuario)->setId($idProf),
+                $dadosDisciplina['professores']
+            ));
+        if (isset($dadosDisciplina['id'])) {
+            $disciplina->setId($dadosDisciplina['id']);
+        }
+        $turma->addDisciplina($disciplina);
+    }
+
+    // TODO previnir que usuário delete disciplinas que tem tarefa associada
+    // fazer no front -- desabilitar o botão de remover
 
     $pdo = Connection::getInstance();
 
-    $pdo->beginTransaction();
     try {
         TurmaDAO::alterar($turma);
-        $pdo->commit();
         respondJson(HttpCodes::OK, ['id' => $turma->getId()]);
     } catch (Exception $e) {
-        $pdo->rollBack();
         respondJson(HttpCodes::BAD_REQUEST, ['exception' => $e]);
     }
 }

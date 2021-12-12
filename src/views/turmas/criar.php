@@ -194,12 +194,15 @@
                 nome: form['turma-nome'].value,
                 ano:  form['turma-ano'].value,
                 disciplinas: Array.from(document.getElementsByClassName('card-disciplina')).map(d => {
-                    return {
+                    const disciplina = {
                         nome: d.getElementsByClassName('disciplina-nome')[0].value,
                         professores: Array.from(d.getElementsByClassName('professor-id')).map(i => i.value)
-                    }
+                    };
+                    const id = d.getElementsByClassName('disciplina-id')[0]?.value;
+                    if (id) disciplina.id = id;
+                    return disciplina;
                 }),
-                alunos: Array.from(document.getElementsByClassName('aluno-id') ?? []).map(i => i.value)
+                alunos: Array.from(document.getElementsByClassName('aluno-id')).map(i => i.value)
             };
             return dados;
         }
@@ -226,21 +229,26 @@
 
             fetch(target, {method: 'POST', body: JSON.stringify(dados)})
             .then(response => {
-                if (response.status == statusEsperado) {
-                    agendarAlertaSwal({
-                        icon: 'success',
-                        text: alertaSucesso
-                    });
-                    response.json().then(ret => {
-                        window.location.assign(`turma?id=${ret.id}`);
-                    });
-                } else {
+                if (response.status != statusEsperado) {
                     Swal.fire({
                         icon: 'error',
                         text: alertaErro
                     });
                     response.text().then(console.log);
+                    return;
                 }
+                agendarAlertaSwal({
+                    icon: 'success',
+                    text: alertaSucesso
+                });
+                response.text().then(ret => {
+                    try {
+                        const id = JSON.parse(ret).id;
+                        window.location.assign(`turma?id=${id}`);
+                    } catch (e) {
+                        console.log(ret)
+                    }
+                });
             });
         };
 
@@ -287,7 +295,7 @@
             const btnAddProfessor = criarElemento('button', ['btn', 'btn-success', 'float-end'], headerProfsColBtn, {
                 type: 'button',
                 onclick: () => {
-                    elemModalAdicionarProfessor.setAttribute('data-id-disciplina', idDOMDisciplina)
+                    elemModalAdicionarProfessor.setAttribute('data-id-dom-disciplina', idDOMDisciplina)
                     modalAdicionarProfessor.show();
                 }
             });
@@ -300,6 +308,11 @@
             const tbodyProfessores = criarElemento('tbody', ['tbody-professores'], tableProfessores);
 
             if (disciplina) {
+                criarElemento('input', ['disciplina-id'], card, {
+                    type: 'hidden',
+                    name: 'disciplina-id',
+                    value: disciplina.id
+                });
                 inputNome.value = disciplina.nome;
                 for (const prof of disciplina.professores) {
                     adicionarProfessorDisciplina(prof.id, prof.nome, prof.login, card);
@@ -358,7 +371,7 @@
                 onclick: () => {
                     // Importante pegar esse cardDisciplina aqui dentro da callback, porque senão
                     // o professor vai pra disciplina errada (fica retido o card da disciplina de uma pesquisa anterior)
-                    const cardDisciplina = document.getElementById(elemModalAdicionarProfessor.getAttribute('data-id-disciplina'));
+                    const cardDisciplina = document.getElementById(elemModalAdicionarProfessor.getAttribute('data-id-dom-disciplina'));
                     modalAdicionarProfessor.hide();
                     adicionarProfessorDisciplina(id_usuario, nome, login, cardDisciplina);
                 }
