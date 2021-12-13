@@ -187,7 +187,11 @@
     <script>
         const form = document.getElementById('form-criar-turma');
 
-        function dadosForm() {
+        form.onsubmit = event => {
+            event.preventDefault();
+
+            // TODO validação dos campos
+
             const dados = {
                 id:   form['id']?.value,
                 acao: form['acao'].value,
@@ -204,15 +208,6 @@
                 }),
                 alunos: Array.from(document.getElementsByClassName('aluno-id')).map(i => i.value)
             };
-            return dados;
-        }
-
-        form.onsubmit = event => {
-            event.preventDefault();
-
-            // TODO validação dos campos
-
-            const dados = dadosForm();
 
             let target, alertaSucesso, alertaErro, statusEsperado;
             if (dados.acao == 'criar') {
@@ -270,6 +265,8 @@
         const elemModalAdicionarProfessor = document.getElementById('modal-adicionar-professor');
         const modalAdicionarProfessor = new bootstrap.Modal(elemModalAdicionarProfessor);
 
+        // Usado tanto para criar uma nova disciplina quando o usuário clica no botão (sem argumentos)
+        // quanto para carregar uma disciplina existente (passada como argumento)
         function criarDisciplina(disciplina) {
             const idDOMDisciplina = `disciplina-${proxIdDOMDisciplina++}`;  
             const card = criarElemento('div', ['card-disciplina', 'card', 'mb-3', 'bg-dark', 'bg-gradient'], null, { id: idDOMDisciplina });
@@ -348,19 +345,25 @@
                     }
                 })
             }).then(resp => {
-                if (resp.status == 200) return resp.json();
-                else throw {};
-            }).then(professores => {
-                console.log(professores);
-                if (professores.length > 0) {
-                    tablePesquisaProfessores.classList.remove('d-none');
-                    tbodyPesquisaProfessores.append(...professores.map(criarProfessorResultadoPesquisa))
+                if (resp.status != 200) {
+                    Swal.fire({
+                        icon: 'warning',
+                        text: 'Não foi possível realizar a pesquisa'
+                    });
+                    resp.text().then(console.log);
+                    return;
                 }
-            }, erro => {
-                console.err(erro);
-                Swal.fire({
-                    icon: 'warning',
-                    text: 'Não foi possível realizar a pesquisa'
+                resp.text().then(ret => {
+                    try {
+                        const professores = JSON.parse(ret);
+                        console.log(professores);
+                        if (professores.length == 0) return;
+                        tablePesquisaProfessores.classList.remove('d-none');
+                        tbodyPesquisaProfessores.append(...professores.map(criarProfessorResultadoPesquisa));
+                    } catch (e) {
+                        console.error(e);
+                        console.error(ret);
+                    }
                 });
             })
         };
@@ -433,18 +436,25 @@
                 method: 'POST',
                 body: JSON.stringify({ filtros: { nome: pesquisa, tipo: 'aluno' } })
             }).then(resp => {
-                if (resp.status == 200) return resp.json();
-                else throw {};
-            }).then(alunos => {
-                if (alunos.length > 0) {
-                    tablePesquisaAlunos.classList.remove('d-none');
-                    tbodyPesquisaAlunos.append(...alunos.map(criarAlunoResultadoPesquisa));
+                if (resp.status != 200) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Não foi possível realizar a pesquisa'
+                    });
+                    resp.text().then(console.log);
+                    return;
                 }
-            }, () => {
-                Swal.fire({
-                    icon: 'error',
-                    text: 'Não foi possível realizar a pesquisa'
-                });
+                resp.text().then(ret => {
+                    try {
+                        const alunos = JSON.parse(ret);
+                        if (alunos.length == 0) return;
+                        tablePesquisaAlunos.classList.remove('d-none');
+                        tbodyPesquisaAlunos.append(...alunos.map(criarAlunoResultadoPesquisa));
+                    } catch (e) {
+                        console.error(e);
+                        console.error(ret);
+                    }
+                })
             });
         };
 
@@ -506,22 +516,30 @@
         if (idTurmaAlterar != -1) {
             fetch(`turma?id=${idTurmaAlterar}`, {headers: {'Accept': 'application/json'}})
             .then(resp => {
-                if (resp.status == 200) return resp.json();
-                else throw resp.text();
-            }).then(turma => {
-                console.log(turma);
-                document.getElementById('turma-nome').value = turma.nome;
-                document.getElementById('turma-ano').value = turma.ano;
-                for (const aluno of turma.alunos)
-                    adicionarAlunoTurma(aluno.id, aluno.nome, aluno.login);
-                for (const disciplina of turma.disciplinas) {
-                    disciplinasContainer.appendChild(criarDisciplina(disciplina));
+                if (resp.status != 200) {
+                    Swal.fire({
+                        icon: 'warning',
+                        text: 'Não foi possível carregar os dados da turma para alterá-la'
+                    });
+                    resp.text().then(console.log);
+                    return;
                 }
-            }, erro => {
-                console.error(erro);
-                Swal.fire({
-                    icon: 'warning',
-                    text: 'Não foi possível carregar os dados da turma para alterá-la'
+                resp.text().then(ret => {
+                    try {
+                        const turma = JSON.parse(ret);
+                        console.log(turma);
+                        document.getElementById('turma-nome').value = turma.nome;
+                        document.getElementById('turma-ano').value = turma.ano;
+                        for (const aluno of turma.alunos) {
+                            adicionarAlunoTurma(aluno.id, aluno.nome, aluno.login);
+                        }
+                        for (const disciplina of turma.disciplinas) {
+                            disciplinasContainer.appendChild(criarDisciplina(disciplina));
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        console.error(ret);
+                    }
                 });
             });
         }
