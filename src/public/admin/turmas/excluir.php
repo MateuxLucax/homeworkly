@@ -4,7 +4,7 @@ $root = '../../../';
 
 require_once $root.'utils/response-utils.php';
 
-forbidMethodsNot('POST');
+forbidMethodsNot('DELETE');
 
 require_once $root.'dao/UsuarioDAO.php';
 require_once $root.'dao/TurmaDAO.php';

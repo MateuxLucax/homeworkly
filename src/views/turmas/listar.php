@@ -13,7 +13,6 @@
                     <th>ID</th>
                     <th>Nome</th>
                     <th>Ano</th>
-                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,25 +32,6 @@
                             </a>
                         </td>
                         <td><?=$turma->getAno()?></td>
-                        <td style="width: 0;">
-                            <div class="d-flex justify-content-end">
-                                <a target="_blank"
-                                   role="button"
-                                   class="btn btn-primary btn-editar-turma me-4"
-                                   title="Editar turma"
-                                   href="alterar?id=<?=$turma->getId()?>"
-                                >
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button type="button"
-                                        class="btn btn-danger btn-excluir-turma"
-                                        title="Remover turma"
-                                        data-id="<?=$turma->getId()?>"
-                                >
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
                     </tr>
                 <?php endforeach; ?>
 
@@ -72,69 +52,6 @@
         </table>
 
     </main>
-
-    <div class="modal fade" id="modal-excluir-turma">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <input type="hidden" name="id">
-                    <p>Tem certeza que deseja excluir esta turma?</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
-                    <button class="btn btn-secondary" id="btn-cancelar-exclusao">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script type="text/javascript">
-
-        //
-        // Excluir turma
-        //
-
-        const elemModalExcluir = document.querySelector('#modal-excluir-turma');
-        const modalExcluir     = new bootstrap.Modal(elemModalExcluir);
-        const inputIdExcluir   = elemModalExcluir.querySelector('[name=id]');
-
-        for (const btnExcluir of document.querySelectorAll('.btn-excluir-turma')) {
-            btnExcluir.addEventListener('click', () => {
-                inputIdExcluir.value = btnExcluir.dataset.id;
-                modalExcluir.show();
-            });
-        }
-
-        document.querySelector('#btn-cancelar-exclusao').addEventListener('click', () => {
-            modalExcluir.hide();
-            inputIdExcluir.value = null;
-        });
-
-        document.querySelector('#btn-confirmar-exclusao').addEventListener('click', () => {
-            const id = inputIdExcluir.value;
-            if (id) {
-                fetch('excluir', { method: 'POST', body: JSON.stringify({ id }) })
-                .then(response => {
-                    if (response.status == 200) {
-                        agendarAlertaSwal({
-                            icon: 'success',
-                            text: 'Turma excluída com sucesso'
-                        });
-                        window.location.reload();
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            text: 'Não foi possível excluir a turma'
-                        });
-                    }
-                    response.text().then(console.log);
-                });
-            }
-            modalExcluir.hide();
-            inputIdExcluir.value = null;
-        });
-    </script>
-
 
 </body>
 </html>

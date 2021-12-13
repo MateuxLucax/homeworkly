@@ -3,6 +3,20 @@
 <?php require_once $root.'/views/componentes/head.php'; ?>
 <body>
 
+    <?php if (isset($view['id-turma'])): ?>
+    <div class="modal fade" id="modal-confirmar-exclusao">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <p>Tem certeza que deseja excluir essa turma?</p>
+                    <button class="btn btn-danger" id="btn-confirmar-exclusao" data-id="<?=$view['id-turma']?>">Excluir</button>
+                    <button class="btn btn-secondary" id="btn-cancelar-exclusao" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <main class="container">
         <form id="form-criar-turma">
 
@@ -12,10 +26,16 @@
 
             <div class="card mb-3 mt-3">
                 <div class="card-header">
-                    Turma
-                    <?php if (isset($view['id-turma'])): ?>
-                        <small class="text-muted">#<?= $view['id-turma'] ?></small>
-                    <?php endif; ?>
+                    <div class="d-flex align-items-center">
+                        Turma
+                        <?php if (isset($view['id-turma'])): ?>
+                            &nbsp;
+                            <span class="text-muted">#<?= $view['id-turma'] ?></span>
+                            <button type="button" class="btn btn-danger ms-auto" data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -185,6 +205,7 @@
     </div>
 
     <script>
+
         const form = document.getElementById('form-criar-turma');
 
         form.onsubmit = event => {
@@ -212,17 +233,19 @@
             let target, alertaSucesso, alertaErro, statusEsperado;
             if (dados.acao == 'criar') {
                 target = 'criar';
+                metodo = 'POST';
                 alertaSucesso = 'Turma criada com sucesso';
                 alertaErro = 'Não foi possível criar a turma';
                 statusEsperado = 201;
             } else if (dados.acao == 'alterar') {
                 target = 'alterar';
+                metodo = 'PUT';
                 alertaSucesso = 'Turma alterada com sucesso';
                 alertaErro = 'Não foi possível alterar a turma';
                 statusEsperado = 200;
             }
 
-            fetch(target, {method: 'POST', body: JSON.stringify(dados)})
+            fetch(target, {method: metodo, body: JSON.stringify(dados)})
             .then(response => {
                 if (response.status != statusEsperado) {
                     Swal.fire({
@@ -236,14 +259,14 @@
                     icon: 'success',
                     text: alertaSucesso
                 });
-                response.text().then(ret => {
-                    try {
-                        const id = JSON.parse(ret).id;
-                        window.location.assign(`turma?id=${id}`);
-                    } catch (e) {
-                        console.log(ret)
-                    }
-                });
+                return response.text();
+            }).then(ret => {
+                try {
+                    const id = JSON.parse(ret).id;
+                    window.location.assign(`turma?id=${id}`);
+                } catch (e) {
+                    console.log(ret)
+                }
             });
         };
 
@@ -517,32 +540,61 @@
             fetch(`turma?id=${idTurmaAlterar}`, {headers: {'Accept': 'application/json'}})
             .then(resp => {
                 if (resp.status != 200) {
+                    // TODO agendarAlertaSwal e depois mudar de página, já que essa não vai ser carregada normalmente?
                     Swal.fire({
                         icon: 'warning',
                         text: 'Não foi possível carregar os dados da turma para alterá-la'
                     });
-                    resp.text().then(console.log);
-                    return;
                 }
-                resp.text().then(ret => {
-                    try {
-                        const turma = JSON.parse(ret);
-                        console.log(turma);
-                        document.getElementById('turma-nome').value = turma.nome;
-                        document.getElementById('turma-ano').value = turma.ano;
-                        for (const aluno of turma.alunos) {
-                            adicionarAlunoTurma(aluno.id, aluno.nome, aluno.login);
-                        }
-                        for (const disciplina of turma.disciplinas) {
-                            disciplinasContainer.appendChild(criarDisciplina(disciplina));
-                        }
-                    } catch (e) {
-                        console.error(e);
-                        console.error(ret);
+                return resp.text();
+            }).then(ret => {
+                try {
+                    const turma = JSON.parse(ret);
+                    console.log(turma);
+                    document.getElementById('turma-nome').value = turma.nome;
+                    document.getElementById('turma-ano').value = turma.ano;
+                    for (const aluno of turma.alunos) {
+                        adicionarAlunoTurma(aluno.id, aluno.nome, aluno.login);
                     }
-                });
+                    for (const disciplina of turma.disciplinas) {
+                        disciplinasContainer.appendChild(criarDisciplina(disciplina));
+                    }
+                } catch (e) {
+                    console.error(e);
+                    console.error(ret);
+                }
+
             });
         }
+
+        //
+        // Exclusão de turma (quanto alterar)
+        //
+
+        const btnConfirmarExclusao = document.getElementById('btn-confirmar-exclusao');
+        const btnCancelarExclusao = document.getElementById('btn-cancelar-exclusao');
+
+        btnConfirmarExclusao?.addEventListener('click', () => {
+            const id = btnConfirmarExclusao.getAttribute('data-id');
+            fetch('excluir', {method: 'DELETE', body: JSON.stringify({id})})
+            .then(resp => {
+                resp.text().then(console.log);
+                if (resp.status != 200) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Não foi possível excluir a turma'
+                    });
+                    btnCancelarExclusao.click();  // fechar o modal
+                } else {
+                    agendarAlertaSwal({
+                        icon: 'success',
+                        text: 'Turma excluída com sucesso'
+                    });
+                    window.location.assign('listar');
+                }
+            });
+        });
+
     </script>
     
 

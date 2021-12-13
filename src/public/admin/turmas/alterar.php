@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
     $view['title'] = 'Alterar turma';
     require_once $root.'/views/turmas/criar.php';
 }
-else if ($_SERVER['REQUEST_METHOD'] == 'POST')
+else if ($_SERVER['REQUEST_METHOD'] == 'PUT')
 {
     $dados = readJsonRequestBody();
 

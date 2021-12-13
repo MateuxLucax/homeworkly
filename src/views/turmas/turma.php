@@ -11,9 +11,14 @@
 
         <!-- TODO deve ter uma forma mais bonita de mostrar todas essas informações na mesma linha -->
 
-        <h1 class="mt-3 mb-3">
-            <?=$turma->getAno()?> / <b><?=$turma->getNome()?></b> <small class="text-muted">#<?=$turma->getId()?></small>
-        </h1>
+        <div class="header mt-3 mb-3 d-flex align-items-center">
+            <h1>
+                <?=$turma->getAno()?> / <b><?=$turma->getNome()?></b> <small class="text-muted">#<?=$turma->getId()?></small>
+            </h1>
+            <a href="alterar?id=<?=$turma->getId()?>" role="button" class="ms-auto btn btn-primary">
+                <i class="fas fa-edit"></i>
+            </a>
+        </div>
     
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation">
