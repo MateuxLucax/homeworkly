@@ -3,6 +3,10 @@
 <?php require $root.'/views/componentes/head.php'; ?>
 <body>
 
+    <header>
+        <?php require_once $root.'/views/componentes/navbar-admin.php'; ?>
+    </header>
+
     <main class="container">
 
         <h1 class="my-4"><?=$view['title'];?></h1>
@@ -151,11 +155,9 @@
     <div class="modal fade" id="modal-excluir-usuario">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <input type="hidden" name="id-usuario">
                     <p>Tem certeza que deseja excluir este usuário?</p>
-                </div>
-                <div class="modal-footer">
                     <button class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
                     <button class="btn btn-secondary" id="btn-cancelar-exclusao">Cancelar</button>
                 </div>

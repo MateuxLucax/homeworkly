@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
     $view['id-turma'] = $_GET['id'];
     $view['title'] = 'Alterar turma';
+    $view['ativo-nav'] = 'turmas';
     require_once $root.'/views/turmas/criar.php';
 }
 else if ($_SERVER['REQUEST_METHOD'] == 'PUT')

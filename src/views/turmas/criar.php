@@ -16,6 +16,10 @@
         </div>
     </div>
     <?php endif; ?>
+    
+    <header>
+        <?php require_once $root.'/views/componentes/navbar-admin.php'; ?>
+    </header>
 
     <main class="container">
         <form id="form-criar-turma">

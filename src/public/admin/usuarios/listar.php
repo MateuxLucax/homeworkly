@@ -46,6 +46,7 @@ if ($headers['Accept'] == 'application/json')
 else
 {
     $view['title'] = 'Usuários';
+    $view['ativo-nav'] = 'usuarios';
     $view['usuarios'] = UsuarioDAO::listarTodos();
 
     require $root.'/views/usuarios/listar.php';

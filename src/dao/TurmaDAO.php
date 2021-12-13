@@ -156,6 +156,11 @@ class TurmaDAO
             // para o final da transação, porque senão o erro ocorre logo que excluirDisciplinas é chamado:
             $pdo->exec('SET CONSTRAINTS ALL DEFERRED');
 
+            // TODO FIXME acho que ainda não tá dando certo isso, acabou de dar um erro:
+            // PDOException: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  update or delete on table \"disciplina\" violates foreign key constraint \"tarefa_id_disciplina_fkey\" on table \"tarefa\"\nDETAIL:  Key (id_disciplina)=(1) is still referenced from table \"tarefa\".
+            // Isso na turma de ID 1 dos inserts.sql
+            // e isso sem deletar a turma clicando no botão (pq senão é isso que tem que acontecer mesmo)
+
             // TODO nomear a restrição da tarefa lá no sql e em vez de ALL colocar o nome dela aqui
 
 

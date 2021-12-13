@@ -3,6 +3,10 @@
 <?php require $root.'/views/componentes/head.php'; ?>
 <body>
 
+    <header>
+        <?php require_once $root.'/views/componentes/navbar-admin.php'; ?>
+    </header>
+
     <main class="container">
 
         <h1 class="my-4"><?=$view['title'];?></h1>

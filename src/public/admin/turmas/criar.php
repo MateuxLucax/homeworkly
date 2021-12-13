@@ -21,6 +21,7 @@ $pdo = Connection::getInstance();
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
     $view['title'] = 'Criar turma';
+    $view['ativo-nav'] = 'turmas';
     require_once $root.'views/turmas/criar.php';
 }
 else if ($_SERVER['REQUEST_METHOD'] == 'POST')

@@ -7,6 +7,10 @@
 
     <!-- TODO botões pro administrador poder editar -- adicionar alunos, disciplinas (criar tb) etc. -->
 
+    <header>
+        <?php require_once $root.'/views/componentes/navbar-admin.php'; ?>
+    </header>
+
     <main class="container">
 
         <!-- TODO deve ter uma forma mais bonita de mostrar todas essas informações na mesma linha -->

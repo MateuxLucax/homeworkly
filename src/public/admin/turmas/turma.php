@@ -44,6 +44,7 @@ try
     } else {
         $view['turma'] = $turma;
         $view['title'] = 'Turma';
+        $view['ativo-nav'] = 'turmas';
         require_once $root.'views/turmas/turma.php';
     }
 }
