@@ -9,7 +9,10 @@ class DisciplinaDAO
     public static function buscarDeTurma(Turma $turma): array
     {
         $rows = Query::select(
-            'SELECT id_disciplina AS id, nome FROM disciplina WHERE id_turma = :idTurma',
+            'SELECT d.id_disciplina AS id, d.nome,
+                    not exists(select 1 from tarefa t where t.id_disciplina = d.id_disciplina) as pode_excluir
+               FROM disciplina d
+              WHERE d.id_turma = :idTurma',
             [':idTurma' => $turma->getId()]
         );
 
@@ -18,6 +21,7 @@ class DisciplinaDAO
                 ->setTurma($turma)
                 ->setId($row['id'])
                 ->setNome($row['nome'])
+                ->setPodeExcluir($row['pode_excluir'])
                 ->setProfessores(UsuarioDao::buscarProfessoresDeDisciplina($row['id'])),
             $rows
         );

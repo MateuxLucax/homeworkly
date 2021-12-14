@@ -2,6 +2,7 @@
 
 class Turma
 {
+    // TODO verificar quais são realmente nullable e quais queremos garantir que estão sempre disponíveis
     private ?int    $id          = null;
     private ?string $nome        = null;
     private ?int    $ano         = null;
