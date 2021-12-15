@@ -4,12 +4,11 @@ require_once $root.'/models/Turma.php';
 
 class Disciplina
 {
-    // TODO verificar quais são realmente nullable e quais queremos garantir que estão sempre disponíveis
-    private ?int    $id          = null;
-    private ?string $nome        = null;
-    private ?Turma  $turma       = null;
-    private ?array  $professores = null;
-    private ?bool   $podeExcluir = null;
+    private int    $id = 0;
+    private string $nome;
+    private Turma  $turma;
+    private array  $professores;
+    private bool   $podeExcluir;
     // pode excluir = tem tarefas,
     // mas não queremos ter que buscar as tarefas em todo lugar onde queremos saber se a disciplina pode ser excluída!
 
@@ -38,10 +37,10 @@ class Disciplina
         return $this;
     }
 
-    public function getId()         : ?int    { return $this->id; }
-    public function getNome()       : ?string { return $this->nome; }
-    public function getTurma()      : ?Turma  { return $this->turma; }
-    public function getProfessores(): ?array  { return $this->professores; }
+    public function getId()         : int    { return $this->id; }
+    public function getNome()       : string { return $this->nome; }
+    public function getTurma()      : Turma  { return $this->turma; }
+    public function getProfessores(): array  { return $this->professores; }
 
-    public function podeExcluir(): ?bool { return $this->podeExcluir; }
+    public function podeExcluir(): bool { return $this->podeExcluir; }
 }

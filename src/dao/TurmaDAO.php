@@ -165,7 +165,7 @@ class TurmaDAO
 
 
             foreach ($turma->getDisciplinas() ?? [] as $disciplina) {
-                $recriar = !is_null($disciplina->getId());
+                $recriar = $disciplina->getId() == 0;
                 $sql = $recriar
                      ? 'INSERT INTO disciplina (id_disciplina, id_turma, nome) VALUES (:id, :idTurma, :nome)'
                      : 'INSERT INTO disciplina (id_turma, nome) VALUES (:idTurma, :nome)';
