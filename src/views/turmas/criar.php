@@ -35,7 +35,7 @@
                         <?php if (isset($view['id-turma'])): ?>
                             &nbsp;
                             <span class="text-muted">#<?= $view['id-turma'] ?></span>
-                            <button type="button" class="btn btn-danger ms-auto" data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao">
+                            <button id="btn-excluir-turma" type="button" class="btn btn-danger ms-auto" data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao">
                                 <i class="fas fa-trash"></i>
                             </button>
                         <?php endif; ?>
@@ -57,58 +57,60 @@
                 </div>
             </div>
 
-            <div class="card mb-3">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-sm-10 my-auto">
-                            Disciplinas
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-sm-10 my-auto">
+                                    Disciplinas
+                                </div>
+                                <div class="col-sm-2">
+                                    <button type="button" id="btn-adicionar-disciplina" class="btn btn-success float-end">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-2">
-                            <button type="button" id="btn-adicionar-disciplina" class="btn btn-success float-end">
-                                <i class="fas fa-plus-circle"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body" id="disciplinas-container">
-
-                </div>
-            </div>
-
-            <div id="alunos-container" style="display: hidden">
-            </div>
-
-            <div class="card mb-3">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-sm-10 my-auto">
-                            Alunos
-                        </div>
-                        <div class="col-sm-2">
-                            <button
-                                type="button"
-                                class="btn btn-success float-end"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-adicionar-aluno"
-                            >
-                                <i class="fas fa-search"></i>
-                            </button>
+                        <div class="card-body" id="disciplinas-container">
                         </div>
                     </div>
                 </div>
-                <div class="card-body" id="alunos-container">
-                    <table class="table table-striped table-hover d-none" id="table-alunos">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>Login</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-alunos">
-                        </tbody>
-                    </table>
+
+                <div class="col-lg-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-sm-10 my-auto">
+                                    Alunos
+                                </div>
+                                <div class="col-sm-2">
+                                    <button
+                                        type="button"
+                                        class="btn btn-success float-end"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-adicionar-aluno"
+                                    >
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body" id="alunos-container">
+                            <table class="table table-striped table-hover d-none" id="table-alunos">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome</th>
+                                        <th>Login</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-alunos">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -332,6 +334,10 @@
             const tbodyProfessores = criarElemento('tbody', ['tbody-professores'], tableProfessores);
 
             if (disciplina) {
+                if (!disciplina.podeExcluir) {
+                    btnRemover.disabled = true;
+                    // TODO adicionar mensagem (tooltip) explicando pq não pode excluir
+                }
                 criarElemento('input', ['disciplina-id'], card, {
                     type: 'hidden',
                     name: 'disciplina-id',
@@ -555,6 +561,10 @@
                 try {
                     const turma = JSON.parse(ret);
                     console.log(turma);
+                    if (!turma.podeExcluir) {
+                        document.getElementById('btn-excluir-turma').disabled = true;
+                        // TODO adicionar tooltip explicando pq não pode excluir
+                    }
                     document.getElementById('turma-nome').value = turma.nome;
                     document.getElementById('turma-ano').value = turma.ano;
                     for (const aluno of turma.alunos) {

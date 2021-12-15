@@ -40,7 +40,35 @@ try
     TurmaDao::popularComDisciplinas($turma);
 
     if ($retornarJson) {
-        respondJson(HttpCodes::OK, $turma->toArray());
+        $turmaArr = [
+            'id' => $turma->getId(),
+            'nome' => $turma->getNome(),
+            'ano' => $turma->getAno(),
+            'podeExcluir' => $turma->podeExcluir(),
+            'alunos' => array_map(
+                fn($aluno) => [
+                    'id' => $aluno->getId(),
+                    'nome' => $aluno->getNome(),
+                    'login' => $aluno->getLogin(),
+                    'ultimoAcesso' => $aluno->getUltimoAcesso()
+                ], $turma->getAlunos()
+            ),
+            'disciplinas' => array_map(
+                fn($disc) => [
+                    'id' => $disc->getId(),
+                    'nome' => $disc->getNome(),
+                    'professores' => array_map(
+                        fn($prof) => [
+                            'id' => $prof->getId(),
+                            'nome' => $prof->getNome(),
+                            'login' => $prof->getLogin(),
+                            'ultimoAcesso' => $prof->getUltimoAcesso()
+                        ], $disc->getProfessores()
+                    )
+                ], $turma->getDisciplinas()
+            )
+        ];
+        respondJson(HttpCodes::OK, $turmaArr);
     } else {
         $view['turma'] = $turma;
         $view['title'] = 'Turma';
