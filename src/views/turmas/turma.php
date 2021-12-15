@@ -5,8 +5,6 @@
 <body>
     <?php $turma = $view['turma'] ?>
 
-    <!-- TODO botões pro administrador poder editar -- adicionar alunos, disciplinas (criar tb) etc. -->
-
     <header>
         <?php require_once $root.'/views/componentes/navbar-admin.php'; ?>
     </header>

@@ -47,9 +47,6 @@ else if ($_SERVER['REQUEST_METHOD'] == 'PUT')
         $turma->addDisciplina($disciplina);
     }
 
-    // TODO previnir que usuário delete disciplinas que tem tarefa associada
-    // fazer no front -- desabilitar o botão de remover
-
     $pdo = Connection::getInstance();
 
     try {
