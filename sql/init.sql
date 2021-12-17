@@ -38,7 +38,7 @@ create table if not exists professor_de_disciplina (
 create table if not exists tarefa (
       id_tarefa     serial    primary key
     , id_professor  bigint    references usuario
-    , id_disciplina bigint    references disciplina
+    , id_disciplina bigint    references disciplina deferrable initially deferred
     , descricao     text      not null
     , esforco_horas real      not null check (esforco_horas > 0)
     , com_nota      boolean   not null
