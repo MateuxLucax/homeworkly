@@ -47,8 +47,6 @@ else if ($_SERVER['REQUEST_METHOD'] == 'PUT')
         $turma->addDisciplina($disciplina);
     }
 
-    $pdo = Connection::getInstance();
-
     try {
         TurmaDAO::alterar($turma);
         respondJson(HttpCodes::OK, ['id' => $turma->getId()]);

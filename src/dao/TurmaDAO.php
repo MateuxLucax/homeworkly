@@ -68,34 +68,41 @@ class TurmaDAO
     public static function criar(Turma $turma): Turma
     {
         $pdo = Connection::getInstance();
-        $pdo->prepare('INSERT INTO turma (nome, ano) VALUES (:nome, :ano)')->execute([
-            ':nome' => $turma->getNome(),
-            ':ano'  => $turma->getAno()
-        ]);
-        $turma->setId($pdo->lastInsertId());
-
-        self::associarAlunos($turma);
-
-        //
-        // Criar disciplinas
-        //
-
-        foreach ($turma->getDisciplinas() as $disciplina) {
-            $pdo->prepare('INSERT INTO disciplina (id_turma, nome) VALUES (:idTurma, :nome)')->execute([
-                ':idTurma' => $disciplina->getTurma()->getId(),
-                ':nome'    => $disciplina->getNome()
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare('INSERT INTO turma (nome, ano) VALUES (:nome, :ano)')->execute([
+                ':nome' => $turma->getNome(),
+                ':ano'  => $turma->getAno()
             ]);
-            $disciplina->setId($pdo->lastInsertId());
+            $turma->setId($pdo->lastInsertId());
 
-            foreach ($disciplina->getProfessores() as $professor) {
-                $pdo->prepare('INSERT INTO professor_de_disciplina (id_professor, id_disciplina) VALUES (:idProf, :idDisc)')->execute([
-                    ':idProf' => $professor->getId(),
-                    ':idDisc' => $disciplina->getId()
+            self::associarAlunos($turma);
+
+            //
+            // Criar disciplinas
+            //
+
+            foreach ($turma->getDisciplinas() as $disciplina) {
+                $pdo->prepare('INSERT INTO disciplina (id_turma, nome) VALUES (:idTurma, :nome)')->execute([
+                    ':idTurma' => $disciplina->getTurma()->getId(),
+                    ':nome'    => $disciplina->getNome()
                 ]);
-            }
-        }
+                $disciplina->setId($pdo->lastInsertId());
 
-        return $turma;
+                foreach ($disciplina->getProfessores() as $professor) {
+                    $pdo->prepare('INSERT INTO professor_de_disciplina (id_professor, id_disciplina) VALUES (:idProf, :idDisc)')->execute([
+                        ':idProf' => $professor->getId(),
+                        ':idDisc' => $disciplina->getId()
+                    ]);
+                }
+            }
+
+            $pdo->commit();
+            return $turma;
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
     }
 
     private static function removerAlunos(Turma $turma): Turma
@@ -122,18 +129,24 @@ class TurmaDAO
     public static function excluir(Turma $turma): Turma
     {
         $pdo = Connection::getInstance();
-
-        self::removerAlunos($turma);
-        self::excluirDisciplinas($turma);
-        $pdo->prepare('DELETE FROM turma WHERE id_turma = :id')->execute([':id' => $turma->getId()]);
-
-        return $turma;
+        $pdo->beginTransaction();
+        try {
+            self::removerAlunos($turma);
+            self::excluirDisciplinas($turma);
+            $pdo->prepare('DELETE FROM turma WHERE id_turma = :id')->execute([':id' => $turma->getId()]);
+            $pdo->commit();
+            return $turma;
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
     }
 
     public static function alterar(Turma $turma): Turma
     {
         $pdo = Connection::getInstance();
         $pdo->beginTransaction();
+
         try {
             $pdo->prepare('UPDATE turma SET nome = :nome, ano = :ano WHERE id_turma = :id')->execute([
                 ':id'   => $turma->getId(),
@@ -179,6 +192,5 @@ class TurmaDAO
             $pdo->rollBack();
             throw $e;
         }
-
     }
 }

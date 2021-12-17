@@ -16,8 +16,6 @@ require_once $root.'models/Turma.php';
 require_once $root.'models/Disciplina.php';
 require_once $root.'models/Usuario.php';
 
-$pdo = Connection::getInstance();
-
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
     $view['title'] = 'Criar turma';
@@ -48,9 +46,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'POST')
         ));
 
     try {
-        $pdo->beginTransaction();
         TurmaDAO::criar($turma);
-        $pdo->commit();
         respondJson(HttpCodes::CREATED, ['id' => $turma->getId()]);
     } catch(Exception $e) {
         $pdo->rollBack();

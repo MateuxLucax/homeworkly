@@ -21,10 +21,7 @@ try
 
     $turma = (new Turma)->setId($dados['id']);
 
-    $pdo = Connection::getInstance();
-    $pdo->beginTransaction();
     TurmaDAO::excluir($turma);
-    $pdo->commit();
 
     respondJson(HttpCodes::OK);
 }
