@@ -33,7 +33,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'PUT')
             $dados['alunos']
         ));
 
-    if ($turma->podeAlterar()) {
+    if (!$turma->podeAlterar()) {
         respondJson(HttpCodes::BAD_REQUEST, ['mensagem' => 'Essa turma não pode ser alterada pois está arquivada (é de um ano passado)']);
     }
     
