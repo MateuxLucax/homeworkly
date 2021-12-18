@@ -35,9 +35,11 @@
                         <?php if (isset($view['id-turma'])): ?>
                             &nbsp;
                             <span class="text-muted">#<?= $view['id-turma'] ?></span>
-                            <button id="btn-excluir-turma" type="button" class="btn btn-danger ms-auto" data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <span id="btn-excluir-turma-wrapper" class="ms-auto">
+                                <button id="btn-excluir-turma" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </span>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -303,7 +305,8 @@
 
             const inputGroup = criarElemento('div', ['input-group', 'mb-3'], cardBody);
             const inputNome = criarElemento('input', ['disciplina-nome', 'form-control'], inputGroup, { type: 'text' });
-            const btnRemover = criarElemento('button', ['btn', 'btn-danger'], inputGroup, {
+            const btnRemoverWrapper = criarElemento('span', [], inputGroup);
+            const btnRemover = criarElemento('button', ['btn', 'btn-danger'], btnRemoverWrapper, {
                 type: 'button',
                 onclick: () => { card.remove() }
             });
@@ -336,7 +339,9 @@
             if (disciplina) {
                 if (!disciplina.podeExcluir) {
                     btnRemover.disabled = true;
-                    // TODO adicionar mensagem (tooltip) explicando pq não pode excluir
+                    btnRemoverWrapper.setAttribute('data-bs-toggle', 'tooltip');
+                    btnRemoverWrapper.title = 'Essa disciplina não pode ser removida pois há tarefas nela';
+                    new bootstrap.Tooltip(btnRemoverWrapper);
                 }
                 criarElemento('input', ['disciplina-id'], card, {
                     type: 'hidden',
@@ -563,7 +568,10 @@
                     console.log(turma);
                     if (!turma.podeExcluir) {
                         document.getElementById('btn-excluir-turma').disabled = true;
-                        // TODO adicionar tooltip explicando pq não pode excluir
+                        const btnExcluirWrapper = document.getElementById('btn-excluir-turma-wrapper');
+                        btnExcluirWrapper.setAttribute('data-bs-toggle', 'tooltip');
+                        btnExcluirWrapper.title = 'Essa turma não pode ser excluída porque alguma de suas disciplinas não pode ser excluída';
+                        new bootstrap.Tooltip(btnExcluirWrapper);
                     }
                     document.getElementById('turma-nome').value = turma.nome;
                     document.getElementById('turma-ano').value = turma.ano;
