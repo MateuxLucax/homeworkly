@@ -17,9 +17,20 @@
             <h1>
                 <?=$turma->getAno()?> / <b><?=$turma->getNome()?></b> <small class="text-muted">#<?=$turma->getId()?></small>
             </h1>
-            <a href="alterar?id=<?=$turma->getId()?>" role="button" class="ms-auto btn btn-primary">
-                <i class="fas fa-edit"></i>
-            </a>
+            <span
+                class="ms-auto"
+                <?php if (!$turma->podeAlterar()): ?>
+                    data-bs-toggle="tooltip"
+                    title='Essa turma não pode ser alterada porque está arquivada (é de um ano passado)'
+                <?php endif; ?>
+            >
+                <button
+                    class="btn btn-primary"
+                    <?= $turma->podeAlterar() ? 'onclick=\'window.location.assign("alterar?id=' . $turma->getId() . '")\'' : 'disabled' ?>
+                >
+                    <i class="fas fa-edit"></i>
+                </button>
+            </span>
         </div>
     
         <ul class="nav nav-tabs" role="tablist">
@@ -110,6 +121,11 @@
 
 
     </main>
+    <script>
+        Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        .forEach(e => new bootstrap.Tooltip(e));
+    </script>
 
 </body>
+
 </html>

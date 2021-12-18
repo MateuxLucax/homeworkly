@@ -44,7 +44,12 @@ class Turma
         return $this;
     }
 
+    public function podeAlterar(): bool {
+        return $this->ano == date('Y');
+    }
+
     public function podeExcluir(): bool {
+        // OK porque sempre que a turma estiver instanciada com disciplinas, nenhuma disciplina estará faltando
         foreach ($this->disciplinas as $disciplina)
             if (!$disciplina->podeExcluir())
                 return false;

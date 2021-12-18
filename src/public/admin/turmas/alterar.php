@@ -32,6 +32,10 @@ else if ($_SERVER['REQUEST_METHOD'] == 'PUT')
             fn($idAluno) => (new Usuario)->setId($idAluno),
             $dados['alunos']
         ));
+
+    if ($turma->podeAlterar()) {
+        respondJson(HttpCodes::BAD_REQUEST, ['mensagem' => 'Essa turma não pode ser alterada pois está arquivada (é de um ano passado)']);
+    }
     
     foreach ($dados['disciplinas'] ?? [] as $dadosDisciplina) {
         $disciplina = (new Disciplina)

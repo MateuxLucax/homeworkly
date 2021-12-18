@@ -590,7 +590,7 @@
         }
 
         //
-        // Exclusão de turma (quanto alterar)
+        // Exclusão de turma (quando alterar)
         //
 
         const btnConfirmarExclusao = document.getElementById('btn-confirmar-exclusao');

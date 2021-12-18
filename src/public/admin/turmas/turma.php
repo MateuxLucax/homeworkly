@@ -45,6 +45,7 @@ try
             'nome' => $turma->getNome(),
             'ano' => $turma->getAno(),
             'podeExcluir' => $turma->podeExcluir(),
+            'podeAlterar' => $turma->podeAlterar(),
             'alunos' => array_map(
                 fn($aluno) => [
                     'id' => $aluno->getId(),
@@ -57,6 +58,7 @@ try
                 fn($disc) => [
                     'id' => $disc->getId(),
                     'nome' => $disc->getNome(),
+                    'podeExcluir' => $disc->podeExcluir(),
                     'professores' => array_map(
                         fn($prof) => [
                             'id' => $prof->getId(),
