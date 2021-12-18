@@ -122,8 +122,8 @@
 
     </main>
     <script>
-        Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        .forEach(e => new bootstrap.Tooltip(e));
+        for (const t of document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            new bootstrap.Tooltip(t);
     </script>
 
 </body>

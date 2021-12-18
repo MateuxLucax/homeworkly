@@ -47,7 +47,7 @@ else
 {
     $view['title'] = 'Usuários';
     $view['ativo-nav'] = 'usuarios';
-    $view['usuarios'] = UsuarioDAO::listarTodos();
+    $view['usuarios'] = UsuarioDAO::buscarTodos();
 
     // TODO desabilitar botão de excluir em usuários que não podem ser excluidos por restrições do DB
     // (se for aluno e estiver em turma, se for professor e estiver em disciplina)

@@ -9,6 +9,7 @@ class Usuario
     private string $hash_senha;
     private DateTime $cadastro;
     private ?DateTime $ultimo_acesso;
+    private bool $podeExcluir;
 
     public function getId(): int
     {
@@ -84,6 +85,17 @@ class Usuario
     public function setUltimoAcesso(?DateTime $ultimo_acesso): Usuario
     {
         $this->ultimo_acesso = $ultimo_acesso;
+        return $this;
+    }
+
+    public function podeExcluir(): bool
+    {
+        return $this->podeExcluir;
+    }
+
+    public function setPodeExcluir(bool $pode): Usuario
+    {
+        $this->podeExcluir = $pode;
         return $this;
     }
 }

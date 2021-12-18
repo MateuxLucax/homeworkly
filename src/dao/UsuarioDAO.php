@@ -67,13 +67,15 @@ class UsuarioDAO
         return $usuario;
     }
 
-    /**
-     * @throws QueryException
-     */
-    public static function listarTodos() : array {
-        $sql = "SELECT id_usuario AS id, nome, tipo, login FROM usuario";
-
-        return Query::select($sql);
+    public static function buscarTodos(): array {
+        return array_map(
+            fn($row) => self::armazenarPodeExcluir((new Usuario)
+                ->setId($row['id_usuario'])
+                ->setNome($row['nome'])
+                ->setTipo($row['tipo'])   // valor das enums coincide com o que é armazenado diretamente no banco
+                ->setLogin($row['login'])),
+            Query::select('SELECT id_usuario, nome, tipo, login FROM usuario')
+        );
     }
 
     public static function validaSessao() : bool {
@@ -117,6 +119,22 @@ class UsuarioDAO
         }
     }
 
+    public static function armazenarPodeExcluir(Usuario $usuario): Usuario
+    {
+        switch ($usuario->getTipo()) {
+            case TipoUsuario::ADMINISTRADOR:
+                return $usuario->setPodeExcluir(false);
+            case TipoUsuario::PROFESSOR:
+                $sql = 'SELECT NOT EXISTS(SELECT 1 FROM professor_de_disciplina WHERE id_professor = :id) AS pode_excluir';
+                $res = Query::select($sql, [':id' => $usuario->getId()]);
+                return $usuario->setPodeExcluir($res[0]['pode_excluir']);
+            case TipoUsuario::ALUNO:
+                $sql = 'SELECT NOT EXISTS(SELECT 1 FROM aluno_em_turma WHERE id_aluno = :id) AS pode_excluir';
+                $res = Query::select($sql, [':id' => $usuario->getId()]);
+                return $usuario->setPodeExcluir($res[0]['pode_excluir']);
+        }
+    }
+
     public static function buscarAlunosDeTurma(int $idTurma): array
     {
         $rows = Query::select(
@@ -129,12 +147,13 @@ class UsuarioDAO
         );
 
         return array_map(
-            fn($row) => (new Usuario)
+            fn($row) => self::armazenarPodeExcluir(
+                (new Usuario)
                 ->setId($row['id'])
                 ->setNome($row['nome'])
                 ->setLogin($row['login'])
                 ->setUltimoAcesso($row['ultimo_acesso'])
-                ->setTipo(TipoUsuario::ALUNO),
+                ->setTipo(TipoUsuario::ALUNO)),
             $rows
         );
     }
@@ -151,12 +170,12 @@ class UsuarioDAO
         );
 
         return array_map(
-            fn($row) => (new Usuario)
+            fn($row) => self::armazenarPodeExcluir((new Usuario)
                 ->setId($row['id'])
                 ->setNome($row['nome'])
                 ->setLogin($row['login'])
                 ->setUltimoAcesso($row['ultimo_acesso'])
-                ->setTipo(TipoUsuario::PROFESSOR),
+                ->setTipo(TipoUsuario::PROFESSOR)),
             $rows
         );
     }

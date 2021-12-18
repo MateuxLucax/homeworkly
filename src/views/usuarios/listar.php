@@ -31,28 +31,41 @@
             <?php else: ?>
                 <?php foreach ($view['usuarios'] as $usuario): ?>
                     <tr class="align-middle">
-                        <td><?=$usuario['id']?></td>
-                        <td><?=$usuario['nome']?></td>
-                        <td><?=ucfirst($usuario['tipo'])?></td>
-                        <td><?=$usuario['login']?></td>
+                        <td><?=$usuario->getId()?></td>
+                        <td><?=$usuario->getNome()?></td>
+                        <td><?=ucfirst($usuario->getTipo())?></td>
+                        <td><?=$usuario->getLogin()?></td>
                         <td style="width: 0;">
                             <div class="d-flex justify-content-end">
                                 <button type="button"
                                         class="btn btn-primary btn-editar-usuario me-4"
                                         title="Editar usuário"
-                                        data-id="<?=$usuario['id']?>"
-                                        data-nome="<?=$usuario['nome']?>"
-                                        data-login="<?=$usuario['login']?>"
+                                        data-id="<?=$usuario->getId()?>"
+                                        data-nome="<?=$usuario->getNome()?>"
+                                        data-login="<?=$usuario->getLogin()?>"
                                 >
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button type="button"
-                                        class="btn btn-danger btn-excluir-usuario"
-                                        title="Remover usuário"
-                                        data-id-usuario="<?=$usuario['id']?>"
+                                <span
+                                    <?php if (!$usuario->podeExcluir()):
+                                        $motivo = match ($usuario->getTipo()) {
+                                            TipoUsuario::PROFESSOR     => 'é professor de alguma disciplina',
+                                            TipoUsuario::ALUNO         => 'é aluno em alguma turma',
+                                            TipoUsuario::ADMINISTRADOR => 'é um administrador do sistema'
+                                        }; ?>
+                                        data-bs-toggle="tooltip"
+                                        title="O usuário não pode ser excluído porque <?= $motivo ?>"
+                                    <?php endif; ?>
                                 >
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-danger btn-excluir-usuario"
+                                        <?php if (!$usuario->podeExcluir()) echo 'disabled'; ?>
+                                        data-id-usuario="<?=$usuario->getId()?>"
+                                    >
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </span>
                             </div>
                         </td>
                     </tr>
@@ -166,6 +179,9 @@
     </div>
 
     <script type="text/javascript">
+
+        for (const t of document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            new bootstrap.Tooltip(t);
 
         //
         // Deletar usuário

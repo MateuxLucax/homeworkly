@@ -1,5 +1,7 @@
 <?php
 
+// TODO usar enum (introduzido no php 8.1)
+
 class TipoUsuario
 {
     public const ADMINISTRADOR = "administrador";
