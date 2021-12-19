@@ -151,11 +151,21 @@
                             <label for="login" class="form-label">Login</label>
                             <input type="text" name="login" id="login" class="form-control">
                         </div>
+                        <div class="mb-3">
+                            <button
+                                id="btn-abrir-modal-alterar-senha"
+                                type="button"
+                                class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-dismiss="modal"
+                                data-bs-target="#modal-alterar-senha"
+                            >
+                                <i class="fas fa-lock"></i>
+                                Alterar senha
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- TODO botão para alterar senha que abre um outro modal pra fazer isso
-                         https://getbootstrap.com/docs/5.0/components/modal/#toggle-between-modals -->
-                    
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">Editar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -174,6 +184,35 @@
                     <button class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
                     <button class="btn btn-secondary" id="btn-cancelar-exclusao">Cancelar</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-alterar-senha">
+        <!-- TODO botão de voltar pro modal anterior (só fazer um data-bs-toggle=modal data-bs-dismiss=motal data-bs-target=modal-editar-usuario, acho)-->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alterar senha</h5>
+                </div>
+                <form id="form-alterar-senha">
+                    <input type="hidden" name="id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Usuário</label>
+                            <input readonly type="text" id="nome" name="nome" class="form-control form-control-static">
+                        </div>
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Nova senha</label>
+                            <!-- TODO usar aquele botão de mostrar/esconder senha aqui -->
+                            <input type="password" class="form-control" name="senha">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Alterar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-cancelar-alterar-senha">Cancelar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -271,27 +310,28 @@
         // Editar usuário
         //
 
-        const formEditarUsuario  = document.getElementById('form-editar-usuario');
-        const modalEditarUsuario = new bootstrap.Modal(document.getElementById('modal-editar-usuario'));
-        const editarInputId    = formEditarUsuario.querySelector('[name=id]');
-        const editarInputNome  = formEditarUsuario.querySelector('[name=nome]');
-        const editarInputLogin = formEditarUsuario.querySelector('[name=login]');
+        const formEditar  = document.getElementById('form-editar-usuario');
+        const modalEditar = new bootstrap.Modal(document.getElementById('modal-editar-usuario'));
+
+        const formAlterarSenha = document.getElementById('form-alterar-senha');
 
         for (const btnEditar of document.getElementsByClassName('btn-editar-usuario')) {
             btnEditar.addEventListener('click', () => {
-                editarInputId.value    = btnEditar.dataset.id;
-                editarInputNome.value  = btnEditar.dataset.nome;
-                editarInputLogin.value = btnEditar.dataset.login;
-                modalEditarUsuario.show();
+                formEditar.querySelector('[name=id]').value    = btnEditar.dataset.id;
+                formEditar.querySelector('[name=nome').value   = btnEditar.dataset.nome;
+                formEditar.querySelector('[name=login]').value = btnEditar.dataset.login;
+                formAlterarSenha.querySelector('[name=id]').value = btnEditar.dataset.id;
+                formAlterarSenha.querySelector('[name=nome]').value = btnEditar.dataset.nome;  // Só pra mostrar
+                modalEditar.show();
             });
         }
 
-        formEditarUsuario.addEventListener('submit', event => {
+        formEditar.addEventListener('submit', event => {
             event.preventDefault();
             const payload = {
-                id:    formEditarUsuario.id.value,
-                nome:  formEditarUsuario.nome.value,
-                login: formEditarUsuario.login.value,
+                id:    formEditar.id.value,
+                nome:  formEditar.nome.value,
+                login: formEditar.login.value,
             };
             fetch('alterar', {method: 'PUT', body: JSON.stringify(payload)})
             .then(response => {
@@ -309,8 +349,39 @@
                 }
                 response.text().then(console.log);
             });
-            modalEditarUsuario.hide();
+            modalEditar.hide();
         });
+
+        //
+        // Editar usuário >> Alterar senha
+        //
+        
+
+        formAlterarSenha.onsubmit = event => {
+            event.preventDefault();
+            const body = {
+                id:    formAlterarSenha.id.value,
+                senha: formAlterarSenha.senha.value
+            };
+            // Como o modal foi aberto pelo data-bs-toggle, não dá pra fechar com .hide(), só pelo botão com data-bs-dismiss
+            document.getElementById('btn-cancelar-alterar-senha').click();
+            fetch('alterar-senha', {method: 'PUT', body: JSON.stringify(body)})
+            .then(resp => {
+                if (resp.status == 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'Senha alterada com sucesso'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Não foi possível alterar a senha deste usuário'
+                    });
+                }
+                return resp.text()
+            }).then(console.log);
+        }
+
     </script>
 
 

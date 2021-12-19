@@ -190,6 +190,15 @@ class UsuarioDAO
         return $usuario;
     }
 
+    public static function alterarSenha(Usuario $usuario): Usuario
+    {
+        Query::execute('UPDATE usuario SET hash_senha = :hashSenha WHERE id_usuario = :id', [
+            ':id'        => $usuario->getId(),
+            ':hashSenha' => $usuario->getHashSenha()
+        ]);
+        return $usuario;
+    }
+
     public static function excluir(Usuario $usuario): void
     {
         Query::execute('DELETE FROM usuario WHERE id_usuario = :id', [':id' => $usuario->getId()]);
