@@ -189,7 +189,6 @@
     </div>
 
     <div class="modal fade" id="modal-alterar-senha">
-        <!-- TODO botão de voltar pro modal anterior (só fazer um data-bs-toggle=modal data-bs-dismiss=motal data-bs-target=modal-editar-usuario, acho)-->
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -206,6 +205,12 @@
                             <label for="senha" class="form-label">Nova senha</label>
                             <!-- TODO usar aquele botão de mostrar/esconder senha aqui -->
                             <input type="password" class="form-control" name="senha">
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal-editar-usuario">
+                                <i class="fas fa-chevron-left"></i>
+                                Voltar
+                            </button>
                         </div>
                     </div>
                     <div class="modal-footer">
