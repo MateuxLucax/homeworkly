@@ -16,7 +16,7 @@ class UsuarioDAO
             ':tipo' => $usuario->getTipo(),
             ':nome' => $usuario->getNome(),
             ':login' => $usuario->getLogin(),
-            ':hash_senha' => PasswordUtil::hash($usuario->getHashSenha())
+            ':hash_senha' => $usuario->getHashSenha()
         ];
 
         return Query::execute($sql, $params);

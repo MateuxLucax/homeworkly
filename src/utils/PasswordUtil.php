@@ -9,4 +9,8 @@ class PasswordUtil
     public static function validate(string $password, string $hashed) : bool {
         return password_verify($password, $hashed);
     }
+
+    public static function safe(string $password) : bool {
+        return strlen($password) >= 12;
+    }
 }

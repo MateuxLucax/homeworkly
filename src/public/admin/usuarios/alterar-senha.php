@@ -15,13 +15,14 @@ try
 
     $dados = readJsonRequestBody();
 
+    if (!PasswordUtil::safe($dados['senha'])) {
+        respondJson(HttpCodes::BAD_REQUEST, ['mensagem' => 'Senha não é forte o suficiente']);
+    }
+
     $usuario = (new Usuario)
         ->setId($dados['id'])
         ->setHashSenha(PasswordUtil::hash($dados['senha']));
 
-    // TODO validar segurança da senha
-    // tanto no front-end qto no back-end
-    
     UsuarioDao::alterarSenha($usuario);
 
     respondJson(HttpCodes::OK);

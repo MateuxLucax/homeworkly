@@ -14,13 +14,17 @@ try
 {
     UsuarioDAO::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
-    $data = readJsonRequestBody();
+    $dados = readJsonRequestBody();
+
+    if (!PasswordUtil::safe($dados['senha'])) {
+        respondJson(HttpCodes::BAD_REQUEST, ['mensagem' => 'Senha não é forte o suficiente (pelo menos 12 caracteres)']);
+    }
 
     $usuario = (new Usuario)
-        ->setNome($data['nome'])
-        ->setTipo($data['tipo'])
-        ->setHashSenha($data['senha'])
-        ->setLogin($data['login']);
+        ->setNome($dados['nome'])
+        ->setTipo($dados['tipo'])
+        ->setHashSenha(PasswordUtil::hash($dados['senha']))
+        ->setLogin($dados['login']);
 
     $registrado = UsuarioDAO::registrar($usuario);
 
