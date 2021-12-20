@@ -176,12 +176,68 @@
                 </div>
                 <div class="modal-body">
 
-                    <div class="input-group mb-3">
-                        <input type="search" class="form-control" id="input-pesquisa-aluno" />
-                        <button class="btn btn-primary" id="btn-pesquisar-alunos">
-                            <i class="fas fa-search"></i>
-                        </button>
+                    <ul class="nav nav-pills mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link disabled">Pesquisar por</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button
+                                type="button"
+                                id="tab-pesquisar-por-nome"
+                                class="nav-link active"
+                                data-bs-toggle="tab"
+                                data-bs-target="#pesquisar-por-nome"
+                                role="tab"
+                            >Nome</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button
+                                type="button"
+                                id="tab-pesquisar-por-turma"
+                                class="nav-link"
+                                data-bs-toggle="tab"
+                                data-bs-target="#pesquisar-por-turma"
+                                role="tab"
+                            >Turma</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mb-3">
+                        <div
+                            class="tab-pane fade show active"
+                            id="pesquisar-por-nome"
+                            role="tabpanel"
+                        >
+                            <div class="input-group">
+                                <input type="search" class="form-control" id="input-pesquisa-aluno" />
+                                <button class="btn btn-primary" id="btn-pesquisar-alunos">
+                                    <i class="fas fa-search"></i>
+                                </button>
+
+                                <!-- TODO em vez de botão pra pesquisar, fazer no keydown (com debounce) -->
+
+                            </div>
+                        </div>
+
+                        <div
+                            class="tab-pane fade"
+                            id="pesquisar-por-turma"
+                            role="tabpanel"
+                        >
+                            <div class="row">
+                                <div class="col-4">
+                                    <select id="pesquisa-aluno-select-ano" class="form-control mb-3">
+                                        <option value="-1">- Ano -</option>
+                                    </select>
+                                </div>
+                                <div class="col-8">
+                                    <select disabled id="pesquisa-aluno-select-turma" class="form-control mb-3"></select>
+                                </div>
+                            </div>
+                        
+                        </div>
                     </div>
+
                     <table class="table table-hover mb-3 d-none" id="table-pesquisa-alunos">
                         <thead>
                             <tr>
@@ -213,6 +269,10 @@
     </div>
 
     <script>
+
+        //
+        // Submissão do formulário inteiro
+        //
 
         const form = document.getElementById('form-criar-turma');
 
@@ -369,9 +429,7 @@
             tablePesquisaProfessores.classList.add('d-none');
             const pesquisa = document.getElementById('input-pesquisa-professores').value;
 
-            while (tbodyPesquisaProfessores.firstChild) {
-                tbodyPesquisaProfessores.firstChild.remove();
-            }
+            removerFilhos(tbodyPesquisaProfessores);
 
             fetch('/admin/usuarios/listar', {
                 headers: { Accept: 'application/json' },
@@ -459,6 +517,14 @@
         // Adicionar alunos dinamicamente
         //
 
+        // TODO ao mudar de 'pesquisar por', limpar a table pesquisa
+        // TODO funções pesquisaAlunoLimpar e pesquisaAlunoPreencher pra facilitar/comprimir
+        // (envolvendo tablePesquisaAlunos e tbodyPesquisaAlunos)
+
+        //
+        // Adicionar alunos dinamicamente >> Pesquisa por nome
+        //
+
         const btnPesquisarAlunos = document.getElementById('btn-pesquisar-alunos');
         const tablePesquisaAlunos = document.getElementById('table-pesquisa-alunos')
         const tbodyPesquisaAlunos = document.getElementById('tbody-pesquisa-alunos');
@@ -466,9 +532,7 @@
         btnPesquisarAlunos.onclick = () => {
             tablePesquisaAlunos.classList.add('d-none');
             const pesquisa = document.getElementById('input-pesquisa-aluno').value;
-            while (tbodyPesquisaAlunos.firstChild) {
-                tbodyPesquisaAlunos.firstChild.remove();
-            }
+            removerFilhos(tbodyPesquisaAlunos);
             fetch('/admin/usuarios/listar', {
                 headers: { 'Accept': 'application/json' },
                 method: 'POST',
@@ -495,6 +559,97 @@
                 })
             });
         };
+
+        //
+        // Adicionar alunos dinamicamente >> Pesquisa por turma
+        //
+
+        const pesquisaAlunoSelectAno = document.getElementById('pesquisa-aluno-select-ano');
+        const pesquisaAlunoSelectTurma = document.getElementById('pesquisa-aluno-select-turma');
+
+        let turmasPorAno;
+
+        // TODO não agrupar por ano no servidor, mas no lado do cliente mesmo
+
+        fetch('listar', {
+            method: 'POST',
+            headers: {'Accept': 'application/json'},
+            body: JSON.stringify({ 'agrupar_por': 'ano' })
+        }).then(resp => {
+            if (resp.status != 200) {
+                Swal.fire({
+                    icon: 'error',
+                    warning: 'Não foi possível carregar as turmas para a pesquisa por alunos'
+                });
+                resp.text().then(console.log);
+                return;
+            }
+            resp.text().then(ret => {
+                try {
+                    turmasPorAno = JSON.parse(ret);
+                    for (const ano in turmasPorAno)
+                        criarElemento('option', [], pesquisaAlunoSelectAno, {
+                            value:     ano,
+                            innerText: ano
+                        });
+                } catch (e) {
+                    console.error(e);
+                    console.error(ret);
+                }
+            });
+        });
+
+        pesquisaAlunoSelectAno.onchange = () => {
+            removerFilhos(tbodyPesquisaAlunos);
+            tablePesquisaAlunos.classList.add('d-none');
+
+            removerFilhos(pesquisaAlunoSelectTurma);
+            const ano = Number(pesquisaAlunoSelectAno.value);
+            if (ano == -1) {
+                pesquisaAlunoSelectTurma.disabled = true;
+                return;
+            }
+            pesquisaAlunoSelectTurma.disabled = false;
+            criarElemento('option', [], pesquisaAlunoSelectTurma, {
+                value: -1,
+                innerText: '- Turma -'
+            });
+            for (const turma of turmasPorAno[ano])
+                criarElemento('option', [], pesquisaAlunoSelectTurma, {
+                    value: turma.id,
+                    innerText: turma.nome
+                });
+        };
+
+        pesquisaAlunoSelectTurma.onchange = () => {
+            removerFilhos(tbodyPesquisaAlunos);
+            tablePesquisaAlunos.classList.add('d-none');
+
+            const idTurma = pesquisaAlunoSelectTurma.value;
+            if (idTurma == -1) return;
+
+            fetch(`alunos?id=${idTurma}`).then(resp => {
+                if (resp.status != 200) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Não foi possível carregar os alunos da turma selecionada'
+                    });
+                    resp.text().then(console.error);
+                    return;
+                }
+                resp.text().then(ret => {
+                    try {
+                        const alunos = JSON.parse(ret);
+                        if (alunos.length == 0) return;
+                        tablePesquisaAlunos.classList.remove('d-none');
+                        tbodyPesquisaAlunos.append(...alunos.map(criarAlunoResultadoPesquisa));
+                    } catch (e) {
+                        console.error(e);
+                        console.error(ret);
+                    }
+                });
+            });
+        }
 
         function criarAlunoResultadoPesquisa({id_usuario, nome, login}) {
             const btnAdd = criarElemento('button', ['btn', 'btn-success'], null, { type: 'button' });

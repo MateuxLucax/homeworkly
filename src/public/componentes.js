@@ -11,7 +11,12 @@ function criarTr(conteudos, tag = 'td') {
 function criarElemento(tag, classes=[], pai=null, atributos={}) {
     const elem = document.createElement(tag);
     pai?.append(elem);
-    elem.classList.add(...classes);
+    if (classes.length > 0)
+        elem.classList.add(...classes);
     Object.assign(elem, atributos);
     return elem;
+}
+
+function removerFilhos(elem) {
+    while (elem.firstChild) elem.firstChild.remove();
 }
