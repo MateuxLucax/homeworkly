@@ -126,6 +126,9 @@
         </form>
     </main>
 
+    <!-- TODO no 'adicionar professor', já trazer todos os professores,
+     e manter filtro por nome usando keydown (com debounce) -->
+
     <div class="modal" id="modal-adicionar-professor">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -512,6 +515,9 @@
                 }
             };
         }
+
+        // Na pesquisa por alunos, desabilitar o botão de adicionar a turma
+        // se ele já tiver sido adicionado (com tooltip pra explicação)
 
         //
         // Adicionar alunos dinamicamente

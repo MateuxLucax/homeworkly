@@ -13,7 +13,7 @@ require_once $root.'/database/Query.php';
 $id_turma = $_GET['id'];
 
 $sql =
-'SELECT a.id_usuario AS id, a.nome, a.login, a.ultimo_acesso
+'SELECT a.id_usuario, a.nome, a.login, a.ultimo_acesso
    FROM usuario a
    JOIN aluno_em_turma at
      ON at.id_aluno = a.id_usuario
