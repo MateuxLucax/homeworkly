@@ -399,7 +399,7 @@
                 if (!disciplina.podeExcluir) {
                     btnRemover.disabled = true;
                     btnRemoverWrapper.setAttribute('data-bs-toggle', 'tooltip');
-                    btnRemoverWrapper.title = 'Essa disciplina não pode ser removida pois há tarefas nela';
+                    btnRemoverWrapper.title = 'Essa disciplina não pode ser excluída pois há tarefas nela';
                     new bootstrap.Tooltip(btnRemoverWrapper);
                 }
                 criarElemento('input', ['disciplina-id'], card, {
