@@ -126,9 +126,6 @@
         </form>
     </main>
 
-    <!-- TODO no 'adicionar professor', já trazer todos os professores,
-     e manter filtro por nome usando keydown (com debounce) -->
-
     <div class="modal" id="modal-adicionar-professor">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -137,11 +134,10 @@
                 </div>
                 <div class="modal-body">
 
-                    <div class="input-group mb-3">
-                        <input type="search" class="form-control" id="input-pesquisa-professores" />
-                        <button class="btn btn-primary" id="btn-pesquisar-professores">
-                            <i class="fas fa-search"></i>
-                        </button>
+                    <!-- TODO colocar ícone de pesquisa -->
+                    <div class="mb-3">
+                        <label for="input-pesquisa-professores" class="form-label">Pesquisar por nome</label>
+                        <input type="search" class="form-control" id="input-pesquisa-professores" value=""/>
                     </div>
                     <table class="table table-hover mb-3 d-none" id="table-pesquisa-professores">
                         <thead>
@@ -274,7 +270,7 @@
     <script>
 
         //
-        // Submissão do formulário inteiro
+        // Submissão do formulário
         //
 
         const form = document.getElementById('form-criar-turma');
@@ -424,48 +420,56 @@
         // Adicionar professores às disciplinas dinamicamente
         //
 
-        const btnPesquisarProfessores = document.getElementById('btn-pesquisar-professores');
+        const todosOsProfessores = [];
+
+        const inputPesquisaProfessores = document.getElementById('input-pesquisa-professores');
+
+        inputPesquisaProfessores.onkeyup = atualizarPesquisaProfessores;
+
+        fetch('/admin/usuarios/listar', {
+            headers: { Accept: 'application/json' },
+            method: 'POST',
+            body: JSON.stringify({
+                filtros: { tipo: 'professor' }
+            })
+        }).then(resp => {
+            if (resp.status != 200) {
+                agendarAlertaSwal({
+                    icon: 'error',
+                    title: 'Erro do sistema',
+                    text: 'Não foi possível abrir a turma para alterações porque não foi possível carregar a lista de professores'
+                });
+                resp.text().then(console.error)
+                return;
+            }
+            resp.text().then(text => {
+                try {
+                    JSON.parse(text).forEach(prof => todosOsProfessores.push(prof));
+                    atualizarPesquisaProfessores();
+                } catch(e) { console.error(e, text); }
+            });
+        });
+
         const tablePesquisaProfessores = document.getElementById('table-pesquisa-professores');
         const tbodyPesquisaProfessores = document.getElementById('tbody-pesquisa-professores');
 
-        btnPesquisarProfessores.onclick = () => {
-            tablePesquisaProfessores.classList.add('d-none');
-            const pesquisa = document.getElementById('input-pesquisa-professores').value;
-
+        function atualizarPesquisaProfessores() {
             removerFilhos(tbodyPesquisaProfessores);
+            tablePesquisaProfessores.classList.add('d-none');
 
-            fetch('/admin/usuarios/listar', {
-                headers: { Accept: 'application/json' },
-                method: 'POST',
-                body: JSON.stringify({
-                    filtros: {
-                        nome: pesquisa,
-                        tipo: 'professor'
-                    }
-                })
-            }).then(resp => {
-                if (resp.status != 200) {
-                    Swal.fire({
-                        icon: 'warning',
-                        text: 'Não foi possível realizar a pesquisa'
-                    });
-                    resp.text().then(console.log);
-                    return;
-                }
-                resp.text().then(ret => {
-                    try {
-                        const professores = JSON.parse(ret);
-                        console.log(professores);
-                        if (professores.length == 0) return;
-                        tablePesquisaProfessores.classList.remove('d-none');
-                        tbodyPesquisaProfessores.append(...professores.map(criarProfessorResultadoPesquisa));
-                    } catch (e) {
-                        console.error(e);
-                        console.error(ret);
-                    }
-                });
-            })
-        };
+            const pesquisa = inputPesquisaProfessores.value;
+            console.log(pesquisa);
+            const re = new RegExp(pesquisa, 'i');
+
+            tbodyPesquisaProfessores.append(
+                ...todosOsProfessores
+                   .filter(prof => prof.nome.match(re))
+                   .map(criarProfessorResultadoPesquisa)
+            );
+
+            if (tbodyPesquisaProfessores.childElementCount > 0)
+                tablePesquisaProfessores.classList.remove('d-none');
+        }
 
         function criarProfessorResultadoPesquisa({ id_usuario, nome, login }) {
             const btnAdd = criarElemento('button', ['btn', 'btn-success'], null, {
@@ -716,11 +720,11 @@
             fetch(`turma?id=${idTurmaAlterar}`, {headers: {'Accept': 'application/json'}})
             .then(resp => {
                 if (resp.status != 200) {
-                    // TODO agendarAlertaSwal e depois mudar de página, já que essa não vai ser carregada normalmente?
-                    Swal.fire({
-                        icon: 'warning',
+                   agendarAlertaSwal({
+                        icon: 'error',
                         text: 'Não foi possível carregar os dados da turma para alterá-la'
                     });
+                    window.location.assign('listar');
                 }
                 return resp.text();
             }).then(ret => {
