@@ -39,6 +39,12 @@ create table if not exists tarefa (
       id_tarefa     serial    primary key
     , id_professor  bigint    references usuario
     , id_disciplina bigint    references disciplina deferrable initially deferred
+    -- A restrição de chave estrangeira do id_disciplina é deferida ao final
+    -- da transação porque implementamos a atualização da turma
+    -- deletando suas disciplinas depois recriando elas com o mesmo id
+    -- (mais as novas e menos as que foram realmente excluídas):
+    -- se não fizéssemos isso, ao deletar o SGBD ia reclamar caso
+    -- a disciplina recriada tivesse alguma tarefa associada.
     , descricao     text      not null
     , esforco_horas real      not null check (esforco_horas > 0)
     , com_nota      boolean   not null
