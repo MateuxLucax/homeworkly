@@ -342,8 +342,7 @@
         //
 
         let proxIdDOMDisciplina = 1;
-        // Usado para gerar atributos ID para os elementos das disciplinas
-        // que por sua vez são usados para adicionar os professores na disciplina correta
+        // Cada disciplina tem um ID distinto no DOM para os professores serem colocados na disciplina correta
 
         const disciplinasContainer   = document.getElementById('disciplinas-container');
         const btnAdicionarDisciplina = document.getElementById('btn-adicionar-disciplina');
@@ -759,7 +758,6 @@
         //
 
         const btnConfirmarExclusao = document.getElementById('btn-confirmar-exclusao');
-        const btnCancelarExclusao = document.getElementById('btn-cancelar-exclusao');
 
         btnConfirmarExclusao?.addEventListener('click', () => {
             const id = btnConfirmarExclusao.getAttribute('data-id');
@@ -771,7 +769,8 @@
                         icon: 'error',
                         text: 'Não foi possível excluir a turma'
                     });
-                    btnCancelarExclusao.click();  // fechar o modal
+                    // fechar o modal
+                    document.getElementById('btn-cancelar-exclusao').click();  
                 } else {
                     agendarAlertaSwal({
                         icon: 'success',
