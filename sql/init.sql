@@ -45,6 +45,7 @@ create table if not exists tarefa (
     -- (mais as novas e menos as que foram realmente excluídas):
     -- se não fizéssemos isso, ao deletar o SGBD ia reclamar caso
     -- a disciplina recriada tivesse alguma tarefa associada.
+    , titulo        text      not null
     , descricao     text      not null
     , esforco_horas real      not null check (esforco_horas > 0)
     , com_nota      boolean   not null

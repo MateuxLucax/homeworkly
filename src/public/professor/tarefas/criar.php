@@ -5,7 +5,8 @@ $root = '../../..';
 require_once $root . '/dao/UsuarioDao.php';
 require_once $root . '/models/TipoUsuario.php';
 
-UsuarioDao::validaSessaoTipo(TipoUsuario::PROFESSOR);
+UsuarioDao::validaSessao();
+//UsuarioDao::validaSessaoTipo(TipoUsuario::PROFESSOR);
 
 require_once $root . '/utils/response-utils.php';
 require_once $root . '/database/Connection.php';
@@ -21,11 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         $dados = readJsonRequestBody();
 
         $pdo->prepare(
-            'INSERT INTO tarefa (id_professor, id_disciplina, descricao, esforco_horas, com_nota, abertura, entrega, fechamento)
-            VALUES (:idProfessor, :idDisciplina, :descricao, :esforcoHoras, :comNota, :abertura, :entrega, :fechamento)'
+            'INSERT INTO tarefa (id_professor, id_disciplina, titulo, descricao, esforco_horas, com_nota, abertura, entrega, fechamento)
+            VALUES (:idProfessor, :idDisciplina, :titulo, :descricao, :esforcoHoras, :comNota, :abertura, :entrega, :fechamento)'
         )->execute([
             ':idProfessor'  => $dados['professor'],
             ':idDisciplina' => $dados['disciplina'],
+            ':titulo'       => $dados['titulo'],
             ':descricao'    => $dados['descricao'],
             ':esforcoHoras' => $dados['esforcoHoras'],
             ':comNota'      => $dados['comNota'],
