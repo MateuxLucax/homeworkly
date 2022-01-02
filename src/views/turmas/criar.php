@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <?php require_once $root.'/views/componentes/head.php'; ?>
 <body>
 
