@@ -50,7 +50,7 @@ create table if not exists tarefa (
     , esforco_minutos int       not null check (esforco_minutos > 0)
     , com_nota        boolean   not null
     , abertura        timestamp not null
-    , entrega         timestamp
+    , entrega         timestamp not null
     -- A tarefa pode ser fechada por data ou manualmente pelo professor
     -- tarefa fechada = data de fechamento já passou ou, se fechamento = null, fechada = true
     , fechamento      timestamp

@@ -50,7 +50,7 @@
                             Data entrega
                             <i class="fas fa-question-circle"></i>
                         </label>
-                        <input class="form-control" type="datetime-local" name="entrega" id="entrega" />
+                        <input class="form-control" type="datetime-local" name="entrega" id="entrega" required />
                     </div>
                     <div class="mb-3 col-12 col-sm-4">
                         <label class="form-label" for="fechamento" style="text-decoration: underline dotted;" data-bs-toggle="tooltip" title="Opcional – pode fechar manualmente depois. Depois dela, alunos não podem mais fazer entregas.">
