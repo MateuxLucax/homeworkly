@@ -48,11 +48,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="turma-nome" class="form-label">Nome</label>
-                                <input type="text" name="turma-nome" id="turma-nome" class="form-control">
+                                <input type="text" name="turma-nome" id="turma-nome" class="form-control" required />
                             </div>
                             <div class="col-md-6">
                                 <label for="turma-ano" class="form-label">Ano</label>
-                                <input type="number" name="turma-ano" id="turma-ano" class="form-control" value="<?=date('Y')?>">
+                                <input type="number" name="turma-ano" id="turma-ano" class="form-control" value="<?=date('Y')?>" required min="1970">
                             </div>
                         </div>
                     </div>
@@ -297,6 +297,16 @@
                 alunos: Array.from(document.getElementsByClassName('aluno-id')).map(i => i.value)
             };
 
+            for (const disciplina of dados.disciplinas) {
+                if (disciplina.professores.length == 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        text: `Toda disciplina precisa de pelo menos um professor. '${disciplina.nome}' não tem nenhum professor.`
+                    });
+                    return;
+                }
+            }
+
             let target, alertaSucesso, alertaErro, statusEsperado;
             if (dados.acao == 'criar') {
                 target = 'criar';
@@ -362,7 +372,11 @@
             const cardBody = criarElemento('div', ['card-body'], card);
 
             const inputGroup = criarElemento('div', ['input-group', 'mb-3'], cardBody);
-            const inputNome = criarElemento('input', ['disciplina-nome', 'form-control'], inputGroup, { type: 'text' });
+            const inputNome = criarElemento('input', ['disciplina-nome', 'form-control'], inputGroup, {
+                type: 'text',
+                required: true,
+                minlength: 5
+            });
             const btnRemoverWrapper = criarElemento('span', [], inputGroup);
             const btnRemover = criarElemento('button', ['btn', 'btn-danger'], btnRemoverWrapper, {
                 type: 'button',
@@ -457,7 +471,6 @@
             tablePesquisaProfessores.classList.add('d-none');
 
             const pesquisa = inputPesquisaProfessores.value;
-            console.log(pesquisa);
             const re = new RegExp(pesquisa, 'i');
 
             tbodyPesquisaProfessores.append(
