@@ -18,9 +18,8 @@ try {
 
     $usuario = new Usuario();
     $usuario->setLogin($data['login']);
-    $usuario->setHashSenha($data['senha']);
 
-    $loggedInUser = UsuarioDAO::login($usuario);
+    $loggedInUser = UsuarioDAO::login($usuario, $data['senha']);
     $response = array();
 
     if (!empty($loggedInUser)) {

@@ -27,7 +27,7 @@ class UsuarioDAO
      * @throws UserNotFoundException
      * @throws QueryException
      */
-    public static function login(Usuario $usuario) : Usuario {
+    public static function login(Usuario $usuario, string $senha) : Usuario {
         $sql = "SELECT * FROM usuario WHERE login = :login";
 
         $params = [
@@ -42,27 +42,20 @@ class UsuarioDAO
 
         $foundUser = $foundUser[0];
 
-        if (!PasswordUtil::validate($usuario->getHashSenha(), $foundUser['hash_senha'])) {
+        if (!PasswordUtil::validate($senha, $foundUser['hash_senha'])) {
             throw new UnauthorizedException();
         }
 
-        $foundUser = self::populate($foundUser);
-
-        self::criarSessao($foundUser);
-
-        return $foundUser;
-    }
-
-    private static function populate(array $data) : Usuario {
-        $usuario = new Usuario;
-
+        $usuario->setId($foundUser['id_usuario']);
+        $usuario->setTipo($foundUser['tipo']);
+        $usuario->setNome($foundUser['nome']);
+        $usuario->setLogin($foundUser['login']);
+        $usuario->setHashSenha($foundUser['hash_senha']);
         // TODO: Parse timestamp to dateTime
-        $usuario->setId($data['id_usuario']);
-        $usuario->setTipo($data['tipo']);
-        $usuario->setNome($data['nome']);
-        $usuario->setLogin($data['login']);
-      //  $usuario->setCadastro(DateUtil::parseTimestamp($data['cadastro']));
-      //  $usuario->setUltimoAcesso($data['ultimo_acesso']);
+        // $usuario->setCadastro(DateUtil::parseTimestamp($foundUser['cadastro']));
+        // $usuario->setUltimoAcesso($foundUser['ultimo_acesso']);
+
+        self::criarSessao($usuario);
 
         return $usuario;
     }
