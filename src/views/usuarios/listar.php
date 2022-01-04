@@ -103,11 +103,11 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome</label>
-                            <input type="text" name="nome" id="nome" class="form-control">
+                            <input type="text" name="nome" id="nome" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="tipo" class="form-label">Tipo</label>
-                            <select name="tipo" id="tipo" class="form-control">
+                            <select name="tipo" id="tipo" class="form-control" required>
                                 <option value="administrador">Administrador</option>
                                 <option value="professor">Professor</option>
                                 <option value="aluno">Aluno</option>
@@ -115,11 +115,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="login" class="form-label">Login</label>
-                            <input type="text" name="login" id="login" class="form-control">
+                            <input type="text" name="login" id="login" class="form-control" required autocomplete="off">
                         </div>
                         <div class="mb-3">
                             <label for="senha" class="form-label">Senha</label>
-                            <input type="password" name="senha" id="senha" class="form-control">
+                            <input type="password" name="senha" id="senha" class="form-control" required minlength="12">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -145,11 +145,11 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome</label>
-                            <input type="text" name="nome" id="nome" class="form-control">
+                            <input type="text" name="nome" id="nome" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="login" class="form-label">Login</label>
-                            <input type="text" name="login" id="login" class="form-control">
+                            <input type="text" name="login" id="login" class="form-control" required autocomplete="off">
                         </div>
                         <div class="mb-3">
                             <button
@@ -204,7 +204,7 @@
                         <div class="mb-3">
                             <label for="senha" class="form-label">Nova senha</label>
                             <!-- TODO usar aquele botão de mostrar/esconder senha aqui -->
-                            <input type="password" class="form-control" name="senha">
+                            <input type="password" class="form-control" name="senha" required minlength="12">
                         </div>
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal-editar-usuario">
@@ -231,20 +231,20 @@
         // Deletar usuário
         //
 
-        const elemModalExcluir    = document.querySelector('#modal-excluir-usuario');
-        const modalExcluirUsuario = new bootstrap.Modal(elemModalExcluir);
+        const elemModalExcluir = document.querySelector('#modal-excluir-usuario');
+        const modalExcluir = new bootstrap.Modal(elemModalExcluir);
 
-        const excluirInputId   = elemModalExcluir.querySelector('[name=id-usuario]');
+        const excluirInputId = elemModalExcluir.querySelector('[name=id-usuario]');
 
         for (const btnExcluir of document.querySelectorAll('.btn-excluir-usuario')) {
             btnExcluir.addEventListener('click', () => {
                 excluirInputId.value   = btnExcluir.dataset.idUsuario;
-                modalExcluirUsuario.show();
+                modalExcluir.show();
             });
         }
 
         document.querySelector('#btn-cancelar-exclusao').addEventListener('click', () => {
-            modalExcluirUsuario.hide();
+            modalExcluir.hide();
             excluirInputId.value   = null;
         });
 
@@ -268,7 +268,7 @@
                     response.text().then(console.log);
                 });
             }
-            modalExcluirUsuario.hide();
+            modalExcluir.hide();
             excluirInputId.value   = null;
         });
 
@@ -276,21 +276,16 @@
         // Criar usuário
         //
 
-        // TODO evento keydown no campo login (com debounce) pra verificar se o login já está o uso
-        //   e, se for o caso, avisar o usuário e bloquear o botão "Criar"
-        //   (nvdd o ideal seria deixar esse botão bloqueado e só habilitar quando os campos estiverem ok --
-        //    login não está em uso, senha é forte o suficiente etc.)
+        const formNovo = document.getElementById('form-novo-usuario');
+        const modalNovo = new bootstrap.Modal(document.getElementById('modal-novo-usuario'));
 
-        const formNovoUsuario = document.getElementById('form-novo-usuario');
-        const modalNovoUsuario = new bootstrap.Modal(document.getElementById('modal-novo-usuario'));
-
-        formNovoUsuario.addEventListener('submit', event => {
+        formNovo.addEventListener('submit', event => {
             event.preventDefault();
             const data = {
-                nome:  formNovoUsuario.nome.value,
-                tipo:  formNovoUsuario.tipo.value,
-                login: formNovoUsuario.login.value,
-                senha: formNovoUsuario.senha.value
+                nome:  formNovo.nome.value,
+                tipo:  formNovo.tipo.value,
+                login: formNovo.login.value,
+                senha: formNovo.senha.value
             };
             fetch('criar', { method: 'POST', body: JSON.stringify(data) })
             .then(response => {
@@ -308,7 +303,7 @@
                 }
                 response.text().then(console.log);
             });
-            modalNovoUsuario.hide();
+            modalNovo.hide();
         });
 
         //
@@ -317,6 +312,7 @@
 
         const formEditar  = document.getElementById('form-editar-usuario');
         const modalEditar = new bootstrap.Modal(document.getElementById('modal-editar-usuario'));
+
 
         const formAlterarSenha = document.getElementById('form-alterar-senha');
 
@@ -386,6 +382,26 @@
                 return resp.text()
             }).then(console.log);
         }
+
+        //
+        // Validar se login está em uso
+        //
+
+        function validarLoginEmUso(campoLogin) {
+            const login = campoLogin.value;
+            fetch('verificar-login', {method: 'POST', body: JSON.stringify({login})})
+            .then(resp => resp.json())
+            .then(ret => {
+                campoLogin.setCustomValidity(
+                    ret.emUso ? 'Login já está em uso, tente outro' : ''
+                );
+            });
+        }
+
+        validarLoginEmUso(formNovo.login);
+        validarLoginEmUso(formEditar.login);
+        formNovo.login.onchange = () => { validarLoginEmUso(formNovo.login); };
+        formEditar.login.onchange = () => { validarLoginEmUso(formEditar.login) };
 
     </script>
 
