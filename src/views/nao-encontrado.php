@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php require_once $root.'views/componentes/head.php' ?>
+<?php require_once $root.'/views/componentes/head.php' ?>
 
 <body>
 

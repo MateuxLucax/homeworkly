@@ -21,6 +21,6 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales/pt-br.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" />
 
-    <script src="/componentes.js"></script>
+    <script src="/utils.js"></script>
     <script src="/session-alert.js"></script>
 </head>

@@ -21,7 +21,7 @@
             <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label" for="titulo">Título</label>
-                    <input class="form-control" type="text" name="titulo" id="titulo"/>
+                    <input class="form-control" type="text" name="titulo" id="titulo" minlength="5" required/>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="descricao">Descrição</label>
@@ -33,7 +33,7 @@
                             Data abertura
                             <i class="fas fa-question-circle"></i>
                         </label>
-                        <input class="form-control" type="datetime-local" name="abertura" id="abertura" readonly/>
+                        <input class="form-control" type="datetime-local" name="abertura" id="abertura" readonly required/>
                         <div class="mt-2">
                             <div class="form-check form-check-inline">
                                 <input checked class="form-check-input" type="radio" name="abrir" value="agora" id="abrir-agora">
@@ -62,8 +62,8 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-6">
-                        <label class="form-label" for="esforcoHoras">Estimativa de esforço</label>
-                        <input class="form-control" type="time" name="esforcoHoras" id="esforcoHoras" />
+                        <label class="form-label" for="esforcoMinutos">Estimativa de esforço</label>
+                        <input class="form-control" type="time" name="esforcoMinutos" id="esforcoMinutos" required/>
                     </div>
                     <div class="col-6">
                         <label class="form-label" for="comNota">Avaliação</label>
@@ -92,9 +92,11 @@
 </body>
 
 <script type="text/javascript">
+    'use strict';
+
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
 
-    // TODO usar masks nos inputs de data e de esforço em horas
+    const form = document.getElementById('form-criar-tarefa');
 
     //
     // Data de abertura
@@ -129,21 +131,96 @@
         }
     }
 
-    radioAbrirAgora.onchange  = () => { trocarTipoAbertura('agora'); }
-    radioAbrirDepois.onchange = () => { trocarTipoAbertura('depois'); }
+    radioAbrirAgora.addEventListener('change',  () => { trocarTipoAbertura('agora'); });
+    radioAbrirDepois.addEventListener('change', () => { trocarTipoAbertura('depois'); });
+
+    //
+    // Validação extra das datas
+    //
+
+    function validarDatas() {
+        const abertura   = new Date(form.abertura.value),
+              entrega    = new Date(form.entrega.value),
+              fechamento = new Date(form.fechamento.value);
+
+        form.abertura.setCustomValidity(
+              radioAbrirDepois.checked && abertura < new Date()
+            ? 'A data de abertura não pode estar no passado'
+            : ''
+        );
+
+        form.entrega.setCustomValidity(
+              form.entrega.value && entrega < abertura
+            ? 'A data de entrega deve vir depois da data de abertura'
+            : ''
+        );
+
+        let validFechamento = '';
+        if (form.fechamento.value) {
+            if (form.entrega.value && fechamento < entrega) {
+                validFechamento = 'A data de fechamento deve vir depois da data de entrega;'
+            }
+            if (fechamento < abertura) {
+                validFechamento = 'A data de fechamento deve vir depois da data de abertura';
+            }
+        }
+        form.fechamento.setCustomValidity(validFechamento);
+    }
+
+    validarDatas();
+    form.abertura   .addEventListener('change', validarDatas);
+    form.entrega    .addEventListener('change', validarDatas);
+    form.fechamento .addEventListener('change', validarDatas);
+    radioAbrirAgora .addEventListener('change', validarDatas);
+    radioAbrirDepois.addEventListener('change', validarDatas);
 
     //
     // Envio do formulário
     //
 
-    const form = document.getElementById('form-criar-tarefa');
-
     form.onsubmit = event => {
         event.preventDefault();
 
-        // TODO validação
+        const emptyToNull = x => x === '' ? null : x;
 
-        // TODO fazer a request
+        const [horas, minutos] = form.esforcoMinutos.value.split(':');
+        const dados = {
+            professor:      form.professor.value,
+            disciplina:     form.disciplina.value,
+            titulo:         form.titulo.value,
+            descricao:      form.descricao.value,
+            esforcoMinutos: horas*60 + minutos,
+            comNota:        form.comNota.value != 0,
+            abertura:       form.abertura.value,
+            entrega:        emptyToNull(form.entrega.value),
+            fechamento:     emptyToNull(form.fechamento.value)
+        };
+
+        fetch('criar', {method: 'POST', body: JSON.stringify(dados)})
+        .then(resp => {
+            if (resp.status != 201) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro do sistema',
+                    text: 'Não foi possível criar a tarefa'
+                });
+                resp.text().then(console.log);
+                return;
+            };
+            resp.text().then(text => {
+                try {
+                    const ret = JSON.parse(text);
+                    agendarAlertaSwal({
+                        icon: 'success',
+                        text: 'Tarefa criada com sucesso'
+                    });
+                    window.location.assign(`tarefa?id=${ret.id}`);
+                } catch (e) {
+                    console.error(e);
+                    console.error(text);
+                }
+            })
+        });
     };
 
 </script>

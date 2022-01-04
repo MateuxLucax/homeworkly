@@ -36,25 +36,25 @@ create table if not exists professor_de_disciplina (
     );
 
 create table if not exists tarefa (
-      id_tarefa     serial    primary key
-    , id_professor  bigint    references usuario
-    , id_disciplina bigint    references disciplina deferrable initially deferred
+      id_tarefa       serial    primary key
+    , id_professor    bigint    references usuario
+    , id_disciplina   bigint    references disciplina deferrable initially deferred
     -- A restrição de chave estrangeira do id_disciplina é deferida ao final
     -- da transação porque implementamos a atualização da turma
     -- deletando suas disciplinas depois recriando elas com o mesmo id
     -- (mais as novas e menos as que foram realmente excluídas):
     -- se não fizéssemos isso, ao deletar o SGBD ia reclamar caso
     -- a disciplina recriada tivesse alguma tarefa associada.
-    , titulo        text      not null
-    , descricao     text      not null
-    , esforco_horas real      not null check (esforco_horas > 0)
-    , com_nota      boolean   not null
-    , abertura      timestamp not null
-    , entrega       timestamp
+    , titulo          text      not null
+    , descricao       text      not null
+    , esforco_minutos int       not null check (esforco_minutos > 0)
+    , com_nota        boolean   not null
+    , abertura        timestamp not null
+    , entrega         timestamp
     -- A tarefa pode ser fechada por data ou manualmente pelo professor
     -- tarefa fechada = data de fechamento já passou ou, se fechamento = null, fechada = true
-    , fechamento    timestamp
-    , fechada       boolean   not null default false
+    , fechamento      timestamp
+    , fechada         boolean   not null default false
     , check (entrega is null or entrega > abertura)
     , check (fechamento is null or entrega is null or fechamento > entrega)
     );

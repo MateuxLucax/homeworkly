@@ -31,7 +31,7 @@ function respondWithNotFoundPage(string $message): void
     $view['title'] = 'Não encontrado';
     $view['mensagem'] = $message;
     http_response_code(HttpCodes::NOT_FOUND);
-    require $root.'views/nao-encontrado.php';
+    require $root.'/views/nao-encontrado.php';
     die();
 }
 

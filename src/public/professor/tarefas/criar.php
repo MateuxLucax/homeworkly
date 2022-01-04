@@ -6,7 +6,7 @@ require_once $root . '/dao/UsuarioDao.php';
 require_once $root . '/models/TipoUsuario.php';
 
 UsuarioDao::validaSessao();
-//UsuarioDao::validaSessaoTipo(TipoUsuario::PROFESSOR);
+//UsuarioDao::validaSessaoTipo(TipoUsuario::PROFESSOR);  // FIXME isso tá dando erro no login aqui
 
 require_once $root . '/utils/response-utils.php';
 require_once $root . '/database/Connection.php';
@@ -22,18 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         $dados = readJsonRequestBody();
 
         $pdo->prepare(
-            'INSERT INTO tarefa (id_professor, id_disciplina, titulo, descricao, esforco_horas, com_nota, abertura, entrega, fechamento)
-            VALUES (:idProfessor, :idDisciplina, :titulo, :descricao, :esforcoHoras, :comNota, :abertura, :entrega, :fechamento)'
+            'INSERT INTO tarefa (id_professor, id_disciplina, titulo, descricao, esforco_minutos, com_nota, abertura, entrega, fechamento)
+            VALUES (:idProfessor, :idDisciplina, :titulo, :descricao, :esforcoMinutos, :comNota, :abertura, :entrega, :fechamento)'
         )->execute([
-            ':idProfessor'  => $dados['professor'],
-            ':idDisciplina' => $dados['disciplina'],
-            ':titulo'       => $dados['titulo'],
-            ':descricao'    => $dados['descricao'],
-            ':esforcoHoras' => $dados['esforcoHoras'],
-            ':comNota'      => $dados['comNota'],
-            ':abertura'     => $dados['abertura'],
-            ':entrega'      => $dados['entrega'],
-            ':fechamento'   => $dados['fechamento'],
+            ':idProfessor'    => $dados['professor'],
+            ':idDisciplina'   => $dados['disciplina'],
+            ':titulo'         => $dados['titulo'],
+            ':descricao'      => $dados['descricao'],
+            ':esforcoMinutos' => $dados['esforcoMinutos'],
+            ':comNota'        => $dados['comNota'],
+            ':abertura'       => $dados['abertura'],
+            ':entrega'        => $dados['entrega'],
+            ':fechamento'     => $dados['fechamento'],
         ]);
 
         respondJson(HttpCodes::CREATED, ['id' => $pdo->lastInsertId()]);
@@ -48,7 +48,11 @@ else if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
     $view['titulo'] = 'Criar tarefa';
 
-    $id_disciplina = $_GET['id-disciplina'];
+    if (!isset($_GET['disciplina'])) {
+        respondWithNotFoundPage('Erro do sistema: a página de criar tarefa não recebeu a disciplina a qual a tarefa vai pertencer.');
+    }
+
+    $id_disciplina = $_GET['disciplina'];
 
     $res = Query::select(
         'SELECT d.nome as disciplina_nome, t.nome as turma_nome, t.ano
