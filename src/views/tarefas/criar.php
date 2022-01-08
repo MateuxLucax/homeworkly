@@ -29,9 +29,10 @@
                 </div>
                 <div class="row">
                     <div class="mb-3 col-12 col-sm-4">
-                        <label class="form-label" for="abertura" style="text-decoration: underline dotted;"  data-bs-toggle="tooltip" title="Quando a tarefa se torna disponível para os alunos.">
+                        <label class="form-label" for="abertura">
                             Data abertura
-                            <i class="fas fa-question-circle"></i>
+                            &nbsp;
+                            <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Quando a tarefa se torna disponível para os alunos."></i>
                         </label>
                         <input class="form-control" type="datetime-local" name="abertura" id="abertura" readonly required/>
                         <div class="mt-2">
@@ -46,16 +47,18 @@
                         </div>
                     </div>
                     <div class="mb-3 col-12 col-sm-4">
-                        <label class="form-label" for="entrega" style="text-decoration: underline dotted;" data-bs-toggle="tooltip" title="Depois dela, entregas ainda podem ser feitas mas ficam marcadas como atrasadas.">
+                        <label class="form-label" for="entrega">
                             Data entrega
-                            <i class="fas fa-question-circle"></i>
+                            &nbsp;
+                            <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Depois da data de entrega, entregas ainda podem ser feitas, mas são marcadas como atrasadas."></i>
                         </label>
                         <input class="form-control" type="datetime-local" name="entrega" id="entrega" required />
                     </div>
                     <div class="mb-3 col-12 col-sm-4">
-                        <label class="form-label" for="fechamento" style="text-decoration: underline dotted;" data-bs-toggle="tooltip" title="Opcional – pode fechar manualmente depois. Depois dela, alunos não podem mais fazer entregas.">
+                        <label class="form-label" for="fechamento">
                             Data fechamento
-                            <i class="fas fa-question-circle"></i>
+                            &nbsp;
+                            <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Opcional – se não informar, você pode fechar manualmente depois. Depois dela, alunos não podem mais fazer entregas."></i>
                         </label>
                         <input class="form-control" type="datetime-local" name="fechamento" id="fechamento" />
                     </div>
