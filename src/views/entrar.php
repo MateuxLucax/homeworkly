@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<?php
-    require $root . 'views/componentes/head.php';
-?>
+<?php require $root . 'views/componentes/head.php'; ?>
 
 <body>
 
@@ -74,7 +72,7 @@
         passwordIcon.classList.toggle(icon);
     }
 
-    const submitLogin = (event) => {
+    const submitLogin = async (event) => {
         event.preventDefault();
 
         const payload = {
@@ -82,22 +80,23 @@
             senha: form.senha.value
         };
 
-        fetch('auth', { method: 'POST', body: JSON.stringify(payload) })
-        .then(response => {
-            if (response.status === 200) {
-                response.json().then(json => {
-                    window.location.assign(json.location);
+        const response = await fetch('auth', { method: 'POST', body: JSON.stringify(payload) });
+        const returnText = await response.text()
+        try {
+            const json = JSON.parse(returnText);
+            if (response.status != 200) {
+                if (!json.hasOwnProperty('message')) throw 'Erro no retorno';
+                Swal.fire({
+                    icon: 'warning',
+                    text: json.message
                 });
-            } else {
-                response.json().then(json => {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Oops...',
-                        text: json.message
-                    });
-                });
+                return;
             }
-        });
+            if (!json.hasOwnProperty('location')) throw 'Erro no retorno';
+            location.assign(json.location);
+        } catch (err) {
+            console.error(err, '\n', returnText);
+        }
     }
 </script>
 </body>
