@@ -1,3 +1,4 @@
+<!-- TODO nas pesquisas por alunos e professores, colocar um alerta quando não houverem resultados, senão parece que ainda tá carregando -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <?php require_once $root.'/views/componentes/head.php'; ?>
@@ -275,10 +276,8 @@
 
         const form = document.getElementById('form-criar-turma');
 
-        form.onsubmit = event => {
+        form.onsubmit = async event => {
             event.preventDefault();
-
-            // TODO validação dos campos
 
             const dados = {
                 id:   form['id']?.value,
@@ -322,29 +321,30 @@
                 statusEsperado = 200;
             }
 
-            fetch(target, {method: metodo, body: JSON.stringify(dados)})
-            .then(response => {
-                if (response.status != statusEsperado) {
-                    Swal.fire({
-                        icon: 'error',
-                        text: alertaErro
-                    });
-                    response.text().then(console.log);
-                    return;
-                }
-                agendarAlertaSwal({
-                    icon: 'success',
-                    text: alertaSucesso
+            const response = await fetch(target, {method: metodo, body: JSON.stringify(dados)});
+            const textProm = response.text();
+
+            if (response.status != statusEsperado) {
+                Swal.fire({
+                    icon: 'error',
+                    text: alertaErro
                 });
-                return response.text();
-            }).then(ret => {
-                try {
-                    const id = JSON.parse(ret).id;
-                    window.location.assign(`turma?id=${id}`);
-                } catch (e) {
-                    console.log(ret)
-                }
+                console.log(await textProm);
+                return;
+            }
+
+            agendarAlertaSwal({
+                icon: 'success',
+                text: alertaSucesso
             });
+
+            try {
+                const ret = await textProm;
+                const id = JSON.parse(ret).id;
+                location.assign(`turma?id=${id}`);
+            } catch (err) {
+                console.error(err, '\n', ret);
+            }
         };
 
         //
@@ -439,29 +439,32 @@
 
         inputPesquisaProfessores.onkeyup = atualizarPesquisaProfessores;
 
-        fetch('/admin/usuarios/listar', {
-            headers: { Accept: 'application/json' },
-            method: 'POST',
-            body: JSON.stringify({
-                filtros: { tipo: 'professor' }
-            })
-        }).then(resp => {
+        (async () => {
+            const response = await fetch('/admin/usuarios/listar', {
+                headers: { Accept: 'application/json' },
+                method: 'POST',
+                body: JSON.stringify({
+                    filtros: {tipo: 'professor'}
+                })
+            });
+            const textProm = response.text();
             if (resp.status != 200) {
                 agendarAlertaSwal({
                     icon: 'error',
                     title: 'Erro do sistema',
-                    text: 'Não foi possível abrir a turma para alterações porque não foi possível carregar a lista de professores'
+                    text: 'Não foi possível abrir a turma para alterações porque não conseguimos carregar a lista de professores'
                 });
-                resp.text().then(console.error)
-                return;
+                console.log(await textProm);
+                history.back();
             }
-            resp.text().then(text => {
-                try {
-                    JSON.parse(text).forEach(prof => todosOsProfessores.push(prof));
-                    atualizarPesquisaProfessores();
-                } catch(e) { console.error(e, text); }
-            });
-        });
+            try {
+                const ret = await textProm;
+                JSON.parse(ret).forEach(prof => todosOsProfessores.push(prof));
+                atualizarPesquisaProfessores();
+            } catch (err) {
+                console.error(err, '\n', ret);
+            }
+        })();
 
         const tablePesquisaProfessores = document.getElementById('table-pesquisa-professores');
         const tbodyPesquisaProfessores = document.getElementById('tbody-pesquisa-professores');
@@ -532,7 +535,7 @@
             };
         }
 
-        // Na pesquisa por alunos, desabilitar o botão de adicionar a turma
+        // TODO Na pesquisa por alunos, desabilitar o botão de adicionar à turma
         // se ele já tiver sido adicionado (com tooltip pra explicação)
 
         //
@@ -540,8 +543,6 @@
         //
 
         // TODO ao mudar de 'pesquisar por', limpar a table pesquisa
-        // TODO funções pesquisaAlunoLimpar e pesquisaAlunoPreencher pra facilitar/comprimir
-        // (envolvendo tablePesquisaAlunos e tbodyPesquisaAlunos)
 
         //
         // Adicionar alunos dinamicamente >> Pesquisa por nome
@@ -551,35 +552,44 @@
         const tablePesquisaAlunos = document.getElementById('table-pesquisa-alunos')
         const tbodyPesquisaAlunos = document.getElementById('tbody-pesquisa-alunos');
 
-        btnPesquisarAlunos.onclick = () => {
-            tablePesquisaAlunos.classList.add('d-none');
-            const pesquisa = document.getElementById('input-pesquisa-aluno').value;
+        function pesquisaAlunosLimpar() {
             removerFilhos(tbodyPesquisaAlunos);
-            fetch('/admin/usuarios/listar', {
+            tablePesquisaAlunos.classList.add('d-none');
+        }
+
+        function pesquisaAlunosPreencher(alunos) {
+            if (alunos.length == 0) return;
+            tablePesquisaAlunos.classList.remove('d-none');
+            tbodyPesquisaAlunos.append(...alunos.map(criarAlunoResultadoPesquisa));
+        }
+
+        btnPesquisarAlunos.onclick = async () => {
+            pesquisaAlunosLimpar();
+
+            const pesquisa = document.getElementById('input-pesquisa-aluno').value;
+
+            const response = await fetch('/admin/usuarios/listar', {
                 headers: { 'Accept': 'application/json' },
                 method: 'POST',
                 body: JSON.stringify({ filtros: { nome: pesquisa, tipo: 'aluno' } })
-            }).then(resp => {
-                if (resp.status != 200) {
-                    Swal.fire({
-                        icon: 'error',
-                        text: 'Não foi possível realizar a pesquisa'
-                    });
-                    resp.text().then(console.log);
-                    return;
-                }
-                resp.text().then(ret => {
-                    try {
-                        const alunos = JSON.parse(ret);
-                        if (alunos.length == 0) return;
-                        tablePesquisaAlunos.classList.remove('d-none');
-                        tbodyPesquisaAlunos.append(...alunos.map(criarAlunoResultadoPesquisa));
-                    } catch (e) {
-                        console.error(e);
-                        console.error(ret);
-                    }
-                })
             });
+            const textProm = response.text();
+
+            if (response.status != 200) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Não foi possível realizar a pesquisa'
+                });
+                console.log(await textProm);
+                return;
+            }
+
+            const ret = await textProm;
+            try {
+                pesquisaAlunosPreencher(JSON.parse(ret));
+            } catch (err) {
+                console.error(err, '\n', ret);
+            }
         };
 
         //
@@ -591,39 +601,38 @@
 
         let turmasPorAno;
 
-        // TODO não agrupar por ano no servidor, mas no lado do cliente mesmo
-
-        fetch('listar', {
-            method: 'POST',
-            headers: {'Accept': 'application/json'},
-            body: JSON.stringify({ 'agrupar_por': 'ano' })
-        }).then(resp => {
+        (async () => {
+            const response = await fetch('listar', {
+                method: 'POST',
+                headers: {'Accept': 'application/json'},
+                body: JSON.stringify({ 'agrupar_por': 'ano' })
+            });
+            const textProm = response.text();
             if (resp.status != 200) {
                 Swal.fire({
                     icon: 'error',
                     warning: 'Não foi possível carregar as turmas para a pesquisa por alunos'
                 });
-                resp.text().then(console.log);
+                console.log(await textProm);
                 return;
             }
-            resp.text().then(ret => {
-                try {
-                    turmasPorAno = JSON.parse(ret);
-                    for (const ano in turmasPorAno)
-                        criarElemento('option', [], pesquisaAlunoSelectAno, {
-                            value:     ano,
-                            innerText: ano
-                        });
-                } catch (e) {
-                    console.error(e);
-                    console.error(ret);
+
+            const ret = await textProm;
+            try {
+                turmasPorAno = JSON.parse(ret);
+                for (const ano in turmasPorAno) {
+                    criarElemento('option', [], pesquisaAlunosSelectAno, {
+                        value: ano,
+                        innerText: ano
+                    });
                 }
-            });
-        });
+            } catch (err) {
+                console.error(err, '\n', ret);
+            }
+        })();
 
         pesquisaAlunoSelectAno.onchange = () => {
-            removerFilhos(tbodyPesquisaAlunos);
-            tablePesquisaAlunos.classList.add('d-none');
+            pesquisaAlunosLimpar();
 
             removerFilhos(pesquisaAlunoSelectTurma);
             const ano = Number(pesquisaAlunoSelectAno.value);
@@ -643,34 +652,30 @@
                 });
         };
 
-        pesquisaAlunoSelectTurma.onchange = () => {
-            removerFilhos(tbodyPesquisaAlunos);
-            tablePesquisaAlunos.classList.add('d-none');
+        pesquisaAlunoSelectTurma.onchange = async () => {
+            pesquisaAlunosLimpar();
 
             const idTurma = pesquisaAlunoSelectTurma.value;
             if (idTurma == -1) return;
 
-            fetch(`alunos?id=${idTurma}`).then(resp => {
-                if (resp.status != 200) {
-                    Swal.fire({
-                        icon: 'error',
-                        text: 'Não foi possível carregar os alunos da turma selecionada'
-                    });
-                    resp.text().then(console.error);
-                    return;
-                }
-                resp.text().then(ret => {
-                    try {
-                        const alunos = JSON.parse(ret);
-                        if (alunos.length == 0) return;
-                        tablePesquisaAlunos.classList.remove('d-none');
-                        tbodyPesquisaAlunos.append(...alunos.map(criarAlunoResultadoPesquisa));
-                    } catch (e) {
-                        console.error(e);
-                        console.error(ret);
-                    }
+            const response = await fetch(`alunos?id=${idTurma}`);
+            const textProm = response.text();
+
+            if (response.status != 200) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Não foi possível carregar os alunos da turma selecionada'
                 });
-            });
+                console.log(await textProm);
+                return;
+            }
+
+            const ret = await textProm;
+            try {
+                pesquisaAlunosPreencher(JSON.parse(ret));
+            } catch (err) {
+                console.error(err, '\n', ret);
+            }
         }
 
         function criarAlunoResultadoPesquisa({id_usuario, nome, login}) {
@@ -728,43 +733,40 @@
 
         const idTurmaAlterar = <?= $view['id-turma'] ?? '-1' ?>;
 
-        if (idTurmaAlterar != -1) {
-            fetch(`turma?id=${idTurmaAlterar}`, {headers: {'Accept': 'application/json'}})
-            .then(resp => {
-                if (resp.status != 200) {
-                   agendarAlertaSwal({
-                        icon: 'error',
-                        text: 'Não foi possível carregar os dados da turma para alterá-la'
-                    });
-                    window.location.assign('listar');
-                }
-                return resp.text();
-            }).then(ret => {
-                try {
-                    const turma = JSON.parse(ret);
-                    console.log(turma);
-                    if (!turma.podeExcluir) {
-                        document.getElementById('btn-excluir-turma').disabled = true;
-                        const btnExcluirWrapper = document.getElementById('btn-excluir-turma-wrapper');
-                        btnExcluirWrapper.setAttribute('data-bs-toggle', 'tooltip');
-                        btnExcluirWrapper.title = 'Essa turma não pode ser excluída porque alguma de suas disciplinas não pode ser excluída';
-                        new bootstrap.Tooltip(btnExcluirWrapper);
-                    }
-                    document.getElementById('turma-nome').value = turma.nome;
-                    document.getElementById('turma-ano').value = turma.ano;
-                    for (const aluno of turma.alunos) {
-                        adicionarAlunoTurma(aluno.id, aluno.nome, aluno.login);
-                    }
-                    for (const disciplina of turma.disciplinas) {
-                        disciplinasContainer.appendChild(criarDisciplina(disciplina));
-                    }
-                } catch (e) {
-                    console.error(e);
-                    console.error(ret);
-                }
+        if (idTurmaAlterar != -1) (async () => {
+            const response = await fetch(`turma?id=${idTurmaAlterar}`, { headers: { Accept: 'application/json' }});
+            const textProm = response.text();
 
-            });
-        }
+            if (response.status != 200) {
+                agendarAlertaSwal({
+                    icon: 'error',
+                    text: 'Não foi possível carregar os dados da turma apra alterá-la'
+                });
+                location.assign(`turma?id=${idTurmaAlterar}`)
+                console.log(await textProm);
+            }
+            const ret = await textProm;
+            try {
+                const turma = JSON.parse(ret);
+                if (!turma.podeExcluir) {
+                    document.getElementById('btn-excluir-turma').disabled = true;
+                    const btnExcluirWrapper = document.getElementById('btn-excluir-turma-wrapper');
+                    btnExcluirWrapper.setAttribute('data-bs-toggle', 'tooltip');
+                    btnExcluirWrapper.title = 'Essa turma não pode ser excluída porque alguma de suas disciplinas não pode ser excluída';
+                    new bootstrap.Tooltip(btnExcluirWrapper);
+                }
+                document.getElementById('turma-nome').value = turma.nome;
+                document.getElementById('turma-ano').value = turma.ano;
+                for (const aluno of turma.alunos) {
+                    adicionarAlunoTurma(aluno.id, aluno.nome, aluno.login);
+                }
+                for (const disciplina of turma.disciplinas) {
+                    disciplinasContainer.appendChild(criarDisciplina(disciplina));
+                }
+            } catch (err) {
+                console.error(err, '\n', ret);
+            }
+        })();
 
         //
         // Exclusão de turma (quando alterar)
@@ -772,26 +774,27 @@
 
         const btnConfirmarExclusao = document.getElementById('btn-confirmar-exclusao');
 
-        btnConfirmarExclusao?.addEventListener('click', () => {
+        btnConfirmarExclusao?.addEventListener('click', async () => {
             const id = btnConfirmarExclusao.getAttribute('data-id');
-            fetch('excluir', {method: 'DELETE', body: JSON.stringify({id})})
-            .then(resp => {
-                resp.text().then(console.log);
-                if (resp.status != 200) {
-                    Swal.fire({
-                        icon: 'error',
-                        text: 'Não foi possível excluir a turma'
-                    });
-                    // fechar o modal
-                    document.getElementById('btn-cancelar-exclusao').click();  
-                } else {
-                    agendarAlertaSwal({
-                        icon: 'success',
-                        text: 'Turma excluída com sucesso'
-                    });
-                    window.location.assign('listar');
-                }
+
+            const response = await fetch('excluir', {method: 'DELETE', body: JSON.stringify({id})});
+            const textProm = response.text();
+
+            if (response.status != 200) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Não foi possível excluir a turma'
+                });
+                document.getElementById('btn-cancelar-exclusao').click();  // fechar o modal
+                console.log(await textProm);
+                return;
+            }
+
+            agendarAlertaSwal({
+                icon: 'success',
+                text: 'Turma excluída com sucesso'
             });
+            location.assign('listar');
         });
 
     </script>

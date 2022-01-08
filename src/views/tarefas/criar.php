@@ -178,7 +178,7 @@
     // Envio do formulário
     //
 
-    form.onsubmit = event => {
+    form.onsubmit = async event => {
         event.preventDefault();
 
         const emptyToNull = x => x === '' ? null : x;
@@ -196,31 +196,29 @@
             fechamento:     emptyToNull(form.fechamento.value)
         };
 
-        fetch('criar', {method: 'POST', body: JSON.stringify(dados)})
-        .then(resp => {
-            if (resp.status != 201) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erro do sistema',
-                    text: 'Não foi possível criar a tarefa'
-                });
-                resp.text().then(console.log);
-                return;
-            };
-            resp.text().then(text => {
-                try {
-                    const ret = JSON.parse(text);
-                    agendarAlertaSwal({
-                        icon: 'success',
-                        text: 'Tarefa criada com sucesso'
-                    });
-                    window.location.assign(`tarefa?id=${ret.id}`);
-                } catch (e) {
-                    console.error(e);
-                    console.error(text);
-                }
-            })
-        });
+        const response = await fetch('criar', {method: 'POST', body: JSON.stringify(dados)});
+        const textProm = response.text();
+        if (response.status != 201) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro do sistema',
+                text: 'Não foi possível criar a tarefa'
+            });
+            console.log(await textProm);
+        } else {
+            agendarAlertaSwal({
+                icon: 'success',
+                text: 'Tarefa criada com sucesso'
+            });
+            try {
+                const text = await textProm;
+                const ret = JSON.parse(text);
+                window.location.assign(`tarefa?id=${ret.id}`);
+            } catch (err) {
+                console.error(err, '\n', text);
+            }
+        }
     };
+
 
 </script>
