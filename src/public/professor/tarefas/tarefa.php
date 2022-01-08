@@ -7,7 +7,7 @@ forbidMethodsNot('GET');
 require_once $root . '/dao/UsuarioDao.php';
 require_once $root . '/models/TipoUsuario.php';
 //UsuarioDao::validaSessaoTipo(TipoUsuario::PROFESSOR); // FIXME dá erro
-UsuarioDao::validaSessao(TipoUsuario::ADMINISTRADOR);
+UsuarioDao::validaSessao();
 
 require_once $root . '/database/Query.php';
 
