@@ -26,12 +26,25 @@ function respondJson(int $code, mixed $body = ''): void
  */
 function respondWithNotFoundPage(string $message): void
 {
+    respondWithErrorPage(HttpCodes::NOT_FOUND, '404 – Não encontrado', $message);
+}
+
+/**
+ * Responde com uma página de erro
+ * 
+ * @param int $code o código HTTP da resposta
+ * @param string $heading mensagem para aprecer como título do alerta na página; pode conter HTML.
+ * @param string $message texto explicando o erro ocorrido; pode conter HTML.
+ */
+function respondWithErrorPage(int $code, string $heading, string $message): void
+{
     global $root;
 
-    $view['title'] = 'Não encontrado';
+    $view['title'] = 'Erro';
+    $view['heading'] = $heading;
     $view['mensagem'] = $message;
-    http_response_code(HttpCodes::NOT_FOUND);
-    require $root.'/views/nao-encontrado.php';
+    http_response_code($code);
+    require $root.'/views/erro.php';
     die();
 }
 

@@ -62,7 +62,7 @@ else if ($_SERVER['REQUEST_METHOD'] == 'GET')
     );
 
     if (count($res) == 0) {
-        respondWithNotFoundPage("Não existe uma disciplina com id $id_disciplina; não podemos criar uma tarefa em uma disciplina que não existe");
+        respondWithNotFoundPage("Não existe uma disciplina com <b>ID $id_disciplina</b>.<br/>Não podemos criar uma tarefa em uma disciplina que não existe");
     }
 
     $disciplina = $res[0];

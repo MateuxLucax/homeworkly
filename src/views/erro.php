@@ -6,7 +6,7 @@
 
     <main class="container">
         <div class="alert alert-danger text-center mt-5" role="alert">
-            <h4 class="alert-heading">404 - Não encontrado</h4>
+            <h4 class="alert-heading"><?= $view['heading'] ?></h4>
             <hr>
             <p class="mb-0"><?= $view['mensagem'] ?></p>
         </div>

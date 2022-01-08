@@ -12,7 +12,7 @@ UsuarioDao::validaSessao(TipoUsuario::ADMINISTRADOR);
 require_once $root . '/database/Query.php';
 
 if (!isset($_GET['id'])) {
-    respondWithNotFoundPage('Erro no sistema: nenhum <b>id</b> de tarefa fornecido.');
+    respondWithNotFoundPage('<b>Erro do sistema:</b> nenhum <b>ID</b> de tarefa fornecido.');
 }
 
 $id = $_GET['id'];
@@ -46,6 +46,8 @@ if (count($queryResult) == 0) {
 }
 
 $tarefa = $queryResult[0];
+
+// bloquear o botão de alterar caso o professor acessando a tela não seja o que criou a tarefa
 
 $view['tarefa'] = $tarefa;
 $view['mostrar-botao-editar'] = true;
