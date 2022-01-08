@@ -13,4 +13,12 @@ class TipoUsuario
         self::ALUNO,
         self::PROFESSOR
     ];
+
+    public static function pasta(string $tipo): string {
+        return match ($tipo) {
+            self::ADMINISTRADOR => 'admin',
+            self::PROFESSOR     => 'professor',
+            self::ALUNO         => 'aluno'
+        };
+    }
 }
