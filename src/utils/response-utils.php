@@ -21,7 +21,7 @@ function respondJson(int $code, mixed $body = ''): void
 /**
  * Gera resposta 404 NOT FOUND com uma página mostrando a mensagem dada
  * 
- * @param string $message a mensagem a mostrar na página de not found
+ * @param string $message a mensagem a mostrar na página de not found; pode conter HTML.
  * @return void
  */
 function respondWithNotFoundPage(string $message): void

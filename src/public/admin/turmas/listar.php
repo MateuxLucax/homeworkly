@@ -13,9 +13,6 @@ UsuarioDAO::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 $headers = getallheaders();
 if ($headers['Accept'] == 'application/json')
 {
-
-    // TODO não agrupar por ano no servidor, mas no lado do cliente mesmo
-
     try {
         $dados = readJsonRequestBody();
 
