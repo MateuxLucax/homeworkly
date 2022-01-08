@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="mb-3 col-12 col-sm-4">
-                        <label class="form-label" for="entrega" style="text-decoration: underline dotted;" data-bs-toggle="tooltip" title="Opcional. Depois dela, entregas ficam marcadas como atrasadas.">
+                        <label class="form-label" for="entrega" style="text-decoration: underline dotted;" data-bs-toggle="tooltip" title="Depois dela, entregas ainda podem ser feitas mas ficam marcadas como atrasadas.">
                             Data entrega
                             <i class="fas fa-question-circle"></i>
                         </label>
@@ -60,7 +60,7 @@
                         <input class="form-control" type="datetime-local" name="fechamento" id="fechamento" />
                     </div>
                 </div>
-                <div class="row mb-3">
+                <div class="row">
                     <div class="col-6">
                         <label class="form-label" for="esforcoMinutos">Estimativa de esforço</label>
                         <input class="form-control" type="time" name="esforcoMinutos" id="esforcoMinutos" required/>
