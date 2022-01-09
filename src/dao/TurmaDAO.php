@@ -20,7 +20,8 @@ class TurmaDAO
         );
     }
 
-    public static function buscar(int $id): Turma
+    // TODO Tratar corretamente dos casos em que retorna null
+    public static function buscar(int $id): ?Turma
     {
         $res = Query::select(
             'SELECT id_turma AS id, nome, ano FROM turma WHERE id_turma = :id',
@@ -28,8 +29,7 @@ class TurmaDAO
         );
 
         if (count($res) == 0) {
-            // TODO criar classe de exceção específica para esse tipo de erro (não existe registro com id dado)
-            throw new Exception();
+            return null;
         }
 
         $res = $res[0];
