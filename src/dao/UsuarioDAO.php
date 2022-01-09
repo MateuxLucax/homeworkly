@@ -6,11 +6,13 @@ require_once $root."/utils/PasswordUtil.php";
 require_once $root."/exceptions/UnauthorizedException.php";
 require_once $root."/exceptions/UserNotFoundException.php";
 
+// TODO trazer as datas de cadastro, último acesso também
+
 class UsuarioDAO
 {
     public static function registrar(Usuario $usuario) : bool {
-        $sql = "INSERT INTO usuario(tipo, nome, login, hash_senha)
-                VALUES (:tipo, :nome, :login, :hash_senha)";
+        $sql = "INSERT INTO usuario(tipo, nome, login, hash_senha, cadastro)
+                VALUES (:tipo, :nome, :login, :hash_senha, CURRENT_TIMESTAMP)";
 
         $params = [
             ':tipo' => $usuario->getTipo(),
