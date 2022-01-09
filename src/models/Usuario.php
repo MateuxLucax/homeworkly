@@ -98,4 +98,12 @@ class Usuario
         $this->podeExcluir = $pode;
         return $this;
     }
+
+    public static function fromSession()
+    {
+        return (new Usuario)
+            ->setId($_SESSION['id_usuario'])
+            ->setNome($_SESSION['nome'])
+            ->setTipo($_SESSION['tipo']);
+    }
 }

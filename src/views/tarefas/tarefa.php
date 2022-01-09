@@ -10,20 +10,27 @@
 
 <!-- TODO botão de alterar, mas antes tela para alterar tarefa existente... -->
 
+<?php
+    $tarefa = $view['tarefa'];
+    $disciplina = $tarefa->disciplina();
+    $turma = $disciplina->getTurma();
+    $professor = $tarefa->professor();
+?>
+
 <main class="container">
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <?= $view['tarefa']['ano_turma'] ?>
+                <?= $turma->getAno() ?>
             </li>
             <li class="breadcrumb-item">
-                <a href="/<?=$view['pasta_usuario']?>/turmas/turma?id=<?=$view['tarefa']['id_turma']?>">
-                    <?=$view['tarefa']['nome_turma']?>
+                <a href="/<?=$view['pasta_usuario']?>/turmas/turma?id=<?= $turma->getId() ?>">
+                    <?= $turma->getNome() ?>
                 </a>
             </li>
             <li class="breadcrumb-item">
                 <!-- TODO colocar link para quando página da disciplina for criada -->
-                <?=$view['tarefa']['nome_disciplina']?>
+                <?= $disciplina->getNome() ?>
             </li>
         </ol>
     </nav>
@@ -32,35 +39,35 @@
             Tarefa
         </div>
         <div class="card-body">
-            <h5 class="card-title"><?=$view['tarefa']['titulo']?></h5>
-            <p><?=$view['tarefa']['descricao']?></p>
+            <h5 class="card-title"><?= $tarefa->titulo() ?></h5>
+            <p><?= $tarefa->descricao() ?></p>
             <hr/>
 
-            <?php function dataISO(string $data) : string {
-                return date('Y-m-d\TH:i', strtotime($data));
+            <?php function dataISO(DateTime $data) : string {
+                return $data->format('Y-m-d\TH:i');
             } ?>
 
             <div class="row mb-3">
                 <div class="col-sm-6">
                     <label class="form-label" for="entrega">Data de entrega</label>
                     <input disabled readonly class="form-control" id="entrega" type="datetime-local"
-                        value="<?=dataISO($view['tarefa']['entrega'])?>"/>
+                        value="<?=dataISO($tarefa->entrega())?>"/>
                 </div>
                 <div class="col-sm-6">
-                    <?php if ($view['tarefa']['fechamento']): ?>
+                    <?php if (!is_null($tarefa->fechamento())): ?>
                         <label class="form-label" for="fechamento">Data de fechamento</label>
                         <input disabled readonly class="form-control" id="fechamento" type="datetime-local"
-                            value="<?=dataISO($view['tarefa']['fechamento'])?>"/>
+                            value="<?=dataISO($tarefa->fechamento())?>"/>
                     <?php else: ?>
                         <label class="form-label" for="fechada">Fechada manualmente</label>
                         <input disabled readonly class="form-control" id="fechamento" type="text"
-                            value="<?=$view['tarefa']['fechada'] ? 'Sim' : 'Não'?>"/>
+                            value="<?=$tarefa->fechadaManualmente() ? 'Sim' : 'Não'?>"/>
                     <?php endif; ?>
                 </div>
             </div>
 
             <?php
-                $esforcoMinutos = $view['tarefa']['esforco_minutos'];
+                $esforcoMinutos = $tarefa->esforcoMinutos();
                 $esforcoValue = sprintf("%02d:%02d", (int) ($esforcoMinutos / 60), $esforcoMinutos % 60);
             ?>
             
@@ -74,12 +81,12 @@
                     <br/>
                     <div class="form-check form-check-inline">
                         <input disabled class="form-check-input" type="radio" name="comNota" value="1" id="avaliacao-nota" 
-                               <?= $view['tarefa']['com_nota'] ? 'checked' : '' ?> />
+                               <?= $tarefa->comNota() ? 'checked' : '' ?> />
                         <label class="form-check-label" for="avaliacao-nota">Nota</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input disabled class="form-check-input" type="radio" name="comNota" value="0" id="avaliacao-visto"
-                               <?= $view['tarefa']['com_nota'] ? '' : 'checked' ?> />
+                               <?= $tarefa->comNota() ? '' : 'checked' ?> />
                         <label class="form-check-label" for="avaliacao-nota">Visto</label>
                     </div>
                 </div>
@@ -90,9 +97,9 @@
             <!-- TODO uma imagem de perfil circular ficaria bonita aqui... -->
             <span>
                 Aberta por
-                <b><?=$view['tarefa']['nome_professor']?></b>
+                <b><?= $professor->getNome() ?></b>
                 em
-                <i><?=date('d/m/Y H:i', strtotime($view['tarefa']['abertura']))?></i>
+                <i><?= $tarefa->abertura()->format('d/m/Y H:i') ?></i>
             </span>
         </div>
     </div>
