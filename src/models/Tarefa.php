@@ -98,8 +98,10 @@ class Tarefa
         return $fechada ? TarefaEstado::FECHADA : TarefaEstado::ATRASADA;
     }
 
-    public function usuarioPodeEditar(Usuario $usuario): bool {
-        return $usuario->getTipo() == TipoUsuario::ADMINISTRADOR
-            || ($usuario->getTipo() == TipoUsuario::PROFESSOR && $usuario->getId() == $this->professor->getId());
+    public function usuarioPodeEditar(): bool {
+        $tipo = $_SESSION['tipo'];
+        $id   = $_SESSION['id_usuario'];
+
+        return $tipo == TipoUsuario::ADMINISTRADOR || ($tipo == TipoUsuario::PROFESSOR && $id == $this->professor()->getId());
     }
 }
