@@ -8,8 +8,6 @@
 <!-- mostrar com uma badge ou algo assim colorido no card-header -->
 <!-- Mas essa lógica ficará no modelo da tarefa, acessível por métodos retornando enums -->
 
-<!-- TODO botão de alterar, mas antes tela para alterar tarefa existente... -->
-
 <?php
     $tarefa = $view['tarefa'];
     $disciplina = $tarefa->disciplina();
@@ -35,8 +33,16 @@
         </ol>
     </nav>
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex align-items-center">
             Tarefa
+            <!-- TODO tornar botão disabled quando tarefa estiver arquivada / for de disciplina de turma do ano passado -->
+            <?php if ($tarefa->usuarioPodeEditar()): ?>
+                <span class="ms-auto">
+                    <a class="btn btn-primary" href="alterar?id=<?= $tarefa->id() ?>">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </span>
+            <?php endif; ?>
         </div>
         <div class="card-body">
             <h5 class="card-title"><?= $tarefa->titulo() ?></h5>
