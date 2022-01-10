@@ -73,7 +73,7 @@ class Tarefa
         return $this;
     }
 
-    public function setFechamento(DateTime $fechamento): Tarefa {
+    public function setFechamento(?DateTime $fechamento): Tarefa {
         $this->fechamento = $fechamento;
         return $this;
     }
