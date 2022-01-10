@@ -2,7 +2,7 @@
 
 $root = '../../..';
 
-require_once $root . '/dao/UsuarioDao.php';
+require_once $root . '/dao/UsuarioDAO.php';
 require_once $root . '/models/TipoUsuario.php';
 
 UsuarioDao::validaSessao();

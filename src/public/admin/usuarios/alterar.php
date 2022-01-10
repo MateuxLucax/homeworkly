@@ -21,7 +21,7 @@ try
         ->setNome($dados['nome'])
         ->setLogin($dados['login']);
     
-    UsuarioDao::alterar($usuario);
+    UsuarioDAO::alterar($usuario);
 
     respondJson(HttpCodes::OK);
 }

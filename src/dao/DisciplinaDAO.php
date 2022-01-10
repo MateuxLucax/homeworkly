@@ -22,7 +22,7 @@ class DisciplinaDAO
                 ->setId($row['id'])
                 ->setNome($row['nome'])
                 ->setPodeExcluir($row['pode_excluir'])
-                ->setProfessores(UsuarioDao::buscarProfessoresDeDisciplina($row['id'])),
+                ->setProfessores(UsuarioDAO::buscarProfessoresDeDisciplina($row['id'])),
             $rows
         );
     }

@@ -11,7 +11,7 @@ UsuarioDAO::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
 require_once $root.'database/Connection.php';
 require_once $root.'utils/HttpCodes.php';
-require_once $root.'dao/TurmaDao.php';
+require_once $root.'dao/TurmaDAO.php';
 require_once $root.'models/Turma.php';
 require_once $root.'models/Disciplina.php';
 require_once $root.'models/Usuario.php';

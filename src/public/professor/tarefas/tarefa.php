@@ -6,8 +6,8 @@ require_once $root . '/utils/response-utils.php';
 forbidMethodsNot('GET');
 require_once $root . '/dao/UsuarioDAO.php';
 require_once $root . '/models/TipoUsuario.php';
-//UsuarioDao::validaSessaoTipo(TipoUsuario::PROFESSOR); // FIXME dá erro
-UsuarioDao::validaSessao();
+//UsuarioDAO::validaSessaoTipo(TipoUsuario::PROFESSOR); // FIXME dá erro
+UsuarioDAO::validaSessao();
 
 require_once $root . '/models/Tarefa.php';
 require_once $root . '/dao/TarefaDAO.php';
@@ -26,6 +26,5 @@ if (is_null($tarefa)) {
 // bloquear o botão de alterar caso o professor acessando a tela não seja o que criou a tarefa
 
 $view['tarefa'] = $tarefa;
-$view['mostrar_botao_editar'] = $tarefa->usuarioPodeEditar(Usuario::fromSession());
 $view['pasta_usuario'] = TipoUsuario::pasta($_SESSION['tipo']);
 require $root . '/views/tarefas/tarefa.php';

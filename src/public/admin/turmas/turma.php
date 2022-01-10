@@ -35,15 +35,15 @@ if (!is_numeric($id)) {
 
 try
 {
-    $turma = TurmaDao::buscar($id);
+    $turma = TurmaDAO::buscar($id);
 
     if (is_null($turma)) {
         if ($retornarJson) respondJson(HttpCodes::NOT_FOUND, ['mensagem' => 'Turma de ID '.$id.' não existe']);
         else respondWithNotFoundPage('Turma de ID <b>'.$id.'</b> não existe');
     }
 
-    TurmaDao::popularComAlunos($turma);
-    TurmaDao::popularComDisciplinas($turma);
+    TurmaDAO::popularComAlunos($turma);
+    TurmaDAO::popularComDisciplinas($turma);
 
     if ($retornarJson) {
         $turmaArr = [

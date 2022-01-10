@@ -23,7 +23,7 @@ try
         ->setId($dados['id'])
         ->setHashSenha(PasswordUtil::hash($dados['senha']));
 
-    UsuarioDao::alterarSenha($usuario);
+    UsuarioDAO::alterarSenha($usuario);
 
     respondJson(HttpCodes::OK);
 }

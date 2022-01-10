@@ -4,9 +4,9 @@ $root = '../../..';
 
 require_once $root . '/utils/response-utils.php';
 forbidMethodsNot('POST');
-require_once $root . '/dao/UsuarioDao.php';
+require_once $root . '/dao/UsuarioDAO.php';
 require_once $root . '/models/TipoUsuario.php';
-UsuarioDao::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
+UsuarioDAO::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
 require_once $root . '/database/Query.php';
 
