@@ -50,11 +50,15 @@
                             &nbsp;
                             <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Quando a tarefa se torna disponível para os alunos."></i>
                         </label>
-                        <!-- TODO input abertura deve vir readonly disabled quando data de abertura estiver no passado, e switch de abrir agora ou depois invisível; e colocar tooltip dizendo que não pode ser alterada -->
+                        <?php $aberturaPassou = $paginaAlterar && $tarefa->estado() != TarefaEstado::ESPERANDO_ABERTURA; ?>
+
                         <input class="form-control mb-2" type="datetime-local" name="abertura" id="abertura"
+                               <?= $aberturaPassou ? 'readonly disabled' : '' ?>
+                               <?= $aberturaPassou ? 'data-bs-toggle="tooltip" title="A tarefa já foi abertura, então sua data de abertura não pode ser modificada."' : '' ?>
                                value="<?=$paginaAlterar ? dataISO($tarefa?->abertura()) : '' ?>"/>
-                        <div class="form-check form-switch">
-                            <input type="checkbox" class="form-check-input" id="abrir-agora" checked/>
+                        <div class="form-check form-switch <?= $aberturaPassou ? 'd-none' : '' ?>">
+                            <input type="checkbox" class="form-check-input" id="abrir-agora"
+                                   <?= $aberturaPassou ? '' : 'checked' ?>/>
                             <label class="form-check-label" for="abrir-agora">Abrir agora</label>
                         </div>
                     </div>
@@ -85,14 +89,14 @@
                         if ($paginaAlterar) {
                             $minsTotal = $tarefa->esforcoMinutos();
                             $horasVal = (int) ($minsTotal / 60);
-                            $minsVal = $minsTotal % 60;
+                            $minsVal = sprintf('%02d', $minsTotal % 60);
                         }
                     ?>
                     <div class="col-12 mb-3 col-sm-6 mb-sm-0 col-md-4">
                         <label class="form-label" for="esforcoMinutos">
                             Esforço
                             &nbsp;
-                            <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Informe uma estimative de quanto tempo um aluno demorará para realizar essa tarefa. Formatos: horas e minutos."></i>
+                            <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Estimativa de quanto tempo, em horas e minutos, um aluno demorará para realizar essa tarefa."></i>
                         </label>
                         <div class="input-group">
                             <input name="esforcoHoras" class="form-control" placeholder="Horas"
