@@ -44,26 +44,22 @@
                 } ?>
 
                 <div class="row">
-                    <div class="mb-3 col-12 col-sm-4">
+                    <div class="mb-3 col-12 col-md-4">
                         <label class="form-label" for="abertura">
                             Data abertura
                             &nbsp;
                             <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Quando a tarefa se torna disponível para os alunos."></i>
                         </label>
-                        <input class="form-control" type="datetime-local" name="abertura" id="abertura" readonly required
+                        <!-- TODO input abertura deve vir readonly disabled quando data de abertura estiver no passado, e switch de abrir agora ou depois invisível; e colocar tooltip dizendo que não pode ser alterada -->
+                        <!-- TODO ver se o 'required' dá problema se deixar no 'abrir agora' -->
+                        <input class="form-control mb-2" type="datetime-local" name="abertura" id="abertura" required
                                value="<?=$paginaAlterar ? dataISO($tarefa?->abertura()) : '' ?>"/>
-                        <div class="mt-2">
-                            <div class="form-check form-check-inline">
-                                <input checked class="form-check-input" type="radio" name="abrir" value="agora" id="abrir-agora">
-                                <label class="form-check-label">Agora</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="abrir" value="depois" id="abrir-depois">
-                                <label class="form-check-label">Depois</label>
-                            </div>
+                        <div class="form-check form-switch">
+                            <input type="checkbox" class="form-check-input" id="abrir-agora" checked/>
+                            <label class="form-check-label" for="abrir-agora">Abrir agora</label>
                         </div>
                     </div>
-                    <div class="mb-3 col-12 col-sm-4">
+                    <div class="mb-3 col-12 col-md-4">
                         <label class="form-label" for="entrega">
                             Data entrega
                             &nbsp;
@@ -72,7 +68,7 @@
                         <input class="form-control" type="datetime-local" name="entrega" id="entrega" required 
                                value="<?= $paginaAlterar ? dataISO($tarefa?->entrega()) : '' ?>"/>
                     </div>
-                    <div class="mb-3 col-12 col-sm-4">
+                    <div class="mb-3 col-12 col-md-4">
                         <label class="form-label" for="fechamento">
                             Data fechamento
                             &nbsp;
@@ -109,7 +105,7 @@
                     </div>
 
                     <?php $comNota = !$paginaAlterar || $tarefa->comNota(); ?>
-                    <div class="col-6">
+                    <div class="col-12 col-sm-6 col-md-8">
                         <label class="form-label" for="comNota">Avaliação</label>
                         <br/>
                         <div class="form-check form-check-inline">
@@ -146,39 +142,17 @@
 
     //
     // Data de abertura
-    // atualização automática se "agora" + tratamento da troca pelos radios
+    // atualização automática se "agora" + tratamento da troca pelo switch
     //
 
     const inputAbertura = document.getElementById('abertura');
+    const switchAbrirAgora = document.getElementById('abrir-agora');
 
-    const radioAbrirAgora  = document.getElementById('abrir-agora');
-    const radioAbrirDepois = document.getElementById('abrir-depois');
+    switchAbrirAgora.addEventListener('change', () => {
+        inputAbertura.style.display = switchAbrirAgora.checked ? 'none' : 'inline-block';
+    });
 
-    let intervalAtualizarAbertura;
-
-    trocarTipoAbertura(radioAbrirAgora.checked ? 'agora' : 'depois');
-    
-    function atualizarAbertura() {
-        const agora = new Date();
-        // https://stackoverflow.com/a/61082536
-        agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
-        inputAbertura.value = agora.toISOString().slice(0, 16);
-    }
-
-    function trocarTipoAbertura(tipo) {
-        if (tipo == 'agora') {
-            inputAbertura.setAttribute('readonly', true);
-            atualizarAbertura();
-            intervalAtualizarAbertura = setInterval(atualizarAbertura, 5000)
-        } else {  // depois
-            inputAbertura.removeAttribute('readonly');
-            inputAbertura.value = '';
-            clearInterval(intervalAtualizarAbertura);
-        }
-    }
-
-    radioAbrirAgora.addEventListener('change',  () => { trocarTipoAbertura('agora'); });
-    radioAbrirDepois.addEventListener('change', () => { trocarTipoAbertura('depois'); });
+    inputAbertura.style.display = switchAbrirAgora.checked ? 'none' : 'inline-block';
 
     //
     // Validação extra das datas
@@ -190,7 +164,7 @@
               fechamento = new Date(form.fechamento.value);
 
         form.abertura.setCustomValidity(
-              radioAbrirDepois.checked && abertura < new Date()
+              !switchAbrirAgora.checked && abertura < new Date()
             ? 'A data de abertura não pode estar no passado'
             : ''
         );
@@ -217,8 +191,7 @@
     form.abertura   .addEventListener('change', validarDatas);
     form.entrega    .addEventListener('change', validarDatas);
     form.fechamento .addEventListener('change', validarDatas);
-    radioAbrirAgora .addEventListener('change', validarDatas);
-    radioAbrirDepois.addEventListener('change', validarDatas);
+    switchAbrirAgora.addEventListener('change', validarDatas);
 
     //
     // Envio do formulário
@@ -245,7 +218,9 @@
     form.onsubmit = async event => {
         event.preventDefault();
 
-        const [horas, minutos] = form.esforcoMinutos.value.split(':');
+        const agora = new Date();
+        agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+
         const dados = {
             professor:      form.professor.value,
             disciplina:     form.disciplina.value,
@@ -253,7 +228,7 @@
             descricao:      form.descricao.value,
             esforcoMinutos: Number(form.esforcoHoras.value) * 60 + Number(form.esforcoMinutos.value),
             comNota:        form.comNota.value == 'true',
-            abertura:       form.abertura.value,
+            abertura:       switchAbrirAgora.checked ? agora.toISOString() : form.abertura.value,
             entrega:        form.entrega.value,
             fechamento:     form.fechamento.value == '' ? null : form.fechamento.value
         };
