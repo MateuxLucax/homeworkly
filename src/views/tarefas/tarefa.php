@@ -54,11 +54,14 @@
             } ?>
 
             <div class="row mb-3">
-                <div class="col-sm-6">
+                <div class="col-12 mb-3 col-sm-6 mb-sm-0">
                     <label class="form-label" for="entrega">Data de entrega</label>
                     <input disabled readonly class="form-control" id="entrega" type="datetime-local"
                         value="<?=dataISO($tarefa->entrega())?>"/>
                 </div>
+
+                <!-- TODO deixar explícito que nenhuma data de fechamento foi informada -->
+
                 <div class="col-sm-6">
                     <?php if (!is_null($tarefa->fechamento())): ?>
                         <label class="form-label" for="fechamento">Data de fechamento</label>
@@ -87,7 +90,7 @@
                         <input disabled readonly class="form-control" type="text" value="<?= $minsVal ?>"/>
                     </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-12 col-sm-6 col-md-8">
                     <label class="form-label" for="comNota">Avaliação</label>
                     <br/>
                     <div class="form-check form-check-inline">
@@ -106,6 +109,9 @@
 
             <!-- TODO link para o perfil do professor quando páginas de perfil forem criadas -->
             <!-- TODO uma imagem de perfil circular ficaria bonita aqui... -->
+
+            <!-- TODO só mostrar em baixo assim quando a tarefa já estiver aberta.
+                 Senão, mostrar junto as outras datas como campo de formulário -- a data de abertura é depois e ainda pode ser alterada -->
             <span>
                 Aberta por
                 <b><?= $professor->getNome() ?></b>
