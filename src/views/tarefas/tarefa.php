@@ -73,14 +73,19 @@
             </div>
 
             <?php
-                $esforcoMinutos = $tarefa->esforcoMinutos();
-                $esforcoValue = sprintf("%02d:%02d", (int) ($esforcoMinutos / 60), $esforcoMinutos % 60);
+                $minsTotal = $tarefa->esforcoMinutos();
+                $horasVal = (int) ($minsTotal / 60);
+                $minsVal = sprintf('%02d', $minsTotal % 60);
             ?>
             
             <div class="row">
-                <div class="col-sm-6">
-                    <label class="form-label" for="esforco">Estimativa de esforço</label>
-                    <input disabled readonly class="form-control" type="time" value="<?=$esforcoValue?>"/>
+                <div class="col-12 mb-3 col-sm-6 mb-sm-0 col-md-4">
+                    <label class="form-label" for="esforco">Esforço</label>
+                    <div class="input-group">
+                        <input disabled readonly class="form-control" type="text" value="<?= $horasVal ?>"/>
+                        <span class="input-group-text">:</span>
+                        <input disabled readonly class="form-control" type="text" value="<?= $minsVal ?>"/>
+                    </div>
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label" for="comNota">Avaliação</label>

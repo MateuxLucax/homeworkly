@@ -85,17 +85,27 @@
                 <div class="row">
 
                     <?php
-                        $esforcoValue = '';
+                        $horasVal = '';
+                        $minsVal = '00';
                         if ($paginaAlterar) {
-                            $esforcoMinutos = $tarefa?->esforcoMinutos();
-                            $horas = (int) ($esforcoMinutos / 60);
-                            $mins  = $esforcoMinutos % 60;
-                            $esforcoValue = sprintf('%2d:%2d', $horas, $mins);
+                            $minsTotal = $tarefa->esforcoMinutos();
+                            $horasVal = (int) ($minsTotal / 60);
+                            $minsVal = $minsTotal % 60;
                         }
                     ?>
-                    <div class="col-6">
-                        <label class="form-label" for="esforcoMinutos">Estimativa de esforço</label>
-                        <input class="form-control" type="time" name="esforcoMinutos" id="esforcoMinutos" required value="<?=$esforcoValue?>"/>
+                    <div class="col-12 mb-3 col-sm-6 mb-sm-0 col-md-4">
+                        <label class="form-label" for="esforcoMinutos">
+                            Esforço
+                            &nbsp;
+                            <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Informe uma estimative de quanto tempo um aluno demorará para realizar essa tarefa. Formatos: horas e minutos."></i>
+                        </label>
+                        <div class="input-group">
+                            <input name="esforcoHoras" class="form-control" placeholder="Horas"
+                                   style="text-align: right;" type="text" pattern="\d*" inputmode="numeric" value="<?= $horasVal ?>"/>
+                            <span class="input-group-text">:</span>
+                            <input name="esforcoMinutos" class="form-control" placeholder="Minutos"
+                                   type="text" pattern="[0-5]?\d" inputmode="numberic" value="<?= $minsVal ?>"/>
+                        </div>
                     </div>
 
                     <?php $comNota = !$paginaAlterar || $tarefa->comNota(); ?>
@@ -241,7 +251,7 @@
             disciplina:     form.disciplina.value,
             titulo:         form.titulo.value,
             descricao:      form.descricao.value,
-            esforcoMinutos: horas*60 + minutos,
+            esforcoMinutos: Number(form.esforcoHoras.value) * 60 + Number(form.esforcoMinutos.value),
             comNota:        form.comNota.value == 'true',
             abertura:       form.abertura.value,
             entrega:        form.entrega.value,
