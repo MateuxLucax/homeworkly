@@ -51,8 +51,7 @@
                             <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Quando a tarefa se torna disponível para os alunos."></i>
                         </label>
                         <!-- TODO input abertura deve vir readonly disabled quando data de abertura estiver no passado, e switch de abrir agora ou depois invisível; e colocar tooltip dizendo que não pode ser alterada -->
-                        <!-- TODO ver se o 'required' dá problema se deixar no 'abrir agora' -->
-                        <input class="form-control mb-2" type="datetime-local" name="abertura" id="abertura" required
+                        <input class="form-control mb-2" type="datetime-local" name="abertura" id="abertura"
                                value="<?=$paginaAlterar ? dataISO($tarefa?->abertura()) : '' ?>"/>
                         <div class="form-check form-switch">
                             <input type="checkbox" class="form-check-input" id="abrir-agora" checked/>
@@ -148,11 +147,18 @@
     const inputAbertura = document.getElementById('abertura');
     const switchAbrirAgora = document.getElementById('abrir-agora');
 
-    switchAbrirAgora.addEventListener('change', () => {
-        inputAbertura.style.display = switchAbrirAgora.checked ? 'none' : 'inline-block';
-    });
+    function trocarTipoAbertura(abrirAgora) {
+        if (abrirAgora) {
+            inputAbertura.required = false;
+            inputAbertura.style.display = 'none';
+        } else {
+            inputAbertura.required = true;
+            inputAbertura.style.display = 'inline-block';
+        }
+    }
 
-    inputAbertura.style.display = switchAbrirAgora.checked ? 'none' : 'inline-block';
+    trocarTipoAbertura(switchAbrirAgora.checked);
+    switchAbrirAgora.addEventListener('change', () => { trocarTipoAbertura(switchAbrirAgora.checked); });
 
     //
     // Validação extra das datas
