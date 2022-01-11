@@ -36,7 +36,7 @@
         <div class="card-header d-flex align-items-center">
             Tarefa
             <!-- TODO tornar botão disabled quando tarefa estiver arquivada / for de disciplina de turma do ano passado -->
-            <?php if ($tarefa->usuarioPodeEditar()): ?>
+            <?php if ($tarefa->usuarioPodeAlterar()): ?>
                 <span class="ms-auto">
                     <a class="btn btn-primary" href="alterar?id=<?= $tarefa->id() ?>">
                         <i class="fas fa-edit"></i>

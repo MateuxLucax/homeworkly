@@ -29,6 +29,7 @@ class TarefaDAO
                   , ta.entrega
                   , ta.fechamento
                   , ta.fechada
+                  , NOT EXISTS(SELECT 1 FROM entrega WHERE id_tarefa = :id) as pode_excluir
                FROM tarefa ta
                JOIN usuario pro ON ta.id_professor = pro.id_usuario
                JOIN disciplina di ON ta.id_disciplina = di.id_disciplina
@@ -51,6 +52,7 @@ class TarefaDAO
             ->setEntrega(new DateTime($ta['entrega']))
             ->setFechamento($ta['fechamento'] ? new DateTime($ta['fechamento']) : null)
             ->setFechadaManualmente($ta['fechada'])
+            ->setPodeExcluir($ta['pode_excluir'])
             ->setProfessor((new Usuario)
                 ->setId($ta['id_professor'])
                 ->setNome($ta['nome_professor'])

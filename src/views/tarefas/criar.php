@@ -23,10 +23,20 @@
         <input type="hidden" name="disciplina" value="<?= $view['disciplina_id'] ?>" />
         <input type="hidden" name="professor" value="<?= $view['professor_id'] ?>" />
         <div class="card mb-3">
-            <div class="card-header">
-                <span class="card-title">
+            <div class="card-header d-flex align-items-center">
+                <span>
                     <?= $paginaAlterar ? 'Alterar tarefa' : 'Criar tarefa' ?>
                 </span>
+                <?php if ($paginaAlterar && $tarefa->usuarioPodeAlterar()): ?>
+                    <div class="ms-auto">
+                        <div <?= $tarefa->podeExcluir() ? '' : 'data-bs-toggle="tooltip" title="A tarefa não pode ser excluída pois contém entregas."' ?>>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao"
+                                    <?= $tarefa->podeExcluir() ? '' : 'disabled' ?>>
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -133,6 +143,20 @@
         </div>
     </form>
 </main>
+
+<?php if ($paginaAlterar): ?>
+<div class="modal fade" id="modal-confirmar-exclusao">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p>Tem certeza que deseja excluir esta tarefa?</p>
+                <button class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
+                <button class="btn btn-secondary" id="btn-cancelar-exclusao" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 </body>
 
@@ -271,5 +295,28 @@
         }
     };
 
+    //
+    // Excluir tarefa
+    //
+    if (paginaAlterar) {
+        document.getElementById('btn-confirmar-exclusao').onclick = async () => {
+            const response = await fetch('excluir', { method: 'DELETE', body: JSON.stringify({id: form.id.value}) });
+            const textPromise = response.text();
+            if (response.status != 204) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Não foi possível excluir a tarefa'
+                });
+                console.log(await textPromise);
+                document.getElementById('btn-cancelar-exclusao').click();  // Fechar modal
+                return;
+            }
+            agendarAlertaSwal({
+                icon: 'success',
+                text: 'Tarefa excluída com sucesso'
+            });
+            console.log(await textPromise);
+        }
+    }
 
 </script>

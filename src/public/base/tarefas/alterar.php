@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
         respondWithNotFoundPage('Não existe tarefa de <b>ID '.$id.'</b>.');
     }
 
-    if (!$tarefa->usuarioPodeEditar()) {
+    if (!$tarefa->usuarioPodeAlterar()) {
         respondWithErrorPage(
             HttpCodes::UNAUTHORIZED,
             'Alteração não autorizada',
