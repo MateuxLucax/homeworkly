@@ -67,4 +67,30 @@ class TarefaDAO
 
         return $tarefa;
     }
+
+    public static function existe(int $idTarefa): bool
+    {
+        return Query::select(
+            'SELECT EXISTS(SELECT 1 FROM tarefa WHERE id_tarefa = :id) as existe',
+            ['id' => $idTarefa]
+        )[0]['existe'];
+    }
+
+    public static function usuarioPodeAlterarTarefa(int $idUsuario, string $tipoUsuario, int $idTarefa): bool
+    {
+        if ($tipoUsuario == TipoUsuario::ALUNO) return false;
+        if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return true;
+        assert($tipoUsuario == TipoUsuario::PROFESSOR);
+
+        $idCriadorTarefa = Query::select('SELECT id_professor FROM tarefa WHERE id_tarefa = :id', ['id' => $idTarefa]);
+            return $idUsuario == $idCriadorTarefa;
+    }
+
+    public static function tarefaTemEntregas(int $idTarefa): bool
+    {
+        return Query::select(
+            'SELECT EXISTS(SELECT 1 FROM entrega WHERE id_tarefa = :id) AS tem_entregas',
+            ['id' => $idTarefa]
+        )[0]['tem_entregas'];
+    }
 }
