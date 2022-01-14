@@ -42,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
     }
     else 
     {
-        $permissao = 12312;
         $mensagem = match($permissao) {
             PermissaoTarefa::NAO_AUTORIZADO => 'Você não tem autorização para alterar essa tarefa',
             PermissaoTarefa::ARQUIVADA => 'Essa tarefa não pode ser alterada pois é de um ano passado e está arquivada',
