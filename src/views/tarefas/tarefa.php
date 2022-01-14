@@ -13,6 +13,8 @@
     $disciplina = $tarefa->disciplina();
     $turma = $disciplina->getTurma();
     $professor = $tarefa->professor();
+
+    $permissao = $view['permissao'];
 ?>
 
 <main class="container">
@@ -36,7 +38,7 @@
         <div class="card-header d-flex align-items-center">
             Tarefa
             <!-- TODO tornar botão disabled quando tarefa estiver arquivada / for de disciplina de turma do ano passado -->
-            <?php if ($tarefa->usuarioPodeAlterar()): ?>
+            <?php if ($permissao->alterar($_SESSION['id_usuario'], $_SESSION['tipo']) != PermissaoTarefa::PODE): ?>
                 <span class="ms-auto">
                     <a class="btn btn-primary" href="alterar?id=<?= $tarefa->id() ?>">
                         <i class="fas fa-edit"></i>
