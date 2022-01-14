@@ -62,7 +62,7 @@ class PermissaoTarefa
     public function excluir(int $idUsuario, string $tipoUsuario): int
     {
         if ($tipoUsuario == TipoUsuario::ALUNO) return self::NAO_AUTORIZADO;
-        // Nem admin não pode excluir se tiver entregas porque nem o BD vai deixar (fere FK id_tarefa da tabela de entrega)
+        // Nem admin pode excluir se tiver entregas porque nem o BD vai deixar (fere FK id_tarefa da tabela de entrega)
         if ($this->temEntregas) return self::TEM_ENTREGAS;
         if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::PODE;
         assert($tipoUsuario == TipoUsuario::PROFESSOR);
