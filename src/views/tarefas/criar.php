@@ -10,6 +10,7 @@
 <?php
     $paginaAlterar = isset($view['tarefa']);
     $tarefa = $paginaAlterar ? $view['tarefa'] : null;
+    $permissao = $paginaAlterar ? $view['permissao'] : null;
 ?>
 
 <main class="container">
@@ -27,16 +28,33 @@
                 <span>
                     <?= $paginaAlterar ? 'Alterar tarefa' : 'Criar tarefa' ?>
                 </span>
-                <?php if ($paginaAlterar && $tarefa->usuarioPodeAlterar()): ?>
-                    <div class="ms-auto">
-                        <div <?= $tarefa->podeExcluir() ? '' : 'data-bs-toggle="tooltip" title="A tarefa não pode ser excluída pois contém entregas."' ?>>
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao"
-                                    <?= $tarefa->podeExcluir() ? '' : 'disabled' ?>>
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                <?php endif; ?>
+                <?php
+                    if ($paginaAlterar) {
+                        $permissaoExcluir = $permissao->excluir($_SESSION['id_usuario'], $_SESSION['tipo']);
+                        $mostrarBotao = $permissaoExcluir != PermissaoTarefa::NAO_AUTORIZADO;
+                        $desabilitarBotao = $permissaoExcluir != PermissaoTarefa::PODE;
+                        $desabilitarMotivo = match ($permissaoExcluir) {
+                            PermissaoTarefa::ARQUIVADA    => 'está arquivada (é de um ano passado)',
+                            PermissaoTarefa::FECHADA      => 'já foi fechada',
+                            PermissaoTarefa::TEM_ENTREGAS => 'tem entregas',
+                            default                       => ''
+                        };
+
+                        if ($mostrarBotao): ?>
+                            <div class="ms-auto">
+                                <div <?= $desabilitarBotao ? 'data-bs-toggle="tooltip" title="A tarefa não pode ser excluída pois '.$desabilitarMotivo.'."' : '' ?>>
+                                    <button type="button" class="btn btn-danger"
+                                            data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao"
+                                            <?= $desabilitarBotao ? 'disabled' : '' ?>
+                                    >
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                        <?php endif;
+                    }
+                ?>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -64,7 +82,7 @@
 
                         <input class="form-control mb-2" type="datetime-local" name="abertura" id="abertura"
                                <?= $aberturaPassou ? 'readonly disabled' : '' ?>
-                               <?= $aberturaPassou ? 'data-bs-toggle="tooltip" title="A tarefa já foi abertura, então sua data de abertura não pode ser modificada."' : '' ?>
+                               <?= $aberturaPassou ? 'data-bs-toggle="tooltip" title="A tarefa já foi aberta, então sua data de abertura não pode ser modificada."' : '' ?>
                                value="<?=$paginaAlterar ? dataISO($tarefa?->abertura()) : '' ?>"/>
                         <div class="form-check form-switch <?= $aberturaPassou ? 'd-none' : '' ?>">
                             <input type="checkbox" class="form-check-input" id="abrir-agora"
@@ -102,6 +120,10 @@
                             $minsVal = sprintf('%02d', $minsTotal % 60);
                         }
                     ?>
+
+                    <!-- TODO validar com customValidiyt conforme usuário editar:
+                         depois de contabilizar quantos minutos dá, deve ser maior que 0 -->
+
                     <div class="col-12 mb-3 col-sm-6 mb-sm-0 col-md-4">
                         <label class="form-label" for="esforcoMinutos">
                             Esforço
@@ -144,7 +166,7 @@
     </form>
 </main>
 
-<?php if ($paginaAlterar): ?>
+<?php if ($paginaAlterar && $permissaoExcluir == PermissaoTarefa::PODE): ?>
 <div class="modal fade" id="modal-confirmar-exclusao">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -298,24 +320,24 @@
     //
     // Excluir tarefa
     //
+
     if (paginaAlterar) {
         document.getElementById('btn-confirmar-exclusao').onclick = async () => {
             const response = await fetch('excluir', { method: 'DELETE', body: JSON.stringify({id: form.id.value}) });
-            const textPromise = response.text();
-            if (response.status != 204) {
+            const ret = await response.json();
+            if (response.status != 200) {
                 Swal.fire({
                     icon: 'error',
-                    text: 'Não foi possível excluir a tarefa'
+                    text: ret.message
                 });
-                console.log(await textPromise);
                 document.getElementById('btn-cancelar-exclusao').click();  // Fechar modal
                 return;
             }
             agendarAlertaSwal({
                 icon: 'success',
-                text: 'Tarefa excluída com sucesso'
+                text: ret.message
             });
-            console.log(await textPromise);
+            history.back();
         }
     }
 

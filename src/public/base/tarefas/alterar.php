@@ -2,6 +2,7 @@
 
 require_once $root . '/utils/response-utils.php';
 require_once $root . '/dao/TarefaDAO.php';
+require_once $root . '/dao/PermissaoTarefa.php';
 require_once $root . '/models/Tarefa.php';
 require_once $root . '/models/Usuario.php';
 
@@ -19,27 +20,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
         respondWithNotFoundPage('Não existe tarefa de <b>ID '.$id.'</b>.');
     }
 
-    if (!$tarefa->usuarioPodeAlterar()) {
-        respondWithErrorPage(
-            HttpCodes::UNAUTHORIZED,
-            'Alteração não autorizada',
-            'Você não pode alterar essa tarefa pois não é o professor que a criou.'
-        );
+    $permissao = (new PermissaoTarefa($id))->alterar($_SESSION['id_usuario'], $_SESSION['tipo']);
+
+    if ($permissao == PermissaoTarefa::PODE)
+    {
+        $disciplina = $tarefa->disciplina();
+        $turma = $disciplina->getTurma();
+
+        $view['disciplina_id']   = $disciplina->getId();
+        $view['disciplina_nome'] = $disciplina->getNome();
+        $view['turma_nome']      = $turma->getNome();
+        $view['ano']             = $turma->getAno();
+        $view['professor_id']    = $tarefa->professor()->getId();
+
+        $view['titulo'] = 'Alterar tarefa';
+        $view['tarefa'] = $tarefa;
+
+        $view['permissao'] = new PermissaoTarefa($tarefa->id());
+
+        require $root . '/views/tarefas/criar.php';
+    }
+    else 
+    {
+        $permissao = 12312;
+        $mensagem = match($permissao) {
+            PermissaoTarefa::NAO_AUTORIZADO => 'Você não tem autorização para alterar essa tarefa',
+            PermissaoTarefa::ARQUIVADA => 'Essa tarefa não pode ser alterada pois é de um ano passado e está arquivada',
+            PermissaoTarefa::FECHADA => 'Essa tarefa não pode ser alterada pois já foi fechada',
+            default => 'Segundo o sistema, você não pode alterar essa tarefa, mas não sabemos qual o motivo (┬┬﹏┬┬)<br/><small>(Cód: '.$permissao.')</small>',
+        };
+        respondWithErrorPage(HttpCodes::BAD_REQUEST, 'A tarefa não pode ser alterada', $mensagem);
     }
 
-    $disciplina = $tarefa->disciplina();
-    $turma = $disciplina->getTurma();
-
-    $view['disciplina_id']   = $disciplina->getId();
-    $view['disciplina_nome'] = $disciplina->getNome();
-    $view['turma_nome']      = $turma->getNome();
-    $view['ano']             = $turma->getAno();
-    $view['professor_id']    = $tarefa->professor()->getId();
-
-    $view['titulo'] = 'Alterar tarefa';
-    $view['tarefa'] = $tarefa;
-
-    require $root . '/views/tarefas/criar.php';
 }
 else if ($_SERVER['REQUEST_METHOD'] == 'PUT')
 {
