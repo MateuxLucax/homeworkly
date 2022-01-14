@@ -15,7 +15,6 @@ class Tarefa
     private DateTime   $entrega;
     private ?DateTime  $fechamento;
     private bool       $fechada_manualmente;
-    private bool       $pode_excluir;
 
     public function id():                 int        { return $this->id; }
     public function professor():          Usuario    { return $this->professor; }
@@ -28,7 +27,6 @@ class Tarefa
     public function entrega():            DateTime   { return $this->entrega; }
     public function fechamento():         ?DateTime  { return $this->fechamento; }
     public function fechadaManualmente(): bool       { return $this->fechada_manualmente; }
-    public function podeExcluir():        bool       { return $this->pode_excluir; }
 
     public function setId(int $id): Tarefa {
         $this->id = $id;
@@ -85,11 +83,6 @@ class Tarefa
         return $this;
     }
 
-    public function setPodeExcluir(bool $pode_excluir): Tarefa {
-        $this->pode_excluir = $pode_excluir;
-        return $this;
-    }
-
     // ------------------------------
 
     public function estado(): TarefaEstado {
@@ -103,12 +96,5 @@ class Tarefa
                 || ( !is_null($this->fechamento) && $agora >= $this->fechamento );
 
         return $fechada ? TarefaEstado::FECHADA : TarefaEstado::ATRASADA;
-    }
-
-    public function usuarioPodeAlterar(): bool {
-        $tipo = $_SESSION['tipo'];
-        $id   = $_SESSION['id_usuario'];
-
-        return $tipo == TipoUsuario::ADMINISTRADOR || ($tipo == TipoUsuario::PROFESSOR && $id == $this->professor()->getId());
     }
 }

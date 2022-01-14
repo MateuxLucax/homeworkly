@@ -29,7 +29,6 @@ class TarefaDAO
                   , ta.entrega
                   , ta.fechamento
                   , ta.fechada
-                  , NOT EXISTS(SELECT 1 FROM entrega WHERE id_tarefa = :id) as pode_excluir
                FROM tarefa ta
                JOIN usuario pro ON ta.id_professor = pro.id_usuario
                JOIN disciplina di ON ta.id_disciplina = di.id_disciplina
@@ -52,7 +51,6 @@ class TarefaDAO
             ->setEntrega(new DateTime($ta['entrega']))
             ->setFechamento($ta['fechamento'] ? new DateTime($ta['fechamento']) : null)
             ->setFechadaManualmente($ta['fechada'])
-            ->setPodeExcluir($ta['pode_excluir'])
             ->setProfessor((new Usuario)
                 ->setId($ta['id_professor'])
                 ->setNome($ta['nome_professor'])
@@ -74,23 +72,5 @@ class TarefaDAO
             'SELECT EXISTS(SELECT 1 FROM tarefa WHERE id_tarefa = :id) as existe',
             ['id' => $idTarefa]
         )[0]['existe'];
-    }
-
-    public static function usuarioPodeAlterarTarefa(int $idUsuario, string $tipoUsuario, int $idTarefa): bool
-    {
-        if ($tipoUsuario == TipoUsuario::ALUNO) return false;
-        if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return true;
-        assert($tipoUsuario == TipoUsuario::PROFESSOR);
-
-        $idCriadorTarefa = Query::select('SELECT id_professor FROM tarefa WHERE id_tarefa = :id', ['id' => $idTarefa]);
-            return $idUsuario == $idCriadorTarefa;
-    }
-
-    public static function tarefaTemEntregas(int $idTarefa): bool
-    {
-        return Query::select(
-            'SELECT EXISTS(SELECT 1 FROM entrega WHERE id_tarefa = :id) AS tem_entregas',
-            ['id' => $idTarefa]
-        )[0]['tem_entregas'];
     }
 }
