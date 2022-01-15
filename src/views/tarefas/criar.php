@@ -261,13 +261,13 @@
         target = 'criar';
         status = 201;
         metodo = 'POST';
-        msgErro = 'Não foi possível criar a tarefa';
+        msgErro = 'Não foi possível criar a tarefa (o servidor não retornou o motivo)';
         msgSucc = 'Tarefa criada com sucesso';
     } else {
         target = 'alterar';
         metodo = 'PUT';
         status = 200;
-        msgErro = 'Não foi possível alterar a tarefa';
+        msgErro = 'Não foi possível alterar a tarefa (o servidor não retornou o motivo)';
         msgSucc = 'Tarefa alterada com sucesso';
     }
 
@@ -294,26 +294,25 @@
         }
 
         const response = await fetch(target, {method: metodo, body: JSON.stringify(dados)});
-        const textProm = response.text();
-        if (response.status != status) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro do sistema',
-                text: msgErro
-            });
-            console.log(await textProm);
-        } else {
-            agendarAlertaSwal({
-                icon: 'success',
-                text: msgSucc
-            });
-            const text = await textProm;
-            try {
-                const ret = JSON.parse(text);
+        const textRet = await response.text();
+        try {
+            const ret = JSON.parse(textRet);
+            if (response.status != status) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro do sistema',
+                    text: ret.message || msgErro
+                });
+                console.error(ret.exception);
+            } else {
+                agendarAlertaSwal({
+                    icon: 'success',
+                    text: msgSucc
+                });
                 location.assign(`tarefa?id=${ret.id}`);
-            } catch (err) {
-                console.error(err, '\n', text);
             }
+        } catch(e) {
+            console.error(e, '\n', textRet);
         }
     };
 
@@ -337,6 +336,8 @@
                 icon: 'success',
                 text: ret.message
             });
+            // TODO trocar para location.assign('/{tipoUsuario}/disciplinas/disciplina?id=...);
+            // quando esse endpoint existir
             history.back();
         }
     }
