@@ -43,8 +43,38 @@ class PermissaoTarefa
         $this->temEntregas = $dados['tem_entregas'];
     }
 
-    // TODO método static criar
-    // recebe usuário (id e tipo), disciplina e turma
+    /**
+     * @return int PODE, ARQUIVADA ou NAO_AUTORIZADO
+     */
+    public static function criar(int $idUsuario, string $tipoUsuario, int $idDisciplina)
+    {
+        if ($tipoUsuario == TipoUsuario::ALUNO) return self::NAO_AUTORIZADO;
+
+        $anoTurma = Query::select(
+            'SELECT t.ano
+               FROM disciplina d
+               JOIN turma t ON t.id_turma = d.id_turma
+              WHERE d.id_disciplina = :id',
+            ['id' => $idDisciplina]
+        )[0]['ano'];
+
+        if ($anoTurma != date('Y')) return self::ARQUIVADA;
+        if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::PODE;
+        assert($tipoUsuario == TipoUsuario::PROFESSOR);
+
+        $professorDaDisciplina = Query::select(
+            'SELECT EXISTS(
+                SELECT 1
+                    FROM professor_de_disciplina
+                    WHERE id_professor = :idProfessor
+                    AND id_disciplina = :idDisciplina
+                ) AS professor_da_disciplina',
+            [ ':idProfessor'  => $idUsuario, 
+              ':idDisciplina' => $idDisciplina ]
+        )[0]['professor_da_disciplina'];
+        return $professorDaDisciplina ? self::PODE : self::NAO_AUTORIZADO;
+    }
+
 
     /**
      * @return int PODE, NAO_AUTORIZADO, ARQUIVADA ou FECHADA
