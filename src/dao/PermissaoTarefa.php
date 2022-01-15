@@ -3,8 +3,6 @@
 require_once $root . '/models/Tarefa.php';
 require_once $root . '/models/TipoUsuario.php';
 
-// TODO documentar possíveis retornos de cada função, facilitando que quem chamar seja exaustivo
-
 class PermissaoTarefa
 {
     private int $idDisciplina;
@@ -48,6 +46,9 @@ class PermissaoTarefa
     // TODO método static criar
     // recebe usuário (id e tipo), disciplina e turma
 
+    /**
+     * @return int PODE, NAO_AUTORIZADO, ARQUIVADA ou FECHADA
+     */
     public function alterar(int $idUsuario, string $tipoUsuario): int
     {
         if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::PODE;
@@ -59,6 +60,9 @@ class PermissaoTarefa
         return self::PODE;
     }
 
+    /**
+     * @return int PODE, NAO_AUTORIZADO, ARQUIVADA, FECHADA ou TEM_ENTREGAS
+     */
     public function excluir(int $idUsuario, string $tipoUsuario): int
     {
         if ($tipoUsuario == TipoUsuario::ALUNO) return self::NAO_AUTORIZADO;
@@ -72,6 +76,9 @@ class PermissaoTarefa
         return self::PODE;
     }
 
+    /**
+     * @return int PODE ou NAO_AUTORIZADO
+     */
     public function visualizar(int $idUsuario, string $tipoUsuario): int
     {
         if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::PODE;
