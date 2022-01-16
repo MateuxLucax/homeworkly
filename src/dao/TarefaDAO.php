@@ -1,5 +1,6 @@
 <?php
 
+require_once $root . '/utils/DateUtil.php';
 require_once $root . '/models/Tarefa.php';
 require_once $root . '/models/Usuario.php';
 require_once $root . '/models/TipoUsuario.php';
@@ -47,12 +48,9 @@ class TarefaDAO
             ->setDescricao($ta['descricao'])
             ->setEsforcoMinutos($ta['esforco_minutos'])
             ->setComNota($ta['com_nota'])
-            ->setAbertura(new DateTime($ta['abertura'], new DateTimeZone('America/Sao_Paulo')))
-            ->setEntrega(new DateTime($ta['entrega'], new DateTimeZone('America/Sao_Paulo')))
-            ->setFechamento(
-                  $ta['fechamento']
-                ? new DateTime($ta['fechamento'], new DateTimeZone('America/Sao_Paulo'))
-                : null)
+            ->setAbertura(DateUtil::toLocalDateTime($ta['abertura']))
+            ->setEntrega(DateUtil::toLocalDateTime($ta['entrega']))
+            ->setFechamento($ta['fechamento'] ? DateUtil::toLocalDateTime($ta['fechamento']) : null)
             ->setFechadaManualmente($ta['fechada'])
             ->setProfessor((new Usuario)
                 ->setId($ta['id_professor'])

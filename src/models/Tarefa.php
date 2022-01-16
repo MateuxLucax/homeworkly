@@ -1,5 +1,6 @@
 <?php
 
+require_once $root . '/utils/DateUtil.php';
 require_once $root . '/models/TarefaEstado.php';
 
 class Tarefa
@@ -86,7 +87,7 @@ class Tarefa
     // ------------------------------
 
     public function estado(): TarefaEstado {
-        $agora = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
+        $agora = DateUtil::toLocalDateTime('now');
 
         if ($this->disciplina->getTurma()->getAno() < $agora->format('Y')) return TarefaEstado::ARQUIVADA;
         if ($agora < $this->abertura) return TarefaEstado::ESPERANDO_ABERTURA;
