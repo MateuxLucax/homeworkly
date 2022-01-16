@@ -19,10 +19,12 @@
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <?= $turma->getAno() ?>
+                <a href="/<?=TipoUsuario::pasta($_SESSION['tipo'])?>/turmas/listar?ano=<?=$turma->getAno()?>">
+                    <?= $turma->getAno() ?>
+                </a>
             </li>
             <li class="breadcrumb-item">
-                <a href="/<?=$view['pasta_usuario']?>/turmas/turma?id=<?= $turma->getId() ?>">
+                <a href="/<?=TipoUsuario::pasta($_SESSION['tipo'])?>/turmas/turma?id=<?= $turma->getId() ?>">
                     <?= $turma->getNome() ?>
                 </a>
             </li>
@@ -35,6 +37,8 @@
     <div class="card">
         <div class="card-header d-flex align-items-center">
             Tarefa
+            &nbsp;
+            <small>(ID <?= $tarefa->id()?>)</small>
             <?php
                 $permissaoAlterar = $permissao->alterar($_SESSION['id_usuario'], $_SESSION['tipo']);
                 $mostrarBotao = $permissaoAlterar != PermissaoTarefa::NAO_AUTORIZADO;

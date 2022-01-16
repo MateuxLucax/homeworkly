@@ -3,10 +3,6 @@
 <?php require_once $root.'/views/componentes/head.php'; ?>
 <body>
 
-<!--TODO não em h1, e colocar links para a turma e para a disciplina
-    TODO e também deixar num estilo mais breadcrumbs
-    e fazer o mesmo na view turma.php-->
-
 <?php
     $paginaAlterar = isset($view['tarefa']);
     $tarefa = $paginaAlterar ? $view['tarefa'] : null;
@@ -14,9 +10,24 @@
 ?>
 
 <main class="container">
-    <div class="header mb-3">
-        <h1><?=$view['ano']?> / <?=$view['turma_nome']?> / <b><?=$view['disciplina_nome']?></b></h1>
-    </div>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/<?=TipoUsuario::pasta($_SESSION['tipo'])?>/turmas/listar?ano=<?=$turma->getAno()?>">
+                    <?= $turma->getAno() ?>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="/<?=TipoUsuario::pasta($_SESSION['tipo'])?>/turmas/turma?id=<?= $turma->getId() ?>">
+                    <?= $turma->getNome() ?>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <!-- TODO colocar link para quando página da disciplina for criada -->
+                <?= $disciplina->getNome() ?>
+            </li>
+        </ol>
+    </nav>
     <form id="form-criar-tarefa">
         <?php if ($paginaAlterar): ?>
             <input type="hidden" name="id" value="<?=$tarefa?->id()?>">

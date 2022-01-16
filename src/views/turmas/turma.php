@@ -11,12 +11,21 @@
 
     <main class="container">
 
-        <!-- TODO deve ter uma forma mais bonita de mostrar todas essas informações na mesma linha -->
-
         <div class="header mt-3 mb-3 d-flex align-items-center">
-            <h1>
-                <?=$turma->getAno()?> / <b><?=$turma->getNome()?></b> <small class="text-muted">#<?=$turma->getId()?></small>
-            </h1>
+            <nav>
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item">
+                        <a href="listar?ano=<?=$turma->getAno()?>">
+                            <?= $turma->getAno() ?>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <?= $turma->getNome() ?>
+                        <small>(ID <?=$turma->getId()?>)</small>
+                    </li>
+                </ol>
+            </nav>
+
             <span
                 class="ms-auto"
                 <?php if (!$turma->podeAlterar()): ?>

@@ -22,7 +22,6 @@ if ($permissaoVisualizar == PermissaoTarefa::PODE)
 {
     $view['tarefa'] = $tarefa;
     $view['permissao'] = $permissao;
-    $view['pasta_usuario'] = TipoUsuario::pasta($_SESSION['tipo']);
     require $root . '/views/tarefas/tarefa.php';
 }
 else if ($permissaoVisualizar == PermissaoTarefa::NAO_AUTORIZADO)
