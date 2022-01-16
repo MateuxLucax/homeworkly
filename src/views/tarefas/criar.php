@@ -28,21 +28,31 @@
                 <span>
                     <?= $paginaAlterar ? 'Alterar tarefa' : 'Criar tarefa' ?>
                 </span>
-                <?php
-                    if ($paginaAlterar) {
-                        $permissaoExcluir = $permissao->excluir($_SESSION['id_usuario'], $_SESSION['tipo']);
-                        $mostrarBotao = $permissaoExcluir != PermissaoTarefa::NAO_AUTORIZADO;
-                        $desabilitarBotao = $permissaoExcluir != PermissaoTarefa::PODE;
-                        $desabilitarMotivo = match ($permissaoExcluir) {
-                            PermissaoTarefa::ARQUIVADA    => 'está arquivada (é de um ano passado)',
-                            PermissaoTarefa::FECHADA      => 'já foi fechada',
-                            PermissaoTarefa::TEM_ENTREGAS => 'tem entregas',
-                            default                       => ''
-                        };
+                <div class="ms-auto">
+                    <?php
+                        if ($paginaAlterar) {
+                            $estado = $tarefa->estado();
+                            $corEstado = match($estado) {
+                                TarefaEstado::ESPERANDO_ABERTURA => 'bg-primary',
+                                TarefaEstado::ABERTA             => 'bg-success',
+                                TarefaEstado::ATRASADA           => 'bg-warning',
+                                TarefaEstado::FECHADA            => 'bg-dark'
+                            };
 
-                        if ($mostrarBotao): ?>
-                            <div class="ms-auto">
-                                <div <?= $desabilitarBotao ? 'data-bs-toggle="tooltip" title="A tarefa não pode ser excluída pois '.$desabilitarMotivo.'."' : '' ?>>
+                            echo '<h5 class="mb-0 d-inline"><span class="badge '.$corEstado.'">'.$estado->toString().'</span></h5>';
+
+                            $permissaoExcluir = $permissao->excluir($_SESSION['id_usuario'], $_SESSION['tipo']);
+                            $mostrarBotao = $permissaoExcluir != PermissaoTarefa::NAO_AUTORIZADO;
+                            $desabilitarBotao = $permissaoExcluir != PermissaoTarefa::PODE;
+                            $desabilitarMotivo = match ($permissaoExcluir) {
+                                PermissaoTarefa::ARQUIVADA    => 'está arquivada (é de um ano passado)',
+                                PermissaoTarefa::FECHADA      => 'já foi fechada',
+                                PermissaoTarefa::TEM_ENTREGAS => 'tem entregas',
+                                default                       => ''
+                            };
+
+                            if ($mostrarBotao): ?>
+                                <div class="d-inline" <?= $desabilitarBotao ? 'data-bs-toggle="tooltip" title="A tarefa não pode ser excluída pois '.$desabilitarMotivo.'."' : '' ?>>
                                     <button type="button" class="btn btn-danger"
                                             data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao"
                                             <?= $desabilitarBotao ? 'disabled' : '' ?>
@@ -50,11 +60,11 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
-                            </div>
 
-                        <?php endif;
-                    }
-                ?>
+                            <?php endif;
+                        }
+                    ?>
+                </div>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -166,7 +176,7 @@
     </form>
 </main>
 
-<?php if ($paginaAlterar && $permissaoExcluir == PermissaoTarefa::PODE): ?>
+<?php if ($paginaAlterar): ?>
 <div class="modal fade" id="modal-confirmar-exclusao">
     <div class="modal-dialog">
         <div class="modal-content">

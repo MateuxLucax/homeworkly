@@ -3,10 +3,8 @@
 <?php require_once $root . '/views/componentes/head.php'; ?>
 <body>
 
-<!-- TODO estado da tarefa: esperando abertura; aberta; atrasada; fechada -->
 <!-- TODO estado da tarefa em relação ao aluno: pendente; entregue -->
-<!-- mostrar com uma badge ou algo assim colorido no card-header -->
-<!-- Mas essa lógica ficará no modelo da tarefa, acessível por métodos retornando enums -->
+<!-- mostrar que nem o estado da tarefa -->
 
 <?php
     $tarefa = $view['tarefa'];
@@ -47,7 +45,21 @@
             <?php endif; ?>
         </div>
         <div class="card-body">
-            <h5 class="card-title"><?= $tarefa->titulo() ?></h5>
+            <h5 class="card-title d-flex align-items-center">
+                <?= $tarefa->titulo() ?>
+                <?php
+                    $estado = $tarefa->estado();
+                    $corEstado = match($estado) {
+                        TarefaEstado::ESPERANDO_ABERTURA => 'bg-primary',
+                        TarefaEstado::ABERTA             => 'bg-success',
+                        TarefaEstado::ATRASADA           => 'bg-warning',
+                        TarefaEstado::FECHADA            => 'bg-dark'
+                    };
+                ?>
+                <span class="ms-auto badge <?= $corEstado ?>">
+                    <?= $estado->toString() ?>
+                </span>
+            </h5>
             <p><?= $tarefa->descricao() ?></p>
             <hr/>
 
