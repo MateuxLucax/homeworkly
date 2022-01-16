@@ -9,7 +9,18 @@
 
     <main class="container">
 
-        <h1 class="my-4"><?=$view['title'];?></h1>
+        <!-- TODO em vez de listar turmas em tabela, usar o card group do bootstrap, 3 cards de turma por linha
+             e criar uma classe CSS pra o card, no hover, parecer que sobe (sombra embaixo etc.) e ficar com cursor pointer
+             aí o evento click redireciona pra /turmas/turma?id={} -->
+
+        <div class="d-flex align-items-center my-3">
+            <h1>Turmas</h1>
+
+            <a href="criar" type="button" class="btn btn-success ms-auto" role="button">
+                <i class="fas fa-plus-circle m-0"></i>
+                Adicionar turma
+            </a>
+        </div>
 
         <table class="table table-striped table-hover table-bordered">
             <thead>
@@ -41,18 +52,6 @@
 
             <?php endif; ?>
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5">
-                        <div class="d-flex justify-content-end">
-                            <a href="criar" type="button" class="btn btn-success ms-auto" role="button">
-                                <i class="fas fa-plus-circle m-0"></i>
-                                Adicionar turma
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            </tfoot>
         </table>
 
     </main>
