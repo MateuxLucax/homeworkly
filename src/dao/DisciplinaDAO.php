@@ -26,4 +26,33 @@ class DisciplinaDAO
             $rows
         );
     }
+
+    public static function buscar(int $id): ?Disciplina
+    {
+        $result = Query::select(
+            'SELECT d.nome
+                  , t.id_turma
+                  , t.nome AS nome_turma
+                  , t.ano
+               FROM disciplina d
+               JOIN turma t ON d.id_turma = t.id_turma
+              WHERE d.id_disciplina = :id',
+            [':id' => $id]
+        );
+        if (count($result) == 0) return null;
+        $d = $result[0];
+
+        return (new Disciplina)
+            ->setId($id)
+            ->setNome($d['nome'])
+            ->setTurma((new Turma)
+                ->setId($d['id_turma'])
+                ->setNome($d['nome_turma'])
+                ->setAno($d['ano']));
+    }
+
+    public static function popularComProfessores(Disciplina $disciplina): Disciplina
+    {
+        return $disciplina->setProfessores(UsuarioDAO::buscarProfessoresDeDisciplina($disciplina->getId()));
+    }
 }
