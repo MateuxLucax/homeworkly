@@ -9,7 +9,16 @@
 
     <main class="container">
 
-        <h1 class="my-4"><?=$view['title'];?></h1>
+        <div class="d-flex align-items-center my-3">
+            <h1>Usuários</h1>
+            <button type="button"
+                    class="btn btn-success ms-auto"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-novo-usuario"
+            >
+                <i class="fas fa-user-plus"></i> Adicionar usuário
+            </button>
+        </div>
 
         <table class="table table-striped table-hover table-bordered">
             <thead>
@@ -73,21 +82,6 @@
 
             <?php endif; ?>
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5">
-                        <div class="d-flex justify-content-end">
-                            <button type="button"
-                                    class="btn btn-success ms-auto"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-novo-usuario"
-                            >
-                                <i class="fas fa-user-plus"></i> Adicionar usuário
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tfoot>
         </table>
 
     </main>
