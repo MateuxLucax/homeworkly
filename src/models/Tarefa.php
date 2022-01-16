@@ -88,6 +88,7 @@ class Tarefa
     public function estado(): TarefaEstado {
         $agora = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
 
+        if ($this->disciplina->getTurma()->getAno() < $agora->format('Y')) return TarefaEstado::ARQUIVADA;
         if ($agora < $this->abertura) return TarefaEstado::ESPERANDO_ABERTURA;
         if ($agora < $this->entrega)  return TarefaEstado::ABERTA; 
 

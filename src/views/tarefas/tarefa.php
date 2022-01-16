@@ -53,7 +53,8 @@
                         TarefaEstado::ESPERANDO_ABERTURA => 'bg-primary',
                         TarefaEstado::ABERTA             => 'bg-success',
                         TarefaEstado::ATRASADA           => 'bg-warning',
-                        TarefaEstado::FECHADA            => 'bg-dark'
+                        TarefaEstado::FECHADA            => 'bg-dark',
+                        TarefaEstado::ARQUIVADA          => 'bg-secondary'
                     };
                 ?>
                 <span class="ms-auto badge <?= $corEstado ?>">

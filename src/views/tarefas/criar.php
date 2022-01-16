@@ -36,7 +36,8 @@
                                 TarefaEstado::ESPERANDO_ABERTURA => 'bg-primary',
                                 TarefaEstado::ABERTA             => 'bg-success',
                                 TarefaEstado::ATRASADA           => 'bg-warning',
-                                TarefaEstado::FECHADA            => 'bg-dark'
+                                TarefaEstado::FECHADA            => 'bg-dark',
+                                TarefaEstado::ARQUIVADA          => 'bg-secondary'
                             };
 
                             echo '<h5 class="mb-0 d-inline"><span class="badge '.$corEstado.'">'.$estado->toString().'</span></h5>';
