@@ -47,9 +47,12 @@ class TarefaDAO
             ->setDescricao($ta['descricao'])
             ->setEsforcoMinutos($ta['esforco_minutos'])
             ->setComNota($ta['com_nota'])
-            ->setAbertura(new DateTime($ta['abertura']))
-            ->setEntrega(new DateTime($ta['entrega']))
-            ->setFechamento($ta['fechamento'] ? new DateTime($ta['fechamento']) : null)
+            ->setAbertura(new DateTime($ta['abertura'], new DateTimeZone('America/Sao_Paulo')))
+            ->setEntrega(new DateTime($ta['entrega'], new DateTimeZone('America/Sao_Paulo')))
+            ->setFechamento(
+                  $ta['fechamento']
+                ? new DateTime($ta['fechamento'], new DateTimeZone('America/Sao_Paulo'))
+                : null)
             ->setFechadaManualmente($ta['fechada'])
             ->setProfessor((new Usuario)
                 ->setId($ta['id_professor'])

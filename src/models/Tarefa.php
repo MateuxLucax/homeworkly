@@ -86,7 +86,7 @@ class Tarefa
     // ------------------------------
 
     public function estado(): TarefaEstado {
-        $agora = new DateTime();
+        $agora = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
 
         if ($agora < $this->abertura) return TarefaEstado::ESPERANDO_ABERTURA;
         if ($agora < $this->entrega)  return TarefaEstado::ABERTA; 
