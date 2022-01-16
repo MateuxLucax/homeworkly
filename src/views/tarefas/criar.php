@@ -227,27 +227,35 @@
     function validarDatas() {
         const abertura   = new Date(form.abertura.value),
               entrega    = new Date(form.entrega.value),
-              fechamento = new Date(form.fechamento.value);
+              fechamento = new Date(form.fechamento.value),
+              agora      = new Date();
 
-        form.abertura.setCustomValidity(
-              !switchAbrirAgora.checked && abertura < new Date()
-            ? 'A data de abertura não pode estar no passado'
-            : ''
-        );
+        let validAbertura = '';
+        if (!switchAbrirAgora.checked) {
+            if (abertura < agora) {
+                validAbertura = 'A data de abertura não pode estar no passado';
+            } else if (abertura.getFullYear() > agora.getFullYear()) {
+                validAbertura = 'A tarefa deverá ser aberta este ano';
+            }
+        }
+        form.abertura.setCustomValidity(validAbertura);
 
-        form.entrega.setCustomValidity(
-              form.entrega.value && entrega < abertura
-            ? 'A data de entrega deve vir depois da data de abertura'
-            : ''
-        );
+        let validEntrega = '';
+        if (entrega < abertura) {
+            validEntrega = 'A data de entrega deve vir depois da data de abertura';
+        } else if (entrega.getFullYear() > agora.getFullYear()) {
+            validEntrega = 'A entrega deverá ocorrer este ano';
+        }
+        form.entrega.setCustomValidity(validEntrega);
 
         let validFechamento = '';
         if (form.fechamento.value) {
-            if (form.entrega.value && fechamento < entrega) {
+            if (fechamento < entrega) {
                 validFechamento = 'A data de fechamento deve vir depois da data de entrega;'
-            }
-            if (fechamento < abertura) {
+            } else if (fechamento < abertura) {
                 validFechamento = 'A data de fechamento deve vir depois da data de abertura';
+            } else if (fechamento.getFullYear() > agora.getFullYear()) {
+                validFechamento = 'A tarefá deverá ser fechada este ano';
             }
         }
         form.fechamento.setCustomValidity(validFechamento);
