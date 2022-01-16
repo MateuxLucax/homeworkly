@@ -60,60 +60,50 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-sm-10 my-auto">
-                                    Disciplinas
-                                </div>
-                                <div class="col-sm-2">
-                                    <button type="button" id="btn-adicionar-disciplina" class="btn btn-success float-end">
-                                        <i class="fas fa-plus-circle"></i>
-                                    </button>
-                                </div>
-                            </div>
+            <div class="card mb-3">
+                <div class="card-header d-flex align-items-center">
+                    Disciplinas
+                    <button type="button" id="btn-adicionar-disciplina" class="ms-auto btn btn-success">
+                        <i class="fas fa-plus-circle"></i>
+                        Adicionar disciplina
+                    </button>
+                </div>
+                <div class="card-body" id="disciplinas-container">
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-10 my-auto">
+                            Alunos
                         </div>
-                        <div class="card-body" id="disciplinas-container">
+                        <div class="col-sm-2">
+                            <button
+                                type="button"
+                                class="btn btn-success float-end"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-adicionar-aluno"
+                            >
+                                <i class="fas fa-search"></i>
+                                Adicionar aluno
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-lg-6">
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-sm-10 my-auto">
-                                    Alunos
-                                </div>
-                                <div class="col-sm-2">
-                                    <button
-                                        type="button"
-                                        class="btn btn-success float-end"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-adicionar-aluno"
-                                    >
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body" id="alunos-container">
-                            <table class="table table-striped table-hover d-none" id="table-alunos">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nome</th>
-                                        <th>Login</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tbody-alunos">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="card-body" id="alunos-container">
+                    <table class="table table-striped table-hover d-none" id="table-alunos">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Login</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-alunos">
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -364,6 +354,7 @@
         const elemModalAdicionarProfessor = document.getElementById('modal-adicionar-professor');
         const modalAdicionarProfessor = new bootstrap.Modal(elemModalAdicionarProfessor);
 
+
         // Usado tanto para criar uma nova disciplina quando o usuário clica no botão (sem argumentos)
         // quanto para carregar uma disciplina existente (passada como argumento)
         function criarDisciplina(disciplina) {
@@ -385,23 +376,21 @@
             criarElemento('i', ['fas', 'fa-minus-circle'], btnRemover);
 
             const cardProfessores = criarElemento('div', ['card'], cardBody);
-            const cardHeaderProfessores = criarElemento('div', ['card-header'], cardProfessores);
+            const cardHeaderProfessores = criarElemento('div', ['card-header', 'd-flex', 'align-items-center'], cardProfessores);
             const cardBodyProfessores = criarElemento('div', ['card-body'], cardProfessores);
 
-            const headerProfsRow = criarElemento('div', ['row'], cardHeaderProfessores);
-            const headerProfsColTitulo = criarElemento('div', ['col-sm-10', 'my-auto'], headerProfsRow);
-            headerProfsColTitulo.append('Professor(es)');
-            const headerProfsColBtn = criarElemento('div', ['col-sm-2'], headerProfsRow);
-
-            const btnAddProfessor = criarElemento('button', ['btn', 'btn-success', 'float-end'], headerProfsColBtn, {
+            cardHeaderProfessores.append('Professor(es)');
+            const btnAddProfessor = criarElemento('button', ['btn', 'btn-success', 'ms-auto'], cardHeaderProfessores, {
                 type: 'button',
                 onclick: () => {
                     elemModalAdicionarProfessor.setAttribute('data-id-dom-disciplina', idDOMDisciplina)
                     modalAdicionarProfessor.show();
                 }
             });
+            criarElemento('i', ['fas', 'fa-search'], btnAddProfessor);
+            btnAddProfessor.append('  Adicionar professor');
+
             document.getElementById('btn-fechar-modal-adicionar-professor').onclick = () => { modalAdicionarProfessor.hide(); }
-            const iconeAddProfessor = criarElemento('i', ['fas', 'fa-search'], btnAddProfessor);
 
             const tableProfessores = criarElemento('table', ['table-professores', 'table', 'table-hover', 'd-none'], cardBodyProfessores);
             const theadProfessores = criarElemento('thead', [], tableProfessores);
@@ -448,7 +437,7 @@
                 })
             });
             const textProm = response.text();
-            if (resp.status != 200) {
+            if (response.status != 200) {
                 agendarAlertaSwal({
                     icon: 'error',
                     title: 'Erro do sistema',
@@ -608,7 +597,7 @@
                 body: JSON.stringify({ 'agrupar_por': 'ano' })
             });
             const textProm = response.text();
-            if (resp.status != 200) {
+            if (response.status != 200) {
                 Swal.fire({
                     icon: 'error',
                     warning: 'Não foi possível carregar as turmas para a pesquisa por alunos'
@@ -621,7 +610,7 @@
             try {
                 turmasPorAno = JSON.parse(ret);
                 for (const ano in turmasPorAno) {
-                    criarElemento('option', [], pesquisaAlunosSelectAno, {
+                    criarElemento('option', [], pesquisaAlunoSelectAno, {
                         value: ano,
                         innerText: ano
                     });
