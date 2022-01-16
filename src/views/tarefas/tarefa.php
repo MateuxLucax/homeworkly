@@ -35,14 +35,30 @@
     <div class="card">
         <div class="card-header d-flex align-items-center">
             Tarefa
-            <!-- TODO tornar botão disabled quando tarefa estiver arquivada / for de disciplina de turma do ano passado -->
-            <?php if ($permissao->alterar($_SESSION['id_usuario'], $_SESSION['tipo']) == PermissaoTarefa::PODE): ?>
-                <span class="ms-auto">
-                    <a class="btn btn-primary" href="alterar?id=<?= $tarefa->id() ?>">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                </span>
-            <?php endif; ?>
+            <?php
+                $permissaoAlterar = $permissao->alterar($_SESSION['id_usuario'], $_SESSION['tipo']);
+                $mostrarBotao = $permissaoAlterar != PermissaoTarefa::NAO_AUTORIZADO;
+                $desabilitarBotao = $permissaoAlterar != PermissaoTarefa::PODE;
+                $desabilitarMotivo = match ($permissaoAlterar) {
+                    PermissaoTarefa::ARQUIVADA => 'é de um ano passado e está arquivada',
+                    PermissaoTarefa::FECHADA   => 'já foi fechada',
+                    default                    => '[cód. '.$permissaoAlterar.']'
+                };
+
+                if ($mostrarBotao): ?>
+                    <div class="d-inline ms-auto"
+                         <?= $desabilitarBotao ? 'data-bs-toggle="tooltip" title="A tarefa não pode ser alterada pois '.$desabilitarMotivo.'."' : '' ?>
+                    >
+                        <span class="ms-auto">
+                            <button type="button" class="btn btn-primary" onclick="location.assign('alterar?id=<?= $tarefa->id() ?>')"
+                                    <?= $desabilitarBotao ? 'disabled' : '' ?>
+                            >
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </span>
+                    </div>
+                <?php endif;
+            ?>
         </div>
         <div class="card-body">
             <h5 class="card-title d-flex align-items-center">
@@ -136,6 +152,10 @@
         </div>
     </div>
 </main>
+
+<script>
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+</script>
 
 </body>
 </html>
