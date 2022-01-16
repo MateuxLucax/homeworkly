@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
             ':titulo'         => $dados['titulo'],
             ':descricao'      => $dados['descricao'],
             ':esforcoMinutos' => $dados['esforcoMinutos'],
-            ':comNota'        => $dados['comNota'] == 'true',
+            ':comNota'        => $dados['comNota'] ? 'true' : 'false',
             ':abertura'       => $dados['abertura'],
             ':entrega'        => $dados['entrega'],
             ':fechamento'     => $dados['fechamento'],
