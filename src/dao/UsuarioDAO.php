@@ -108,7 +108,7 @@ class UsuarioDAO
     public static function validaSessaoTipo(string $tipo) : void {
         if (self::validaSessao()) {
             $tipoSessao = (string) $_SESSION['tipo'];
-            if (!($tipoSessao == TipoUsuario::ADMINISTRADOR) || !($tipoSessao == $tipo)) {
+            if ($tipoSessao != TipoUsuario::ADMINISTRADOR && $tipoSessao != $tipo) {
                 self::sair();
             }
         }
