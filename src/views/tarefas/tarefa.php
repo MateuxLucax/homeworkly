@@ -34,7 +34,7 @@
             </li>
         </ol>
     </nav>
-    <div class="card">
+    <div class="card mb-3">
         <div class="card-header d-flex align-items-center">
             Tarefa
             &nbsp;
@@ -61,15 +61,11 @@
                             </button>
                         </span>
                     </div>
-                <?php endif;
-            ?>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title d-flex align-items-center">
-                <?= $tarefa->titulo() ?>
+                <?php endif; ?>
+
                 <?php
                     $estado = $tarefa->estado();
-                    $corEstado = match($estado) {
+                    $classeBgEstado = match($estado) {
                         TarefaEstado::ESPERANDO_ABERTURA => 'bg-primary',
                         TarefaEstado::ABERTA             => 'bg-success',
                         TarefaEstado::ATRASADA           => 'bg-warning',
@@ -77,9 +73,15 @@
                         TarefaEstado::ARQUIVADA          => 'bg-secondary'
                     };
                 ?>
-                <span class="ms-auto badge <?= $corEstado ?>">
-                    <?= $estado->toString() ?>
-                </span>
+                <h5 class="mb-0 ms-auto">
+                    <span class="badge <?= $classeBgEstado ?>">
+                        <?= $estado->toString() ?>
+                    </span>
+                </h5>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">
+                <?= $tarefa->titulo() ?>
             </h5>
             <p><?= $tarefa->descricao() ?></p>
             <hr/>
@@ -155,6 +157,97 @@
             </span>
         </div>
     </div>
+
+    <?php
+    if ($_SESSION['tipo'] == TipoUsuario::ALUNO):
+        $alunoJaEntregou = $view['entrega'] != null;
+        $tarefaPermiteEntrega = $estado == TarefaEstado::ABERTA || $estado == TarefaEstado::ATRASADA; ?>
+
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                Entrega
+            </div>
+            <div class="card-body">
+                <?php
+                if ($alunoJaEntregou || $tarefaPermiteEntrega):
+                    if ($alunoJaEntregou) {
+                        $formAction = 'alterar?id='.$view['entrega']['id'];
+                        $conteudoEntrega = $view['entrega']['conteudo'];
+                        $iconeBotao = 'fa-edit';
+                        $textoBotao = 'Alterar';
+                    } else {
+                        $formAction = 'criar?tarefa='.$tarefa->id();
+                        $conteudoEntrega = '';
+                        $iconeBotao = 'fa-paper-plane';
+                        $textoBotao = 'Salvar';
+                    }
+
+                    if (!$tarefaPermiteEntrega): ?>
+                        <div class="alert alert-warning">
+                            Você não pode mais alterar a entrega.
+                        </div>
+                    <?php endif;
+                    ?>
+
+                    <form action="/aluno/entregas/<?= $formAction ?>">
+                        <textarea
+                            class="mb-0 form-control" name="conteudo-entrega" id="conteudo-entrega" rows="3" required
+                            <?= $alunoJaEntregou && !$tarefaPermiteEntrega ? 'disabled readonly' : ''?>
+                        ><?= $conteudoEntrega ?></textarea>
+                        <?php if ($tarefaPermiteEntrega): ?>
+                            <div class="float-end">
+                                <button type="button" class="mt-3 btn btn-primary">
+                                    <i class="fas <?= $iconeBotao ?>"></i>
+                                    <?= $textoBotao ?>
+                                </button>
+                            </div>
+                        <?php endif; ?>
+                    </form>
+                <?php else: ?>
+                    <div class="mt-3 mb-0 alert alert-danger">
+                        Você não pode mais realizar a entrega desta tarefa.
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA): ?>
+                    <hr/>
+                    <div class="d-flex align-items-center">
+                        <div>Avaliação do professor</div>
+                        <?php if ($tarefa->comNota()) {
+                            $nota = $view['entrega']['nota'];
+                            $textoAvaliacao = ($nota ?? '?') .'/10';
+                            $bgAvaliacao = !$nota ? 'bg-secondary' : ($nota < 7 ? 'bg-warning' : 'bg-success');
+                        } else {
+                            // TODO alterar visto para 3 valores (no BD, mas refletir aqui): visto, não visto / pendente (somente visível pro professor?) e não aceito
+                            if ($view['entrega']['visto'] === null) {
+                                $textoAvaliacao = 'Não visto';
+                                $bgAvaliacao = 'bg-secondary';
+                            } else if ($view['entrega']['visto']) {
+                                $textoAvaliacao = 'Visto';
+                                $bgAvaliacao = 'bg-success';
+                            } else {
+                                $textoAvaliacao = 'Não aceito';
+                                $bgAvaliacao = 'bg-danger';
+                            }
+                        } ?>
+                        <h4 class="mb-0" style="margin-left: 15px;">
+                            <span class="badge <?= $bgAvaliacao ?>">
+                                <?= $textoAvaliacao ?>
+                            </span>
+                        </h4>
+                    </div>
+
+                    <?php if (!empty($view['entrega']['comentario'])): ?>
+                        <label class="form-label mt-3" for="entrega-comentario"Comentário>Comentário</label>
+                        <textarea disabled readonly id="entrega-comentario" class="form-control" rows="3"
+                        ><?= $view['entrega']['comentario'] ?></textarea>
+                    <?php endif; ?>
+
+                <?php endif; ?>
+
+            </div>
+        </div>
+    <?php endif; ?>
 </main>
 
 <script>
