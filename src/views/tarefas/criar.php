@@ -54,7 +54,9 @@
                                 TarefaEstado::ARQUIVADA          => 'bg-secondary'
                             };
 
-                            echo '<h5 class="mb-0 d-inline"><span class="badge '.$corEstado.'">'.$estado->toString().'</span></h5>';
+                            $corTexto = $corEstado == 'bg-warning' ? 'text-dark' : '';
+
+                            echo '<h5 class="mb-0 d-inline"><span class="badge '.$corEstado.' '.$corTexto.'">'.$estado->toString().'</span></h5>';
 
                             $permissaoExcluir = $permissao->excluir($_SESSION['id_usuario'], $_SESSION['tipo']);
                             $mostrarBotao = $permissaoExcluir != PermissaoTarefa::NAO_AUTORIZADO;

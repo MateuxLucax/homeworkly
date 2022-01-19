@@ -74,9 +74,10 @@
                         TarefaEstado::FECHADA            => 'bg-dark',
                         TarefaEstado::ARQUIVADA          => 'bg-secondary'
                     };
+                    $classeTextoEstado = $classeBgEstado == 'bg-warning' ? 'text-dark' : '';
                 ?>
                 <h5 class="mb-0" style="margin-left: 15px;">
-                    <span class="badge <?= $classeBgEstado ?>">
+                    <span class="badge <?= $classeBgEstado ?> <?= $classeTextoEstado ?>">
                         <?= $estado->toString() ?>
                     </span>
                 </h5>
@@ -177,7 +178,15 @@
 
         <div class="card">
             <div class="card-header d-flex align-items-center">
-                Entrega
+                <?php if ($alunoJaEntregou) {
+                    $dataHoraEntrega = DateUtil::toLocalDateTime($view['entrega']['data_hora']);
+                    echo '<span>Entregue em <i>'.$dataHoraEntrega->format('d/m H:i').'</i></span>';
+                    if ($dataHoraEntrega > $tarefa->entrega()) {
+                        echo '<h5 class="mb-0" style="margin-left: 15px;"><span class="badge bg-warning text-dark">Atrasada</span></h5>';
+                    }
+                } else {
+                    echo 'Entrega pendente';
+                } ?>
             </div>
             <div class="card-body">
                 <?php
@@ -244,17 +253,18 @@
                                 $textoAvaliacao = 'Não aceito';
                                 $bgAvaliacao = 'bg-danger';
                             }
+
+                            $corTextoAvaliacao = $bgAvaliacao == 'bg-warning' ? 'text-dark' : '';
                         } ?>
-                        <h4 class="mb-0" style="margin-left: 15px;">
-                            <span class="badge <?= $bgAvaliacao ?>">
+                        <h5 class="mb-0" style="margin-left: 15px;">
+                            <span class="badge <?= $bgAvaliacao ?> <?= $corTextoAvaliacao ?>">
                                 <?= $textoAvaliacao ?>
                             </span>
-                        </h4>
+                        </h5>
                     </div>
 
                     <?php if (!empty($view['entrega']['comentario'])): ?>
-                        <label class="form-label mt-3" for="entrega-comentario"Comentário>Comentário</label>
-                        <textarea disabled readonly id="entrega-comentario" class="form-control" rows="3"
+                        <textarea disabled readonly id="entrega-comentario" class="mt-3 form-control" rows="3"
                         ><?= $view['entrega']['comentario'] ?></textarea>
                     <?php endif; ?>
 
