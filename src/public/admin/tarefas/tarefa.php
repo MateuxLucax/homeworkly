@@ -9,3 +9,12 @@ require_once $root . '/models/TipoUsuario.php';
 UsuarioDAO::validaSessaoTipo(TipoUsuario::ADMINISTRADOR);
 
 require_once $root . '/public/base/tarefas/tarefa.php';
+
+$tarefa = buscarTarefaOuNotFound();
+$permissao = new PermissaoTarefa($tarefa->id());
+$permissaoVisualizar = $permissao->visualizar($_SESSION['id_usuario'], $_SESSION['tipo']);
+if ($permissaoVisualizar != PermissaoTarefa::PODE) responsePermissaoNaoPode($permissaoVisualizar);
+
+$view['tarefa'] = $tarefa;
+$view['permissao'] = $permissao;
+require $root . '/views/tarefas/tarefa.php';
