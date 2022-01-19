@@ -26,7 +26,7 @@ function respondJson(int $code, mixed $body = ''): void
  */
 function respondWithNotFoundPage(string $message): void
 {
-    respondWithErrorPage(HttpCodes::NOT_FOUND, '404 – Não encontrado', $message);
+    respondWithErrorPage(HttpCodes::NOT_FOUND, 'Não encontrado', $message);
 }
 
 /**
