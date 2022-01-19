@@ -84,7 +84,7 @@ class Tarefa
         return $this;
     }
 
-    // ------------------------------
+    // -------------------------------------------------------
 
     public function estado(): TarefaEstado {
         $agora = DateUtil::toLocalDateTime('now');

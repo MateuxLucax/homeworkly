@@ -39,6 +39,8 @@
             Tarefa
             &nbsp;
             <small>(ID <?= $tarefa->id()?>)</small>
+            <div class="ms-auto d-flex align-items-center">
+
             <?php
                 $permissaoAlterar = $permissao->alterar($_SESSION['id_usuario'], $_SESSION['tipo']);
                 $mostrarBotao = $permissaoAlterar != PermissaoTarefa::NAO_AUTORIZADO;
@@ -50,10 +52,10 @@
                 };
 
                 if ($mostrarBotao): ?>
-                    <div class="d-inline ms-auto"
+                    <div
                          <?= $desabilitarBotao ? 'data-bs-toggle="tooltip" title="A tarefa não pode ser alterada pois '.$desabilitarMotivo.'."' : '' ?>
                     >
-                        <span class="ms-auto">
+                        <span>
                             <button type="button" class="btn btn-primary" onclick="location.assign('alterar?id=<?= $tarefa->id() ?>')"
                                     <?= $desabilitarBotao ? 'disabled' : '' ?>
                             >
@@ -73,11 +75,13 @@
                         TarefaEstado::ARQUIVADA          => 'bg-secondary'
                     };
                 ?>
-                <h5 class="mb-0 ms-auto">
+                <h5 class="mb-0" style="margin-left: 15px;">
                     <span class="badge <?= $classeBgEstado ?>">
                         <?= $estado->toString() ?>
                     </span>
                 </h5>
+
+            </div>
         </div>
         <div class="card-body">
             <h5 class="card-title">
@@ -163,6 +167,14 @@
         $alunoJaEntregou = $view['entrega'] != null;
         $tarefaPermiteEntrega = $estado == TarefaEstado::ABERTA || $estado == TarefaEstado::ATRASADA; ?>
 
+        <!-- TODO mostrar data e hora da entrega
+             e também se a entrega ficou atrasada -->
+
+        <!-- TODO além disso, talvez fica estranho mostrar um estado 'Atrasada' para a entrega,
+             porque é o que vai ser mostrado para o aluno mesmo que ele tenha feito a entrega
+
+             mostrar no lugar "Passou da data de entrega" com uma cor diferente, mais neutra?  -->
+
         <div class="card">
             <div class="card-header d-flex align-items-center">
                 Entrega
@@ -171,16 +183,19 @@
                 <?php
                 if ($alunoJaEntregou || $tarefaPermiteEntrega):
                     if ($alunoJaEntregou) {
-                        $formAction = 'alterar?id='.$view['entrega']['id'];
+                        $formMethod = 'PUT';
+                        $endpointEntrega = 'alterar?id='.$view['entrega']['id'];
                         $conteudoEntrega = $view['entrega']['conteudo'];
                         $iconeBotao = 'fa-edit';
                         $textoBotao = 'Alterar';
                     } else {
-                        $formAction = 'criar?tarefa='.$tarefa->id();
+                        $formMethod = 'POST';
+                        $endpointEntrega = 'criar?tarefa='.$tarefa->id();
                         $conteudoEntrega = '';
                         $iconeBotao = 'fa-paper-plane';
                         $textoBotao = 'Salvar';
                     }
+                    $formAction = "/aluno/entregas/$endpointEntrega";
 
                     if (!$tarefaPermiteEntrega): ?>
                         <div class="alert alert-warning">
@@ -189,14 +204,15 @@
                     <?php endif;
                     ?>
 
-                    <form action="/aluno/entregas/<?= $formAction ?>">
+                    <!-- method de form aparentemente só pode ser GET ou POST, então colocado como data attribute -->
+                    <form id="form-fazer-entrega" data-method="<?= $formMethod ?>" action="<?= $formAction ?>">
                         <textarea
-                            class="mb-0 form-control" name="conteudo-entrega" id="conteudo-entrega" rows="3" required
+                            class="mb-0 form-control" name="conteudo" id="conteudo" rows="3" required
                             <?= $alunoJaEntregou && !$tarefaPermiteEntrega ? 'disabled readonly' : ''?>
                         ><?= $conteudoEntrega ?></textarea>
                         <?php if ($tarefaPermiteEntrega): ?>
                             <div class="float-end">
-                                <button type="button" class="mt-3 btn btn-primary">
+                                <button type="submit" id="btn-fazer-entrega" class="mt-3 btn btn-primary">
                                     <i class="fas <?= $iconeBotao ?>"></i>
                                     <?= $textoBotao ?>
                                 </button>
@@ -204,12 +220,12 @@
                         <?php endif; ?>
                     </form>
                 <?php else: ?>
-                    <div class="mt-3 mb-0 alert alert-danger">
+                    <div class="mb-0 alert alert-danger">
                         Você não pode mais realizar a entrega desta tarefa.
                     </div>
                 <?php endif; ?>
 
-                <?php if ($estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA): ?>
+                <?php if ($alunoJaEntregou && ($estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA)): ?>
                     <hr/>
                     <div class="d-flex align-items-center">
                         <div>Avaliação do professor</div>
@@ -218,7 +234,6 @@
                             $textoAvaliacao = ($nota ?? '?') .'/10';
                             $bgAvaliacao = !$nota ? 'bg-secondary' : ($nota < 7 ? 'bg-warning' : 'bg-success');
                         } else {
-                            // TODO alterar visto para 3 valores (no BD, mas refletir aqui): visto, não visto / pendente (somente visível pro professor?) e não aceito
                             if ($view['entrega']['visto'] === null) {
                                 $textoAvaliacao = 'Não visto';
                                 $bgAvaliacao = 'bg-secondary';
@@ -251,7 +266,62 @@
 </main>
 
 <script>
-    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+
+document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+
+//
+// Aluno
+//
+
+const idTarefa = <?= $tarefa->id() ?>;
+
+<?php if ($_SESSION['tipo'] == TipoUsuario::ALUNO): ?>
+
+    //
+    // Fazer entrega
+    //
+
+    const formEntrega = document.getElementById('form-fazer-entrega');
+
+    formEntrega?.addEventListener('submit', async event => {
+        event.preventDefault();
+
+        const target = formEntrega.action;
+        const method = formEntrega.dataset.method;
+        const body = JSON.stringify({ conteudo: formEntrega.conteudo.value });
+
+        console.log('target', target);
+        console.log('method', method);
+        console.log('body', body);
+
+        const response = await fetch(target, { method, body });
+        const text = await response.text();
+
+        try {
+            const ret = JSON.parse(text);
+            if (response.status != 200) {
+                Swal.fire({
+                    icon: 'error',
+                    text: ret.message
+                });
+                if (ret.hasOwnProperty('exception')) console.error(exception);
+                return;
+            }
+
+            agendarAlertaSwal({
+                icon: 'success',
+                text: 'A entrega foi feita com sucesso'
+            });
+            location.assign(`tarefa?id=${idTarefa}`);
+
+        } catch(e) {
+            console.error(e);
+            console.error(text);
+        }
+    });
+
+<?php endif; ?>
+
 </script>
 
 </body>
