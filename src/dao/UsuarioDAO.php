@@ -130,6 +130,19 @@ class UsuarioDAO
         }
     }
 
+    public static function alunoDaTurma(int $idUsuario, int $idTurma): bool
+    {
+        return (bool) Query::select(
+            'SELECT EXISTS(
+                SELECT 1
+                  FROM aluno_em_turma
+                 WHERE (id_aluno, id_turma) = (:idUsuario, :idTurma)
+            ) AS aluno_da_turma',
+            [ ':idUsuario' => $idUsuario,
+              ':idTurma' => $idTurma ]
+        )[0]['aluno_da_turma'];
+    }
+
     public static function buscarAlunosDeTurma(int $idTurma): array
     {
         $rows = Query::select(
