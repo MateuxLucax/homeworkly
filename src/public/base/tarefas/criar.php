@@ -3,6 +3,10 @@
 require_once $root . '/utils/response-utils.php';
 require_once $root . '/database/Connection.php';
 require_once $root . '/dao/PermissaoTarefa.php';
+require_once $root . '/models/Disciplina.php';
+require_once $root . '/dao/DisciplinaDAO.php';
+require_once $root . '/models/Tarefa.php';
+require_once $root . '/dao/TarefaDAO.php';
 
 /**
  * @return retorna array [codigo, titulo, mensagem] para a response caso a permissão não seja PODE
@@ -47,6 +51,8 @@ function retornoPermissao(int $permissao, string $tipoUsuario): array
         ];
     }
 }
+
+// -------------------------------------------------------
 
 $pdo = Connection::getInstance();
 
@@ -97,32 +103,23 @@ else if ($_SERVER['REQUEST_METHOD'] == 'GET')
         respondWithNotFoundPage('Erro do sistema: a página de criar tarefa não recebeu a disciplina a qual a tarefa vai pertencer.');
     }
 
-    $id_disciplina = $_GET['disciplina'];
+    $idDisciplina = $_GET['disciplina'];
 
-    $res = Query::select(
-        'SELECT d.nome as disciplina_nome, t.nome as turma_nome, t.ano
-           FROM disciplina d JOIN turma t ON d.id_turma = t.id_turma
-          WHERE d.id_disciplina = :id',
-        ['id' => $id_disciplina]
-    );
+    $disciplina = DisciplinaDAO::buscar($idDisciplina);
 
-    if (count($res) == 0) {
-        respondWithNotFoundPage("Não existe uma disciplina com <b>ID $id_disciplina</b>.<br/>Não podemos criar uma tarefa em uma disciplina que não existe");
+    if ($disciplina == null) {
+        respondWithNotFoundPage("Não existe uma disciplina com <b>ID $idDisciplina</b>.<br/>Não podemos criar uma tarefa em uma disciplina que não existe");
     }
 
-    $permissao = PermissaoTarefa::criar($_SESSION['id_usuario'], $_SESSION['tipo'], $id_disciplina);
+    $permissao = PermissaoTarefa::criar($_SESSION['id_usuario'], $_SESSION['tipo'], $idDisciplina);
 
     if ($permissao != PermissaoTarefa::PODE) {
         list($codigo, $titulo, $mensagem) = retornoPermissao($permissao, $_SESSION['tipo']);
         respondWithErrorPage($codigo, $titulo, nl2br($mensagem));
     }
 
-    $disciplina = $res[0];
-
-    $view['disciplina_id']   = $id_disciplina;
-    $view['disciplina_nome'] = $disciplina['disciplina_nome'];
-    $view['turma_nome']      = $disciplina['turma_nome'];
-    $view['ano']             = $disciplina['ano'];
+    $view['disciplina'] = $disciplina;
+    $view['turma'] = $disciplina->getTurma();
 
     $view['professor_id']   = $_SESSION['id_usuario'];
     $view['professor_nome'] = $_SESSION['nome'];
@@ -131,5 +128,8 @@ else if ($_SERVER['REQUEST_METHOD'] == 'GET')
 }
 else 
 {
-    respondJson(HttpCodes::METHOD_NOT_ALLOWED, ['message' => 'Método não '.$_SERVER['RESPONSE_METHOD'].' permitido']);
+    respondJson(
+        HttpCodes::METHOD_NOT_ALLOWED,
+        ['message' => 'Método não '.$_SERVER['RESPONSE_METHOD'].' permitido']
+    );
 }

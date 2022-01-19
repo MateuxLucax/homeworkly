@@ -4,6 +4,9 @@
 <body>
 
 <?php
+    $turma = $view['turma'];
+    $disciplina = $view['disciplina'];
+
     $paginaAlterar = isset($view['tarefa']);
     $tarefa = $paginaAlterar ? $view['tarefa'] : null;
     $permissao = $paginaAlterar ? $view['permissao'] : null;
@@ -32,7 +35,7 @@
         <?php if ($paginaAlterar): ?>
             <input type="hidden" name="id" value="<?=$tarefa?->id()?>">
         <?php endif; ?>
-        <input type="hidden" name="disciplina" value="<?= $view['disciplina_id'] ?>" />
+        <input type="hidden" name="disciplina" value="<?= $disciplina->getId() ?>" />
         <input type="hidden" name="professor" value="<?= $view['professor_id'] ?>" />
         <div class="card mb-3">
             <div class="card-header d-flex align-items-center">
