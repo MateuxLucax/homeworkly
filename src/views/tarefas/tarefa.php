@@ -66,6 +66,12 @@
                 <?php endif; ?>
 
                 <?php
+                    // acho que mostrar 'atrasada' fica um pouco estranho
+                    // TODO mostrar 'aberta' mas colocar um alert na entrega
+                    // caso o usuário ainda não tenha feito a entrega
+                    // de que ela ficará atrasada.
+
+                    // TODO talvez remover esse estado ATRASADA mesmo
                     $estado = $tarefa->estado();
                     $classeBgEstado = match($estado) {
                         TarefaEstado::ESPERANDO_ABERTURA => 'bg-primary',
@@ -300,10 +306,6 @@ const idTarefa = <?= $tarefa->id() ?>;
         const method = formEntrega.dataset.method;
         const body = JSON.stringify({ conteudo: formEntrega.conteudo.value });
 
-        console.log('target', target);
-        console.log('method', method);
-        console.log('body', body);
-
         const response = await fetch(target, { method, body });
         const text = await response.text();
 
@@ -320,7 +322,7 @@ const idTarefa = <?= $tarefa->id() ?>;
 
             agendarAlertaSwal({
                 icon: 'success',
-                text: 'A entrega foi feita com sucesso'
+                text: ret.message
             });
             location.assign(`tarefa?id=${idTarefa}`);
 
