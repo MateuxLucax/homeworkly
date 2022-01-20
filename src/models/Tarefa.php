@@ -86,17 +86,17 @@ class Tarefa
 
     // -------------------------------------------------------
 
-    public function estado(): TarefaEstado {
+    public function estado(): TarefaEstado
+    {
+        // Professor pode fechar a tarefa manualmente antes da data de fechamento
+        if ($this->fechada_manualmente) return TarefaEstado::FECHADA;
+
         $agora = DateUtil::toLocalDateTime('now');
 
         if ($this->disciplina->getTurma()->getAno() < $agora->format('Y')) return TarefaEstado::ARQUIVADA;
         if ($agora < $this->abertura) return TarefaEstado::ESPERANDO_ABERTURA;
         if ($agora < $this->entrega)  return TarefaEstado::ABERTA; 
-
-        // Professor pode fechar a tarefa manualmente antes da data de fechamento
-        $fechada = $this->fechada_manualmente
-                || ( !is_null($this->fechamento) && $agora >= $this->fechamento );
-
-        return $fechada ? TarefaEstado::FECHADA : TarefaEstado::ATRASADA;
+        if (is_null($this->fechamento) || $agora < $this->fechamento) return TarefaEstado::ATRASADA;
+        return TarefaEstado::FECHADA; 
     }
 }
