@@ -58,12 +58,13 @@ create table if not exists tarefa (
     );
 
 create table if not exists entrega (
-      id_entrega serial    primary key
-    , id_tarefa  bigint    references tarefa
-    , id_aluno   bigint    references usuario
-    , visto      boolean
-    , nota       real      check (nota is null or (nota >= 0 and nota <= 10))
-    , data_hora  timestamp not null
-    , conteudo   text      not null
-    , comentario text
+      id_entrega    serial    primary key
+    , id_tarefa     bigint    references tarefa
+    , id_aluno      bigint    references usuario
+    , conteudo      text      not null
+    , data_hora     timestamp not null
+    , em_definitivo boolean
+    , visto         boolean
+    , nota          real      check (nota is null or (nota >= 0 and nota <= 10))
+    , comentario    text
     );

@@ -52,8 +52,8 @@ insert into tarefa (titulo, descricao, esforco_minutos, com_nota, abertura, entr
 , ('Contas', 'Realize as contas: 2+2, 9+2+3, 9*9*9, e^i', 60, false, current_timestamp + interval '7' day, current_timestamp + interval '9' day, null, false, 5, 2)
 on conflict do nothing;
 
-insert into entrega (id_tarefa, id_aluno, visto, nota, data_hora, conteudo, comentario) values
-  (1, 3, null, 8.0, current_timestamp + interval '3' hour, '2, 4, 6, 40, 9, 1', null)
-, (1, 4, null, 0.0, current_timestamp + interval '2' day, '1, 2, 3, 4, 5, 6', 'O quê??')
-, (1, 5, null, 10.0, current_timestamp, '2, 4, 6, 35, 9, indeterminado', 'Parabéns!')
+insert into entrega (id_tarefa, id_aluno, visto, nota, data_hora, conteudo, comentario, em_definitivo) values
+  (1, 3, null, 8.0, current_timestamp + interval '3' hour, '2, 4, 6, 40, 9, 1', null, true)
+, (1, 4, null, 0.0, current_timestamp + interval '2' day, '1, 2, 3, 4, 5, 6', 'O quê??', true)
+, (1, 5, null, 10.0, current_timestamp, '2, 4, 6, 35, 9, indeterminado', 'Parabéns!', true)
 on conflict do nothing;
