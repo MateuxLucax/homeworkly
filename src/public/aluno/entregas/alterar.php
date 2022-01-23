@@ -10,7 +10,8 @@ UsuarioDAO::validaSessaoTipo(TipoUsuario::ALUNO);
 
 // -------------------------------------------------------
 
-require_once $root . '/database/Query.php';
+require_once $root . '/models/Entrega.php';
+require_once $root . '/dao/EntregaDAO.php';
 require_once $root . '/utils/DateUtil.php';
 
 try
@@ -24,34 +25,32 @@ try
     $idTarefa = $_GET['tarefa'];
     $idAluno = $_GET['aluno'];
 
-    $result = Query::select(
-        'SELECT em_definitivo FROM entrega WHERE (id_tarefa, id_aluno) = (:idTarefa, :idAluno)',
-        [ ':idTarefa' => $idTarefa,
-          ':idAluno'  => $idAluno ]
-    );
+    //
+    // Verifica se aluno pode alterar entrega
+    //
 
-    if (count($result) == 0) respondJson(
+    // TODO fazer as mesmas verificações que em criar.php
+    // mas na verdade fazer num objeto PermissaoEntrega
+    // para reutilizar nas duas situações
+
+    $entrega = EntregaDAO::buscar($idAluno, $idTarefa);
+
+    if ($entrega == null) respondJson(
         HttpCodes::NOT_FOUND,
         ['message' => 'Não existe entrega feita pelo aluno de ID '.$idAluno.' na tarefa de ID '.$idTarefa ]
     );
 
-    if ($result[0]['em_definitivo']) respondJson(
+    if ($entrega->emDefinitivo()) respondJson(
         HttpCodes::UNAUTHORIZED,
         ['message' => 'A entrega não pode ser alterada pois já foi feita em definitivo']
     );
 
-    $conteudo = readJsonRequestBody()['conteudo'];
-    $dataHora = DateUtil::toLocalDateTime('now');
+    $dados = readJsonRequestBody();
 
-    $ok = Query::execute(
-        'UPDATE entrega
-            SET conteudo = :conteudo, data_hora = :dataHora
-          WHERE (id_aluno, id_tarefa) = (:idAluno, :idTarefa)',
-        [ ':idAluno'  => $idAluno,
-          ':idTarefa'  => $idTarefa,
-          ':conteudo' => $conteudo,
-          ':dataHora' => $dataHora->format('Y-m-d H:i:s') ]
-    );
+    $entrega->setConteudo($dados['conteudo']);
+    $entrega->setDataHora(DateUtil::toLocalDateTime('now'));
+
+    $ok = EntregaDAO::alterar($entrega);
 
     if ($ok) respondJson(
         HttpCodes::OK,

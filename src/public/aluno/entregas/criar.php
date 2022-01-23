@@ -12,7 +12,9 @@ UsuarioDAO::validaSessaoTipo(TipoUsuario::ALUNO);
 
 require_once $root . '/models/Tarefa.php';
 require_once $root . '/models/TarefaEstado.php';
+require_once $root . '/models/Entrega.php';
 require_once $root . '/dao/TarefaDAO.php';
+require_once $root . '/dao/EntregaDAO.php';
 require_once $root . '/utils/DateUtil.php';
 require_once $root . '/database/Connection.php';
 
@@ -77,21 +79,16 @@ try
     // Realiza a entrega
     //
 
-    $dadosRequest = readJsonRequestBody();
+    $dados = readJsonRequestBody();
 
-    $conteudo = $dadosRequest['conteudo'];
-    $dataHora = DateUtil::toLocalDateTime('now')->format('Y-m-d H:i:s');
+    $entrega = (new Entrega)
+        ->setTarefa((new Tarefa)->setId($idTarefa))
+        ->setAluno((new Usuario)->setId($idAluno))
+        ->setConteudo($dados['conteudo'])
+        ->setDataHora(DateUtil::toLocalDateTime('now'))
+        ->setEmDefinitivo(false);
 
-    $pdo = Connection::getInstance();
-    $ok = $pdo->prepare(
-        'INSERT INTO entrega (id_tarefa, id_aluno, conteudo, data_hora)
-         VALUES (:idTarefa, :idAluno, :conteudo, :dataHora)'
-    )->execute([
-        ':idTarefa' => $idTarefa,
-        ':idAluno' => $idAluno,
-        ':conteudo' => $conteudo,
-        ':dataHora' => $dataHora
-    ]);
+    $ok =  EntregaDAO::criar($entrega);
 
     if ($ok) respondJson(
         HttpCodes::OK,
@@ -99,7 +96,7 @@ try
     );
     else respondJson(
         HttpCodes::INTERNAL_SERVER_ERROR,
-        ['message' => 'Erro do servidor ao criar a entrega (execução do INSERT falhou)']
+        ['message' => 'Erro do servidor ao criar a entrega no banco de dados']
     );
 }
 catch (Exception $e)
