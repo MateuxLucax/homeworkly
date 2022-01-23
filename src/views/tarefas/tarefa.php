@@ -13,6 +13,10 @@
     $professor = $tarefa->professor();
 
     $permissao = $view['permissao'];
+
+    if ($_SESSION['tipo'] == TipoUsuario::ALUNO) {
+        $entrega = $view['entrega'];
+    }
 ?>
 
 <main class="container">
@@ -177,7 +181,7 @@
 
     <?php
     if ($_SESSION['tipo'] == TipoUsuario::ALUNO):
-        $alunoJaEntregou = $view['entrega'] != null;
+        $alunoJaEntregou = $entrega != null;
         $tarefaPermiteEntrega = $estado == TarefaEstado::ABERTA || $estado == TarefaEstado::ATRASADA; ?>
 
         <!-- TODO mostrar data e hora da entrega
@@ -191,9 +195,8 @@
         <div class="card mb-3">
             <div class="card-header d-flex align-items-center">
                 <?php if ($alunoJaEntregou) {
-                    $dataHoraEntrega = DateUtil::toLocalDateTime($view['entrega']['data_hora']);
-                    echo '<span>Entregue em <i>'.$dataHoraEntrega->format('d/m H:i').'</i></span>';
-                    if ($dataHoraEntrega > $tarefa->entrega()) {
+                    echo '<span>Entregue em <i>'.$entrega->dataHora()->format('d/m H:i').'</i></span>';
+                    if ($entrega->dataHora() > $tarefa->dataHoraEntrega()) {
                         echo '<h5 class="mb-0" style="margin-left: 15px;"><span class="badge bg-warning text-dark">Atrasada</span></h5>';
                     }
                 } else {
@@ -205,14 +208,14 @@
                     <div class="d-flex align-items-center">
                         <div>Avaliação do professor</div>
                         <?php if ($tarefa->comNota()) {
-                            $nota = $view['entrega']['nota'];
+                            $nota = $entrega->nota();
                             $textoAvaliacao = ($nota ?? '?') .'/10';
                             $bgAvaliacao = !$nota ? 'bg-secondary' : ($nota < 7 ? 'bg-warning' : 'bg-success');
                         } else {
-                            if ($view['entrega']['visto'] === null) {
+                            if ($entrega->visto() === null) {
                                 $textoAvaliacao = 'Não visto';
                                 $bgAvaliacao = 'bg-secondary';
-                            } else if ($view['entrega']['visto']) {
+                            } else if ($entrega->visto()) {
                                 $textoAvaliacao = 'Visto';
                                 $bgAvaliacao = 'bg-success';
                             } else {
@@ -229,9 +232,9 @@
                         </h5>
                     </div>
 
-                    <?php if (!empty($view['entrega']['comentario'])): ?>
+                    <?php if (!empty($entrega->comentario())): ?>
                         <textarea disabled readonly id="entrega-comentario" class="mt-3 form-control" rows="3"
-                        ><?= $view['entrega']['comentario'] ?></textarea>
+                        ><?= $entrega->comentario() ?></textarea>
                     <?php endif; ?>
 
                     <hr/>
@@ -241,8 +244,8 @@
                 <?php if ($alunoJaEntregou || $tarefaPermiteEntrega):
                     if ($alunoJaEntregou) {
                         $formMethod = 'PUT';
-                        $endpointEntrega = 'alterar?aluno='.$view['entrega']['id_aluno'].'&tarefa='.$view['entrega']['id_tarefa'];
-                        $conteudoEntrega = $view['entrega']['conteudo'];
+                        $endpointEntrega = 'alterar?aluno='.$_SESSION['id_usuario'].'&tarefa='.$tarefa->id();
+                        $conteudoEntrega = $entrega->conteudo();
                         $iconeBotao = 'fa-paper-plane';
                         $textoBotao = 'Alterar';
                     } else {
@@ -254,17 +257,20 @@
                     }
                     $formAction = "/aluno/entregas/$endpointEntrega";
 
-                    if (!$tarefaPermiteEntrega): ?>
-                        <div class="alert alert-warning">
+                    // TODO trocar por 'você não pode mais entregar em definitivo' ?
+                    // e também só mostrar se a entrega não foi entregue em definitivo
+                    if (!$tarefaPermiteEntrega) {
+                        echo
+                        '<div class="alert alert-warning">
                             Você não pode mais alterar a entrega.
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (DateUtil::toLocalDateTime('now') >= $tarefa->dataHoraEntrega()): ?>
-                        <div class="alert alert-warning">
+                        </div>';
+                    } else if (DateUtil::toLocalDateTime('now') >= $tarefa->dataHoraEntrega()) {
+                        echo
+                        '<div class="alert alert-warning">
                             Ao ser entregue em definitivo, sua entrega ficará marcada como <b>atrasada</b>.
-                        </div>
-                    <?php endif; ?>
+                        </div>';
+                    }
+                    ?>
 
                     <!-- method de form aparentemente só pode ser GET ou POST, então colocado como data attribute -->
                     <form id="form-fazer-entrega" data-method="<?= $formMethod ?>" action="<?= $formAction ?>">
