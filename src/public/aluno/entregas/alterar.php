@@ -16,47 +16,29 @@ require_once $root . '/utils/DateUtil.php';
 try
 {
 
-    if (empty($_GET['id'])) respondJson(
+    if (empty($_GET['tarefa']) || empty($_GET['aluno'])) respondJson(
         HttpCodes::BAD_REQUEST,
-        ['message' => 'Não foi informado o ID da entrega a ser alterada']
+        ['message' => 'Não foram informados os IDs da tarefa e do aluno']
     );
 
-    $id = $_GET['id'];
+    $idTarefa = $_GET['tarefa'];
+    $idAluno = $_GET['aluno'];
 
-    $existe = (bool) Query::select(
-        'SELECT EXISTS(SELECT 1 FROM entrega WHERE id_entrega = :id) AS existe',
-        [':id' => $id]
-    )[0]['existe'];
+    $result = Query::select(
+        'SELECT em_definitivo FROM entrega WHERE (id_tarefa, id_aluno) = (:idTarefa, :idAluno)',
+        [ ':idTarefa' => $idTarefa,
+          ':idAluno'  => $idAluno ]
+    );
 
-    if (!$existe) respondJson(
+    if (count($result) == 0) respondJson(
         HttpCodes::NOT_FOUND,
-        ['message' => 'Não existe entrega de ID '.$id]
+        ['message' => 'Não existe entrega feita pelo aluno de ID '.$idAluno.' na tarefa de ID '.$idTarefa ]
     );
 
-    $idAlunoEmSessao = $_SESSION['id_usuario'];
-
-    $idAlunoQueFezEntrega = Query::select(
-        'SELECT id_aluno FROM entrega WHERE id_entrega = :id',
-        [':id' => $id]
-    )[0]['id_aluno'];
-
-    if ($idAlunoEmSessao != $idAlunoQueFezEntrega) respondJson(
+    if ($result[0]['em_definitivo']) respondJson(
         HttpCodes::UNAUTHORIZED,
-        ['message' => 'Você não é o aluno que fez a entrega']
+        ['message' => 'A entrega não pode ser alterada pois já foi feita em definitivo']
     );
-
-    // TODO implementar funcionalidade de 'entregar em definitivo'
-    // que nem a do Moodle para as entregas.
-    // Porque quando um aluno atualizar uma entrega depois
-    // da data de entrega, mesmo que uma entrega quase pronta
-    // já tenha sido feita antes, ela ficará marcada como atrasada.
-    // Isso porque atualizamos a coluna data_hora.
-    // Só que se não realizarmos essa atualização, será
-    // possível que alunos criem a tarefa antes da data de entrega
-    // só pra não ficar atrasada, deixam o campo de conteúdo em
-    // branco, e preencham potencialmente depois da data de entrega
-    // sem consequências.
-    // Com o 'entregar em definitivo' não existe esse impasse.
 
     $conteudo = readJsonRequestBody()['conteudo'];
     $dataHora = DateUtil::toLocalDateTime('now');
@@ -64,8 +46,9 @@ try
     $ok = Query::execute(
         'UPDATE entrega
             SET conteudo = :conteudo, data_hora = :dataHora
-          WHERE id_entrega = :id',
-        [ ':id'       => $id,
+          WHERE (id_aluno, id_tarefa) = (:idAluno, :idTarefa)',
+        [ ':idAluno'  => $idAluno,
+          ':idTarefa'  => $idTarefa,
           ':conteudo' => $conteudo,
           ':dataHora' => $dataHora->format('Y-m-d H:i:s') ]
     );

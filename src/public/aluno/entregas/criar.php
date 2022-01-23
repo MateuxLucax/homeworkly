@@ -95,8 +95,7 @@ try
 
     if ($ok) respondJson(
         HttpCodes::OK,
-        [ 'message' => 'A entrega foi feita com sucesso',
-          'id' => $pdo->lastInsertId() ]
+        [ 'message' => 'A entrega foi feita com sucesso' ]
     );
     else respondJson(
         HttpCodes::INTERNAL_SERVER_ERROR,

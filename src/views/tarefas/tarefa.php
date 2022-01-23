@@ -199,7 +199,7 @@
                 if ($alunoJaEntregou || $tarefaPermiteEntrega):
                     if ($alunoJaEntregou) {
                         $formMethod = 'PUT';
-                        $endpointEntrega = 'alterar?id='.$view['entrega']['id'];
+                        $endpointEntrega = 'alterar?aluno='.$view['entrega']['id_aluno'].'&tarefa='.$view['entrega']['id_tarefa'];
                         $conteudoEntrega = $view['entrega']['conteudo'];
                         $iconeBotao = 'fa-edit';
                         $textoBotao = 'Alterar';

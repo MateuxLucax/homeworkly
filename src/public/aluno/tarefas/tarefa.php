@@ -16,10 +16,10 @@ $permissaoVisualizar = $permissao->visualizar($_SESSION['id_usuario'], $_SESSION
 if ($permissaoVisualizar != PermissaoTarefa::PODE) responsePermissaoNaoPode($permissaoVisualizar);
 
 $resEntrega = Query::select(
-    'SELECT id_entrega AS id, conteudo, data_hora, visto, nota, comentario
+    'SELECT id_tarefa, id_aluno, conteudo, data_hora, visto, nota, comentario
        FROM entrega
       WHERE (id_aluno, id_tarefa) = (:idAluno, :idTarefa)',
-    [':idAluno' => $_SESSION['id_usuario'],
+    [ ':idAluno' => $_SESSION['id_usuario'],
       ':idTarefa' => $tarefa->id() ]
 );
 
