@@ -41,30 +41,6 @@
             <small>(ID <?= $tarefa->id()?>)</small>
             <div class="ms-auto d-flex align-items-center">
 
-            <?php
-                $permissaoAlterar = $permissao->alterar($_SESSION['id_usuario'], $_SESSION['tipo']);
-                $mostrarBotao = $permissaoAlterar != PermissaoTarefa::NAO_AUTORIZADO;
-                $desabilitarBotao = $permissaoAlterar != PermissaoTarefa::PODE;
-                $desabilitarMotivo = match ($permissaoAlterar) {
-                    PermissaoTarefa::ARQUIVADA => 'é de um ano passado e está arquivada',
-                    PermissaoTarefa::FECHADA   => 'já foi fechada',
-                    default                    => '[cód. '.$permissaoAlterar.']'
-                };
-
-                if ($mostrarBotao): ?>
-                    <div
-                         <?= $desabilitarBotao ? 'data-bs-toggle="tooltip" title="A tarefa não pode ser alterada pois '.$desabilitarMotivo.'."' : '' ?>
-                    >
-                        <span>
-                            <button type="button" class="btn btn-primary" onclick="location.assign('alterar?id=<?= $tarefa->id() ?>')"
-                                    <?= $desabilitarBotao ? 'disabled' : '' ?>
-                            >
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </span>
-                    </div>
-                <?php endif; ?>
-
                 <?php
                     // acho que mostrar 'atrasada' fica um pouco estranho
                     // TODO mostrar 'aberta' mas colocar um alert na entrega
@@ -82,11 +58,41 @@
                     };
                     $classeTextoEstado = $classeBgEstado == 'bg-warning' ? 'text-dark' : '';
                 ?>
-                <h5 class="mb-0" style="margin-left: 15px;">
+                <h5 class="mb-0">
                     <span class="badge <?= $classeBgEstado ?> <?= $classeTextoEstado ?>">
                         <?= $estado->toString() ?>
                     </span>
                 </h5>
+
+                <?php
+                    $permissaoAlterar = $permissao->alterar($_SESSION['id_usuario'], $_SESSION['tipo']);
+                    $mostrarBotao = $permissaoAlterar != PermissaoTarefa::NAO_AUTORIZADO;
+                    $desabilitarBotao = $permissaoAlterar != PermissaoTarefa::PODE;
+                    $desabilitarMotivo = match ($permissaoAlterar) {
+                        PermissaoTarefa::ARQUIVADA => 'é de um ano passado e está arquivada',
+                        PermissaoTarefa::FECHADA   => 'já foi fechada',
+                        default                    => '[cód. '.$permissaoAlterar.']'
+                    };
+
+                    if ($mostrarBotao) {
+                        $tooltip
+                        = $desabilitarBotao
+                        ? 'data-bs-toggle="tooltip" title="A tarefa não pode ser alterada pois '.$desabilitarMotivo.'"'
+                        : '';
+
+                        echo
+                        '<div '.$tooltip.' style="margin-left: 15px;">
+                            <span>
+                                <button type="button" class="btn btn-primary"
+                                        onclick="location.assign(\'alterar?id='.$tarefa->id().'\')"
+                                        '.($desabilitarBotao ? 'disabled' : '').'>
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </span>
+                        </div>';
+                    }
+                ?>
+
 
             </div>
         </div>
@@ -182,7 +188,7 @@
 
              mostrar no lugar "Passou da data de entrega" com uma cor diferente, mais neutra?  -->
 
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-header d-flex align-items-center">
                 <?php if ($alunoJaEntregou) {
                     $dataHoraEntrega = DateUtil::toLocalDateTime($view['entrega']['data_hora']);
@@ -195,13 +201,49 @@
                 } ?>
             </div>
             <div class="card-body">
-                <?php
-                if ($alunoJaEntregou || $tarefaPermiteEntrega):
+                <?php if ($alunoJaEntregou && ($estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA)): ?>
+                    <div class="d-flex align-items-center">
+                        <div>Avaliação do professor</div>
+                        <?php if ($tarefa->comNota()) {
+                            $nota = $view['entrega']['nota'];
+                            $textoAvaliacao = ($nota ?? '?') .'/10';
+                            $bgAvaliacao = !$nota ? 'bg-secondary' : ($nota < 7 ? 'bg-warning' : 'bg-success');
+                        } else {
+                            if ($view['entrega']['visto'] === null) {
+                                $textoAvaliacao = 'Não visto';
+                                $bgAvaliacao = 'bg-secondary';
+                            } else if ($view['entrega']['visto']) {
+                                $textoAvaliacao = 'Visto';
+                                $bgAvaliacao = 'bg-success';
+                            } else {
+                                $textoAvaliacao = 'Não aceito';
+                                $bgAvaliacao = 'bg-danger';
+                            }
+                        }
+                        $corTextoAvaliacao = $bgAvaliacao == 'bg-warning' ? 'text-dark' : '';
+                        ?>
+                        <h5 class="mb-0" style="margin-left: 15px;">
+                            <span class="badge <?= $bgAvaliacao ?> <?= $corTextoAvaliacao ?>">
+                                <?= $textoAvaliacao ?>
+                            </span>
+                        </h5>
+                    </div>
+
+                    <?php if (!empty($view['entrega']['comentario'])): ?>
+                        <textarea disabled readonly id="entrega-comentario" class="mt-3 form-control" rows="3"
+                        ><?= $view['entrega']['comentario'] ?></textarea>
+                    <?php endif; ?>
+
+                    <hr/>
+
+                <?php endif; ?>
+
+                <?php if ($alunoJaEntregou || $tarefaPermiteEntrega):
                     if ($alunoJaEntregou) {
                         $formMethod = 'PUT';
                         $endpointEntrega = 'alterar?aluno='.$view['entrega']['id_aluno'].'&tarefa='.$view['entrega']['id_tarefa'];
                         $conteudoEntrega = $view['entrega']['conteudo'];
-                        $iconeBotao = 'fa-edit';
+                        $iconeBotao = 'fa-paper-plane';
                         $textoBotao = 'Alterar';
                     } else {
                         $formMethod = 'POST';
@@ -216,8 +258,13 @@
                         <div class="alert alert-warning">
                             Você não pode mais alterar a entrega.
                         </div>
-                    <?php endif;
-                    ?>
+                    <?php endif; ?>
+
+                    <?php if (DateUtil::toLocalDateTime('now') >= $tarefa->entrega()): ?>
+                        <div class="alert alert-warning">
+                            Ao ser entregue em definitivo, sua entrega ficará marcada como <b>atrasada</b>.
+                        </div>
+                    <?php endif; ?>
 
                     <!-- method de form aparentemente só pode ser GET ou POST, então colocado como data attribute -->
                     <form id="form-fazer-entrega" data-method="<?= $formMethod ?>" action="<?= $formAction ?>">
@@ -238,42 +285,6 @@
                     <div class="mb-0 alert alert-danger">
                         Você não pode mais realizar a entrega desta tarefa.
                     </div>
-                <?php endif; ?>
-
-                <?php if ($alunoJaEntregou && ($estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA)): ?>
-                    <hr/>
-                    <div class="d-flex align-items-center">
-                        <div>Avaliação do professor</div>
-                        <?php if ($tarefa->comNota()) {
-                            $nota = $view['entrega']['nota'];
-                            $textoAvaliacao = ($nota ?? '?') .'/10';
-                            $bgAvaliacao = !$nota ? 'bg-secondary' : ($nota < 7 ? 'bg-warning' : 'bg-success');
-                        } else {
-                            if ($view['entrega']['visto'] === null) {
-                                $textoAvaliacao = 'Não visto';
-                                $bgAvaliacao = 'bg-secondary';
-                            } else if ($view['entrega']['visto']) {
-                                $textoAvaliacao = 'Visto';
-                                $bgAvaliacao = 'bg-success';
-                            } else {
-                                $textoAvaliacao = 'Não aceito';
-                                $bgAvaliacao = 'bg-danger';
-                            }
-
-                            $corTextoAvaliacao = $bgAvaliacao == 'bg-warning' ? 'text-dark' : '';
-                        } ?>
-                        <h5 class="mb-0" style="margin-left: 15px;">
-                            <span class="badge <?= $bgAvaliacao ?> <?= $corTextoAvaliacao ?>">
-                                <?= $textoAvaliacao ?>
-                            </span>
-                        </h5>
-                    </div>
-
-                    <?php if (!empty($view['entrega']['comentario'])): ?>
-                        <textarea disabled readonly id="entrega-comentario" class="mt-3 form-control" rows="3"
-                        ><?= $view['entrega']['comentario'] ?></textarea>
-                    <?php endif; ?>
-
                 <?php endif; ?>
 
             </div>
