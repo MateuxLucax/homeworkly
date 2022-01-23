@@ -16,5 +16,5 @@ $permissaoVisualizar = $permissao->visualizar($_SESSION['id_usuario'], $_SESSION
 if ($permissaoVisualizar != PermissaoTarefa::PODE) responsePermissaoNaoPode($permissaoVisualizar);
 
 $view['tarefa'] = $tarefa;
-$view['permissao'] = $permissao;
+$view['permissaoTarefa'] = $permissao;
 require $root . '/views/tarefas/tarefa.php';

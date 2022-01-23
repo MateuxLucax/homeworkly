@@ -12,10 +12,11 @@
     $turma = $disciplina->getTurma();
     $professor = $tarefa->professor();
 
-    $permissao = $view['permissao'];
+    $permissaoTarefa = $view['permissaoTarefa'];
 
     if ($_SESSION['tipo'] == TipoUsuario::ALUNO) {
         $entrega = $view['entrega'];
+        $permissaoEntrega = $view['permissaoEntrega'];
     }
 ?>
 
@@ -69,13 +70,13 @@
                 </h5>
 
                 <?php
-                    $permissaoAlterar = $permissao->alterar($_SESSION['id_usuario'], $_SESSION['tipo']);
-                    $mostrarBotao = $permissaoAlterar != PermissaoTarefa::NAO_AUTORIZADO;
-                    $desabilitarBotao = $permissaoAlterar != PermissaoTarefa::PODE;
-                    $desabilitarMotivo = match ($permissaoAlterar) {
+                    $permissaoTarefaAlterar = $permissaoTarefa->alterar($_SESSION['id_usuario'], $_SESSION['tipo']);
+                    $mostrarBotao = $permissaoTarefaAlterar != PermissaoTarefa::NAO_AUTORIZADO;
+                    $desabilitarBotao = $permissaoTarefaAlterar != PermissaoTarefa::PODE;
+                    $desabilitarMotivo = match ($permissaoTarefaAlterar) {
                         PermissaoTarefa::ARQUIVADA => 'é de um ano passado e está arquivada',
                         PermissaoTarefa::FECHADA   => 'já foi fechada',
-                        default                    => '[cód. '.$permissaoAlterar.']'
+                        default                    => '[cód. '.$permissaoTarefaAlterar.']'
                     };
 
                     if ($mostrarBotao) {
@@ -184,8 +185,7 @@
         $alunoJaEntregou = $entrega != null;
         $tarefaPermiteEntrega = $estado == TarefaEstado::ABERTA || $estado == TarefaEstado::ATRASADA; ?>
 
-        <!-- TODO mostrar data e hora da entrega
-             e também se a entrega ficou atrasada -->
+        <!-- TODO mostrar data e hora da entrega -->
 
         <!-- TODO além disso, talvez fica estranho mostrar um estado 'Atrasada' para a entrega,
              porque é o que vai ser mostrado para o aluno mesmo que ele tenha feito a entrega

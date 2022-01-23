@@ -15,6 +15,7 @@ require_once $root . '/models/TarefaEstado.php';
 require_once $root . '/models/Entrega.php';
 require_once $root . '/dao/TarefaDAO.php';
 require_once $root . '/dao/EntregaDAO.php';
+require_once $root . '/dao/PermissaoEntrega.php';
 require_once $root . '/utils/DateUtil.php';
 require_once $root . '/database/Connection.php';
 
@@ -38,66 +39,48 @@ try
 
     $idAluno = $_SESSION['id_usuario'];
 
-    //
-    // Verifica se aluno pode entregar a tarefa
-    //
-
     $tarefa = TarefaDAO::buscar($idTarefa);
 
-    $idTurma = $tarefa->disciplina()->getTurma()->getId();
-    if (!UsuarioDAO::alunoDaTurma($idAluno, $idTurma)) {
-        respondJson(
-            HttpCodes::UNAUTHORIZED,
-            ['message' => 'O usuário em sessão não é aluno da turma da qual a tarefa pertence']
+    $permissao = PermissaoEntrega::criar($_SESSION['id_usuario'], $_SESSION['tipo'], $tarefa);
+
+    if ($permissao == PermissaoEntrega::PODE)
+    {
+        $dados = readJsonRequestBody();
+
+        $entrega = (new Entrega)
+            ->setTarefa((new Tarefa)->setId($idTarefa))
+            ->setAluno((new Usuario)->setId($idAluno))
+            ->setConteudo($dados['conteudo'])
+            ->setDataHora(DateUtil::toLocalDateTime('now'))
+            ->setEmDefinitivo(false);
+
+        $ok = EntregaDAO::criar($entrega);
+
+        if ($ok) respondJson(
+            HttpCodes::OK,
+            [ 'message' => 'A entrega foi feita com sucesso' ]
+        );
+        else respondJson(
+            HttpCodes::INTERNAL_SERVER_ERROR,
+            ['message' => 'Erro do servidor ao criar a entrega no banco de dados']
         );
     }
+    else
+    {
+        $mensagem = match($permissao) {
+            PermissaoEntrega::NAO_EH_ALUNO => 'O usuário não é um aluno',
+            PermissaoEntrega::NAO_EH_DA_TURMA => 'O aluno não pertence a turma onde a tarefa foi criada',
+            PermissaoEntrega::ESPERANDO_ABERTURA => 'A tarefa ainda não foi aberta',
+            PermissaoEntrega::ARQUIVADA => 'A tarefa está arquivada',
+            PermissaoEntrega::FECHADA => 'A tarefa já foi fechada',
+            default => 'Segundo o sistema, o usuário não tem permissão de fazer a entrega, mas não sabemos por quê'
+        };
 
-    $estado = $tarefa->estado();
-
-    if ($estado == TarefaEstado::ARQUIVADA) {
         respondJson(
-            HttpCOdes::UNAUTHORIZED,
-            ['message' => 'A entrega não pode ser feita pois a tarefa está arquivada']
+            HttpCodes::BAD_REQUEST,
+            'A entrega não pôde ser feita. Motivo: '.$mensagem
         );
     }
-
-    if ($estado == TarefaEstado::FECHADA) {
-        respondJson(
-            HttpCodes::UNAUTHORIZED,
-            ['message' => 'A entrega não pode ser feita pois a tarefa já foi fechada']
-        );
-    }
-
-    if ($estado == TarefaEstado::ESPERANDO_ABERTURA) {
-        respondJson(
-            HttpCodes::UNAUTHORIZED,
-            ['message' => 'A entrega não pode ser feita pois a tarefa ainda não foi aberta']
-        );
-    }
-
-    //
-    // Realiza a entrega
-    //
-
-    $dados = readJsonRequestBody();
-
-    $entrega = (new Entrega)
-        ->setTarefa((new Tarefa)->setId($idTarefa))
-        ->setAluno((new Usuario)->setId($idAluno))
-        ->setConteudo($dados['conteudo'])
-        ->setDataHora(DateUtil::toLocalDateTime('now'))
-        ->setEmDefinitivo(false);
-
-    $ok =  EntregaDAO::criar($entrega);
-
-    if ($ok) respondJson(
-        HttpCodes::OK,
-        [ 'message' => 'A entrega foi feita com sucesso' ]
-    );
-    else respondJson(
-        HttpCodes::INTERNAL_SERVER_ERROR,
-        ['message' => 'Erro do servidor ao criar a entrega no banco de dados']
-    );
 }
 catch (Exception $e)
 {
