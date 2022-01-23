@@ -47,24 +47,16 @@
             <div class="ms-auto d-flex align-items-center">
 
                 <?php
-                    // acho que mostrar 'atrasada' fica um pouco estranho
-                    // TODO mostrar 'aberta' mas colocar um alert na entrega
-                    // caso o usuário ainda não tenha feito a entrega
-                    // de que ela ficará atrasada.
-
-                    // TODO talvez remover esse estado ATRASADA mesmo
                     $estado = $tarefa->estado();
                     $classeBgEstado = match($estado) {
                         TarefaEstado::ESPERANDO_ABERTURA => 'bg-primary',
                         TarefaEstado::ABERTA             => 'bg-success',
-                        TarefaEstado::ATRASADA           => 'bg-warning',
                         TarefaEstado::FECHADA            => 'bg-dark',
                         TarefaEstado::ARQUIVADA          => 'bg-secondary'
                     };
-                    $classeTextoEstado = $classeBgEstado == 'bg-warning' ? 'text-dark' : '';
                 ?>
                 <h5 class="mb-0">
-                    <span class="badge <?= $classeBgEstado ?> <?= $classeTextoEstado ?>">
+                    <span class="badge <?= $classeBgEstado ?>">
                         <?= $estado->toString() ?>
                     </span>
                 </h5>
@@ -183,7 +175,7 @@
     <?php
     if ($_SESSION['tipo'] == TipoUsuario::ALUNO):
         $alunoJaEntregou = $entrega != null;
-        $tarefaPermiteEntrega = $estado == TarefaEstado::ABERTA || $estado == TarefaEstado::ATRASADA; ?>
+        $tarefaPermiteEntrega = $estado == TarefaEstado::ABERTA; ?>
 
         <!-- TODO mostrar data e hora da entrega -->
 

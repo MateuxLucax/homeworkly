@@ -49,14 +49,11 @@
                             $corEstado = match($estado) {
                                 TarefaEstado::ESPERANDO_ABERTURA => 'bg-primary',
                                 TarefaEstado::ABERTA             => 'bg-success',
-                                TarefaEstado::ATRASADA           => 'bg-warning',
                                 TarefaEstado::FECHADA            => 'bg-dark',
                                 TarefaEstado::ARQUIVADA          => 'bg-secondary'
                             };
 
-                            $corTexto = $corEstado == 'bg-warning' ? 'text-dark' : '';
-
-                            echo '<h5 class="mb-0 d-inline"><span class="badge '.$corEstado.' '.$corTexto.'">'.$estado->toString().'</span></h5>';
+                            echo '<h5 class="mb-0 d-inline"><span class="badge '.$corEstado.'">'.$estado->toString().'</span></h5>';
 
                             $permissaoExcluir = $permissao->excluir($_SESSION['id_usuario'], $_SESSION['tipo']);
                             $mostrarBotao = $permissaoExcluir != PermissaoTarefa::NAO_AUTORIZADO;

@@ -95,8 +95,7 @@ class Tarefa
 
         if ($this->disciplina->getTurma()->getAno() < $agora->format('Y')) return TarefaEstado::ARQUIVADA;
         if ($agora < $this->abertura) return TarefaEstado::ESPERANDO_ABERTURA;
-        if ($agora < $this->entrega)  return TarefaEstado::ABERTA; 
-        if (is_null($this->fechamento) || $agora < $this->fechamento) return TarefaEstado::ATRASADA;
+        if ($this->fechamento != null && $agora < $this->fechamento) return TarefaEstado::ABERTA; 
         return TarefaEstado::FECHADA; 
     }
 }
