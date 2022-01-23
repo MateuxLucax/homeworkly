@@ -122,7 +122,6 @@ else if ($_SERVER['REQUEST_METHOD'] == 'GET')
     $view['turma'] = $disciplina->getTurma();
 
     $view['professor_id']   = $_SESSION['id_usuario'];
-    $view['professor_nome'] = $_SESSION['nome'];
 
     require_once $root . '/views/tarefas/criar.php';
 }

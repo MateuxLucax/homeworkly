@@ -27,14 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
         $disciplina = $tarefa->disciplina();
         $turma = $disciplina->getTurma();
 
-        $view['disciplina_id']   = $disciplina->getId();
-        $view['disciplina_nome'] = $disciplina->getNome();
-        $view['turma_nome']      = $turma->getNome();
-        $view['ano']             = $turma->getAno();
-        $view['professor_id']    = $tarefa->professor()->getId();
+        $view['professor_id'] = $tarefa->professor()->getId();
 
         $view['titulo'] = 'Alterar tarefa';
         $view['tarefa'] = $tarefa;
+        $view['disciplina'] = $tarefa->disciplina();
+        $view['turma']      = $tarefa->disciplina()->getTurma();
 
         $view['permissao'] = new PermissaoTarefa($tarefa->id());
 
