@@ -58,7 +58,7 @@ try
 
         if ($ok) respondJson(
             HttpCodes::OK,
-            [ 'message' => 'A entrega foi feita com sucesso' ]
+            [ 'message' => "A entrega foi feita com sucesso.\nNo entanto, você ainda precisa entregar em definitivo para que o professor possa vê-la e avaliá-la." ]
         );
         else respondJson(
             HttpCodes::INTERNAL_SERVER_ERROR,

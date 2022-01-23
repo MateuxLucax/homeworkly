@@ -52,13 +52,15 @@ class EntregaDAO
         'UPDATE entrega
             SET conteudo = :conteudo
               , data_hora = :dataHora
+              , em_definitivo = :emDefinitivo
          WHERE (id_aluno, id_tarefa) = (:idAluno, :idTarefa)';
 
         $params = [
-            ':idAluno'  => $entrega->aluno()->getId(),
-            ':idTarefa' => $entrega->tarefa()->id(),
-            ':conteudo' => $entrega->conteudo(),
-            ':dataHora' => $entrega->dataHora()->format('Y-m-d H:i:s')
+            ':idAluno'      => $entrega->aluno()->getId(),
+            ':idTarefa'     => $entrega->tarefa()->id(),
+            ':conteudo'     => $entrega->conteudo(),
+            ':dataHora'     => $entrega->dataHora()->format('Y-m-d H:i:s'),
+            ':emDefinitivo' => $entrega->emDefinitivo() ?'true': 'false'
         ];
 
         return Query::execute($sql, $params);

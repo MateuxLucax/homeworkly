@@ -174,19 +174,12 @@
 
     <?php
     if ($_SESSION['tipo'] == TipoUsuario::ALUNO):
-        $alunoJaEntregou = $entrega != null;
-        $tarefaPermiteEntrega = $estado == TarefaEstado::ABERTA; ?>
-
-        <!-- TODO mostrar data e hora da entrega -->
-
-        <!-- TODO além disso, talvez fica estranho mostrar um estado 'Atrasada' para a entrega,
-             porque é o que vai ser mostrado para o aluno mesmo que ele tenha feito a entrega
-
-             mostrar no lugar "Passou da data de entrega" com uma cor diferente, mais neutra?  -->
+        $alunoEntregou = $entrega != null;
+        $entregaHabilitada = $permissaoEntrega == PermissaoEntrega::PODE; ?>
 
         <div class="card mb-3">
             <div class="card-header d-flex align-items-center">
-                <?php if ($alunoJaEntregou) {
+                <?php if ($alunoEntregou && $entrega->emDefinitivo()) {
                     echo '<span>Entregue em <i>'.$entrega->dataHora()->format('d/m H:i').'</i></span>';
                     if ($entrega->dataHora() > $tarefa->dataHoraEntrega()) {
                         echo '<h5 class="mb-0" style="margin-left: 15px;"><span class="badge bg-warning text-dark">Atrasada</span></h5>';
@@ -196,7 +189,7 @@
                 } ?>
             </div>
             <div class="card-body">
-                <?php if ($alunoJaEntregou && ($estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA)): ?>
+                <?php if ($alunoEntregou && $entrega->emDefinitivo() && ($estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA)): ?>
                     <div class="d-flex align-items-center">
                         <div>Avaliação do professor</div>
                         <?php if ($tarefa->comNota()) {
@@ -233,8 +226,8 @@
 
                 <?php endif; ?>
 
-                <?php if ($alunoJaEntregou || $tarefaPermiteEntrega):
-                    if ($alunoJaEntregou) {
+                <?php if ($alunoEntregou || $entregaHabilitada):
+                    if ($alunoEntregou) {
                         $formMethod = 'PUT';
                         $endpointEntrega = 'alterar?aluno='.$_SESSION['id_usuario'].'&tarefa='.$tarefa->id();
                         $conteudoEntrega = $entrega->conteudo();
@@ -249,18 +242,18 @@
                     }
                     $formAction = "/aluno/entregas/$endpointEntrega";
 
-                    // TODO trocar por 'você não pode mais entregar em definitivo' ?
-                    // e também só mostrar se a entrega não foi entregue em definitivo
-                    if (!$tarefaPermiteEntrega) {
-                        echo
-                        '<div class="alert alert-warning">
-                            Você não pode mais alterar a entrega.
-                        </div>';
-                    } else if (DateUtil::toLocalDateTime('now') >= $tarefa->dataHoraEntrega()) {
-                        echo
-                        '<div class="alert alert-warning">
-                            Ao ser entregue em definitivo, sua entrega ficará marcada como <b>atrasada</b>.
-                        </div>';
+                    if (!$entrega->emDefinitivo()) {
+                        if (!$entregaHabilitada) {
+                            echo
+                            '<div class="alert alert-warning">
+                                Você não pode mais entregar a tarefa em definitivo.
+                            </div>';
+                        } else if (DateUtil::toLocalDateTime('now') >= $tarefa->dataHoraEntrega()) {
+                            echo
+                            '<div class="alert alert-warning">
+                                Já passou da data de entrega, então sua entrega ficará marcada como <b>atrasada</b>.
+                            </div>';
+                        }
                     }
                     ?>
 
@@ -268,14 +261,20 @@
                     <form id="form-fazer-entrega" data-method="<?= $formMethod ?>" action="<?= $formAction ?>">
                         <textarea
                             class="mb-0 form-control" name="conteudo" id="conteudo" rows="3" required
-                            <?= $alunoJaEntregou && !$tarefaPermiteEntrega ? 'disabled readonly' : ''?>
+                            <?= $alunoEntregou && !$entregaHabilitada ? 'disabled readonly' : ''?>
                         ><?= $conteudoEntrega ?></textarea>
-                        <?php if ($tarefaPermiteEntrega): ?>
+                        <?php if ($entregaHabilitada): ?>
                             <div class="float-end">
-                                <button type="submit" id="btn-fazer-entrega" class="mt-3 btn btn-primary">
+                                <button type="button" id="btn-fazer-entrega" class="mt-3 btn btn-primary">
                                     <i class="fas <?= $iconeBotao ?>"></i>
                                     <?= $textoBotao ?>
                                 </button>
+                                <?php if ($alunoEntregou): ?>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#modal-confirmar-entrega-em-definitivo" class="mt-3 btn btn-success">
+                                        <i class="fas fa-check"></i>
+                                        Entregar em definitivo
+                                    </button>
+                                <?php endif; ?>
                             </div>
                         <?php endif; ?>
                     </form>
@@ -289,6 +288,24 @@
         </div>
     <?php endif; ?>
 </main>
+
+<div class="modal fade" id="modal-confirmar-entrega-em-definitivo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p>Tem certeza que deseja entregar essa tarefa em definitivo?</p>
+                <p>Você não poderá mais alterar a tarefa.</p>
+
+                <button class="btn btn-success" id="btn-confirmar-entrega-em-definitivo">
+                    Ok
+                </button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 
@@ -307,13 +324,23 @@ const idTarefa = <?= $tarefa->id() ?>;
     //
 
     const formEntrega = document.getElementById('form-fazer-entrega');
+    const btnFazerEntrega = document.getElementById('btn-fazer-entrega');
+    const btnEntregaEmDefinitivo = document.getElementById('btn-confirmar-entrega-em-definitivo');
 
-    formEntrega?.addEventListener('submit', async event => {
-        event.preventDefault();
+    formEntrega?.addEventListener('submit', event => event.preventDefault());
+    // ENTER também causa submit, mas queremos que só seja pelo botão
 
+    btnFazerEntrega?.addEventListener('click', async () => { fazerEntrega(false); });
+    btnEntregaEmDefinitivo?.addEventListener('click', async () => { fazerEntrega(true); });
+
+    async function fazerEntrega(emDefinitivo) {
         const target = formEntrega.action;
         const method = formEntrega.dataset.method;
-        const body = JSON.stringify({ conteudo: formEntrega.conteudo.value });
+
+        const body = JSON.stringify({
+            conteudo: formEntrega.conteudo.value,
+            emDefinitivo
+        });
 
         const response = await fetch(target, { method, body });
         const text = await response.text();
@@ -339,8 +366,7 @@ const idTarefa = <?= $tarefa->id() ?>;
             console.error(e);
             console.error(text);
         }
-    });
-
+    }
 <?php endif; ?>
 
 </script>

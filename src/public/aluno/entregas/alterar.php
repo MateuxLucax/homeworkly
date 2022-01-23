@@ -48,13 +48,19 @@ try
         $dados = readJsonRequestBody();
 
         $entrega->setConteudo($dados['conteudo']);
+        $entrega->setEmDefinitivo($dados['emDefinitivo']);
         $entrega->setDataHora(DateUtil::toLocalDateTime('now'));
 
         $ok = EntregaDAO::alterar($entrega);
 
+        $mensagemNaoEmDefinitivo
+        = $entrega->emDefinitivo()
+        ? ''
+        : "\nNo entanto, ainda falta entregá-la em definitivo para que o professor possa vê-la e avaliá-la.";
+
         if ($ok) respondJson(
             HttpCodes::OK,
-            ['message' => 'Entrega atualizada com sucesso']
+            ['message' => 'Entrega atualizada com sucesso.'.$mensagemNaoEmDefinitivo]
         );
         else respondJson(
             HttpCodes::INTERNAL_SERVER_ERROR,
