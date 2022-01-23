@@ -69,7 +69,7 @@
                             };
 
                             if ($mostrarBotao): ?>
-                                <div class="d-inline" <?= $desabilitarBotao ? 'data-bs-toggle="tooltip" title="A tarefa não pode ser excluída pois '.$desabilitarMotivo.'."' : '' ?>>
+                                <div style="margin-left: 15px;" class="d-inline" <?= $desabilitarBotao ? 'data-bs-toggle="tooltip" title="A tarefa não pode ser excluída pois '.$desabilitarMotivo.'."' : '' ?>>
                                     <button type="button" class="btn btn-danger"
                                             data-bs-toggle="modal" data-bs-target="#modal-confirmar-exclusao"
                                             <?= $desabilitarBotao ? 'disabled' : '' ?>
