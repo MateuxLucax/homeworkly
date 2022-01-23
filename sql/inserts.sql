@@ -18,9 +18,9 @@ insert into usuario (tipo, nome, login, hash_senha) values
    '$2y$10$mGLt5GFyw/81isZBxgSa9.Zb2j97FzP1l.j.KuafKdOx3.Sg8Pe3O');
 
 insert into turma (nome, ano) values
-  ('6º Ano 2020', 2020)
-, ('7º Ano 2021', 2021)
-, ('8º Ano 2021', 2021)
+  ('6º Ano 2021', 2021)
+, ('7º Ano 2022', 2022)
+, ('8º Ano 2022', 2022)
 on conflict do nothing;
 
 insert into aluno_em_turma (id_aluno, id_turma) values
