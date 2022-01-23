@@ -62,7 +62,7 @@ create table if not exists entrega (
     , id_aluno      bigint    references usuario
     , conteudo      text      not null
     , data_hora     timestamp not null
-    , em_definitivo boolean
+    , em_definitivo boolean   default false
     , visto         boolean
     , nota          real      check (nota is null or (nota >= 0 and nota <= 10))
     , comentario    text
