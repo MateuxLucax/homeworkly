@@ -110,7 +110,7 @@
                         <input class="form-control mb-2" type="datetime-local" name="abertura" id="abertura"
                                <?= $aberturaPassou ? 'readonly disabled' : '' ?>
                                <?= $aberturaPassou ? 'data-bs-toggle="tooltip" title="A tarefa já foi aberta, então sua data de abertura não pode ser modificada."' : '' ?>
-                               value="<?=$paginaAlterar ? dataISO($tarefa?->abertura()) : '' ?>"/>
+                               value="<?=$paginaAlterar ? dataISO($tarefa?->dataHoraAbertura()) : '' ?>"/>
                         <div class="form-check form-switch <?= $aberturaPassou ? 'd-none' : '' ?>">
                             <input type="checkbox" class="form-check-input" id="abrir-agora"
                                    <?= $aberturaPassou ? '' : 'checked' ?>/>
@@ -124,7 +124,7 @@
                             <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Depois da data de entrega, entregas ainda podem ser feitas, mas são marcadas como atrasadas."></i>
                         </label>
                         <input class="form-control" type="datetime-local" name="entrega" id="entrega" required 
-                               value="<?= $paginaAlterar ? dataISO($tarefa?->entrega()) : '' ?>"/>
+                               value="<?= $paginaAlterar ? dataISO($tarefa?->dataHoraEntrega()) : '' ?>"/>
                     </div>
                     <div class="mb-3 col-12 col-md-4">
                         <label class="form-label" for="fechamento">
@@ -133,7 +133,7 @@
                             <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Opcional – se não informar, você pode fechar manualmente depois. Depois dela, alunos não podem mais fazer entregas."></i>
                         </label>
                         <input class="form-control" type="datetime-local" name="fechamento" id="fechamento"
-                               value="<?= $paginaAlterar && $tarefa?->fechamento() != null ? dataISO($tarefa->fechamento()) : '' ?>"/>
+                               value="<?= $paginaAlterar && $tarefa?->dataHoraFechamento() != null ? dataISO($tarefa->dataHoraFechamento()) : '' ?>"/>
                     </div>
                 </div>
                 <div class="row">

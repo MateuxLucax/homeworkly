@@ -111,16 +111,16 @@
                 <div class="col-12 mb-3 col-sm-6 mb-sm-0">
                     <label class="form-label" for="entrega">Data de entrega</label>
                     <input disabled readonly class="form-control" id="entrega" type="datetime-local"
-                        value="<?=dataISO($tarefa->entrega())?>"/>
+                        value="<?=dataISO($tarefa->dataHoraEntrega())?>"/>
                 </div>
 
                 <!-- TODO deixar explícito que nenhuma data de fechamento foi informada -->
 
                 <div class="col-sm-6">
-                    <?php if (!is_null($tarefa->fechamento())): ?>
+                    <?php if (!is_null($tarefa->dataHoraFechamento())): ?>
                         <label class="form-label" for="fechamento">Data de fechamento</label>
                         <input disabled readonly class="form-control" id="fechamento" type="datetime-local"
-                            value="<?=dataISO($tarefa->fechamento())?>"/>
+                            value="<?=dataISO($tarefa->dataHoraFechamento())?>"/>
                     <?php else: ?>
                         <label class="form-label" for="fechada">Fechada manualmente</label>
                         <input disabled readonly class="form-control" id="fechamento" type="text"
@@ -170,7 +170,7 @@
                 Aberta por
                 <b><?= $professor->getNome() ?></b>
                 em
-                <i><?= $tarefa->abertura()->format('d/m/Y H:i') ?></i>
+                <i><?= $tarefa->dataHoraAbertura()->format('d/m/Y H:i') ?></i>
             </span>
         </div>
     </div>
@@ -260,7 +260,7 @@
                         </div>
                     <?php endif; ?>
 
-                    <?php if (DateUtil::toLocalDateTime('now') >= $tarefa->entrega()): ?>
+                    <?php if (DateUtil::toLocalDateTime('now') >= $tarefa->dataHoraEntrega()): ?>
                         <div class="alert alert-warning">
                             Ao ser entregue em definitivo, sua entrega ficará marcada como <b>atrasada</b>.
                         </div>

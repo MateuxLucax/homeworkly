@@ -69,9 +69,9 @@ while ($t = $stmt->fetch(PDO::FETCH_ASSOC)) {
         ->setTitulo($t['titulo'])
         ->setDescricao($t['descricao'])
         ->setEsforcoMinutos($t['esforco_minutos'])
-        ->setAbertura(DateUtil::toLocalDateTime($t['abertura']))
-        ->setEntrega(DateUtil::toLocalDateTime($t['entrega']))
-        ->setFechamento($ta['fechamento'] ? DateUtil::toLocalDateTime($ta['fechamento']) : null)
+        ->setDataHoraAbertura(DateUtil::toLocalDateTime($t['abertura']))
+        ->setDataHoraEntrega(DateUtil::toLocalDateTime($t['entrega']))
+        ->setDataHoraFechamento($ta['fechamento'] ? DateUtil::toLocalDateTime($ta['fechamento']) : null)
         ->setFechadaManualmente($t['fechada'])
         ->setProfessor($professoresPorId[$t['id_professor']]);
 

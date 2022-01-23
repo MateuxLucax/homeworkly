@@ -24,9 +24,9 @@ class Tarefa
     public function descricao():          string     { return $this->descricao; }
     public function esforcoMinutos():     int        { return $this->esforco_minutos; }
     public function comNota():            bool       { return $this->com_nota; }
-    public function abertura():           DateTime   { return $this->abertura; }
-    public function entrega():            DateTime   { return $this->entrega; }
-    public function fechamento():         ?DateTime  { return $this->fechamento; }
+    public function dataHoraAbertura():           DateTime   { return $this->abertura; }
+    public function dataHoraEntrega():            DateTime   { return $this->entrega; }
+    public function dataHoraFechamento():         ?DateTime  { return $this->fechamento; }
     public function fechadaManualmente(): bool       { return $this->fechada_manualmente; }
 
     public function setId(int $id): Tarefa {
@@ -64,17 +64,17 @@ class Tarefa
         return $this;
     }
 
-    public function setAbertura(DateTime $abertura): Tarefa {
+    public function setDataHoraAbertura(DateTime $abertura): Tarefa {
         $this->abertura = $abertura;
         return $this;
     }
 
-    public function setEntrega(DateTime $entrega): Tarefa {
+    public function setDataHoraEntrega(DateTime $entrega): Tarefa {
         $this->entrega = $entrega;
         return $this;
     }
 
-    public function setFechamento(?DateTime $fechamento): Tarefa {
+    public function setDataHoraFechamento(?DateTime $fechamento): Tarefa {
         $this->fechamento = $fechamento;
         return $this;
     }
