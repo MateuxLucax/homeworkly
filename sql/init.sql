@@ -68,3 +68,56 @@ create table if not exists entrega (
     , comentario    text
     , primary key (id_tarefa, id_aluno)
     );
+
+create table if not exists historico_tarefa (
+      id_historico_tarefa serial    primary key
+    , id_tarefa           serial    references tarefa
+    , titulo              text      not null
+    , descricao           text      not null
+    , data_alteracao      timestamp not null
+    );
+
+create table if not exists historico_entrega (
+      id_historico_entrega serial primary key
+    , id_tarefa     bigint    references tarefa
+    , id_aluno      bigint    references usuario
+    , conteudo      text      not null
+    , data_alteracao      timestamp not null
+);
+
+create or replace function registra_historico_tarefa()
+    returns trigger
+    language plpgsql
+    as $_$
+        begin
+            if (tg_op = 'UPDATE' or tg_op = 'INSERT') then
+                insert into historico_tarefa (id_tarefa, titulo, descricao, data_alteracao) values (new.id_tarefa, new.titulo, new.descricao, now());
+            end if;
+
+            return null;
+        end;
+    $_$;
+
+create trigger tr_registra_historico_tarefa
+    after update or insert on tarefa
+        for each row
+            execute procedure registra_historico_tarefa();
+
+
+create or replace function registra_historico_entrega()
+    returns trigger
+    language plpgsql
+as $_$
+begin
+    if (tg_op = 'UPDATE' or tg_op = 'INSERT') then
+        insert into historico_entrega (id_tarefa, id_aluno, conteudo, data_alteracao) values (new.id_tarefa, new.id_aluno, new.conteudo, now());
+    end if;
+
+    return null;
+end;
+$_$;
+
+create trigger tr_registra_historico_entrega
+    after update or insert on entrega
+        for each row
+            execute procedure registra_historico_entrega();
