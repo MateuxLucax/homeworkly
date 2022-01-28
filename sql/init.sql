@@ -79,10 +79,11 @@ create table if not exists historico_tarefa (
 
 create table if not exists historico_entrega (
       id_historico_entrega serial primary key
-    , id_tarefa     bigint    references tarefa
-    , id_aluno      bigint    references usuario
+    , id_tarefa     bigint
+    , id_aluno      bigint
     , conteudo      text      not null
     , data_alteracao      timestamp not null
+    , foreign key (id_tarefa, id_aluno) references entrega (id_tarefa, id_aluno)
 );
 
 create or replace function registra_historico_tarefa()
