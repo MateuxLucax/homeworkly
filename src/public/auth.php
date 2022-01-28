@@ -23,17 +23,12 @@ try {
     $response = array();
 
     if (!empty($loggedInUser)) {
-        /*
         $whereIGo = match ($loggedInUser->getTipo()) {
-            TipoUsuario::ALUNO         => "/aluno/disciplinas/disciplina",  // ?turma= opcional, por padrão pega a do ano atual
-            TipoUsuario::ADMINISTRADOR => "/admin/usuarios/listar",
-            TipoUsuario::PROFESSOR     => "/professor/turmas/listar",
-            default                    => "",
+            TipoUsuario::ALUNO         => "/aluno/inicio",  // ?turma= opcional, por padrão pega a do ano atual
+            TipoUsuario::ADMINISTRADOR => "/admin/inicio",
+            TipoUsuario::PROFESSOR     => "/professor/inicio",
+            default                    => "/entrar",
         };
-        */
-
-        // HACK enquanto não tivermos index.php nesses diretórios
-        $whereIGo = '/';
 
         $response = [
             "location" => $whereIGo

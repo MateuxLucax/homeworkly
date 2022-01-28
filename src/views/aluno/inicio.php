@@ -1,4 +1,7 @@
-<div id='calendar'></div>
+<div class="container-fluid">
+    <div id='calendar'></div>
+</div>
+
 <script>
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -7,8 +10,10 @@
             initialView: 'dayGridMonth',
             locale: 'pt-br',
             themeSystem: 'bootstrap',
-            dateClick: function() {
-                alert('a day has been clicked!');
+            selectable: true,
+            select: (selectInfo) => {
+                const title = prompt('Informe o Título da tarefa;');
+                console.log([selectInfo, title]);
             }
         });
         calendar.render();

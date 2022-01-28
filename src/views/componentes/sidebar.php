@@ -6,32 +6,20 @@
     <ul class="nav nav-pills flex-column mb-auto">
         <li class="nav-item">
             <a href="#" class="nav-link active" aria-current="page">
-                <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
-                Home
+                <i class="far fa-calendar-alt fa-fw me-2"></i>
+                Calendário de tarefas
             </a>
         </li>
         <li>
             <a href="#" class="nav-link link-dark">
-                <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
-                Dashboard
+                <i class="far fa-clipboard fa-fw me-2"></i>
+                Lista de tarefas
             </a>
         </li>
         <li>
             <a href="#" class="nav-link link-dark">
-                <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
-                Orders
-            </a>
-        </li>
-        <li>
-            <a href="#" class="nav-link link-dark">
-                <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
-                Products
-            </a>
-        </li>
-        <li>
-            <a href="#" class="nav-link link-dark">
-                <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
-                Customers
+                <i class="fas fa-chalkboard-teacher fa-fw me-2"></i>
+                Disciplinas
             </a>
         </li>
     </ul>
