@@ -1,7 +1,3 @@
-<!doctype html>
-<html lang="en">
-<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/../views/componentes/head.php'; ?>
-<body>
 <div id='calendar'></div>
 <script>
 
@@ -19,5 +15,3 @@
     });
 
 </script>
-</body>
-</html>
