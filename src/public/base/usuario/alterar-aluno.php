@@ -35,7 +35,7 @@ try
             respondJson(HttpCodes::OK);
         }
     } catch (UnauthorizedException $exception) {
-        respondJson(HttpCodes::UNAUTHORIZED, ['mensagem' => 'Senha incorreta!']);
+        respondJson(HttpCodes::UNAUTHORIZED, ['mensagem' => 'Senha atual incorreta!']);
     }
 }
 catch (Exception $e)

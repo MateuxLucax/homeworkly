@@ -52,7 +52,7 @@
                            placeholder="********"
                            aria-label="Senha atual"
                            required />
-                    <button class="btn btn-outline-secondary" onclick="toggleVisibilityAtual()" type="button"><i id="icone-senha-atual" class="fas fa-eye-slash"></i></button>
+                    <button tabindex="-1" class="btn btn-outline-secondary" onclick="toggleVisibilityAtual()" type="button"><i id="icone-senha-atual" class="fas fa-eye-slash"></i></button>
                 </div>
             </div>
 
@@ -69,7 +69,7 @@
                            placeholder="********"
                            aria-label="Senha nova"
                            required />
-                    <button class="btn btn-outline-secondary" onclick="toggleVisibilityNova()" type="button"><i id="icone-senha-nova" class="fas fa-eye-slash"></i></button>
+                    <button tabindex="-1" class="btn btn-outline-secondary" onclick="toggleVisibilityNova()" type="button"><i id="icone-senha-nova" class="fas fa-eye-slash"></i></button>
                 </div>
             </div>
 
