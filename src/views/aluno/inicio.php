@@ -16,15 +16,7 @@
             //     const title = prompt('Informe o Título da tarefa;');
             //     console.log([selectInfo, title]);
             // }
-            events: eventos,
-            eventContent: (args, createElement) => {
-                const icone = args.event._def.extendedProps.icon;
-                let retorno = args.event._def.title;
-                if (icone) retorno = icone + args.event._def.title;
-                return {
-                    html: retorno
-                };
-            },
+            events: eventos
         });
         calendar.render();
     });
