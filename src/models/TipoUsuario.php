@@ -14,7 +14,7 @@ class TipoUsuario
         self::PROFESSOR
     ];
 
-    public static function pasta(string $tipo): string {
+    public static function toString(string $tipo): string {
         return match ($tipo) {
             self::ADMINISTRADOR => 'admin',
             self::PROFESSOR     => 'professor',

@@ -13,7 +13,7 @@
             <label for="login" class="form-label">Usuário</label>
             <div class="input-group">
                 <span class="input-group-text">
-                    <i class="fas fa-user"></i>
+                    <i class="far fa-user"></i>
                 </span>
                 <input type="text"
                        class="form-control"
@@ -36,7 +36,7 @@
                        name="senha"
                        id="senha"
                        placeholder="Senha"
-                       aria-label="Usuário"
+                       aria-label="Senha"
                        required />
                 <button class="btn btn-outline-secondary" onclick="toggleVisibility()" type="button"><i id="icone-senha" class="fas fa-eye-slash"></i></button>
             </div>
@@ -84,7 +84,7 @@
         const returnText = await response.text()
         try {
             const json = JSON.parse(returnText);
-            if (response.status != 200) {
+            if (response.status !== 200) {
                 if (!json.hasOwnProperty('message')) throw 'Erro no retorno';
                 Swal.fire({
                     icon: 'warning',

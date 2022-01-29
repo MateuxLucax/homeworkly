@@ -1,11 +1,6 @@
-<div class="container-fluid">
-    <div id='calendar'></div>
-</div>
-
 <script>
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('calendar');
+    document.addEventListener('DOMContentLoaded', () => {
+        const calendarEl = document.querySelector('#calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             locale: 'pt-br',
@@ -18,5 +13,6 @@
         });
         calendar.render();
     });
-
 </script>
+
+<div id='calendar'></div>

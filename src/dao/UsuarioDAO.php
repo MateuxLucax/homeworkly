@@ -198,6 +198,33 @@ class UsuarioDAO
         return $usuario;
     }
 
+    /**
+     * @throws QueryException
+     * @throws UserNotFoundException
+     * @throws UnauthorizedException
+     */
+    public static function validaSenha(Usuario $usuario): bool
+    {
+        $sql = "SELECT * FROM usuario WHERE id_usuario = :id";
+
+        $params = [
+            ':id' => $usuario->getId()
+        ];
+
+        $foundUser = Query::select($sql, $params);
+
+        if (empty($foundUser)) {
+            throw new UserNotFoundException();
+        }
+
+        $foundUser = $foundUser[0];
+
+        if (!PasswordUtil::validate($usuario->getHashSenha(), $foundUser['hash_senha'])) {
+            throw new UnauthorizedException();
+        }
+        return true;
+    }
+
     public static function alterarSenha(Usuario $usuario): Usuario
     {
         Query::execute('UPDATE usuario SET hash_senha = :hashSenha WHERE id_usuario = :id', [
@@ -210,5 +237,17 @@ class UsuarioDAO
     public static function excluir(Usuario $usuario): void
     {
         Query::execute('DELETE FROM usuario WHERE id_usuario = :id', [':id' => $usuario->getId()]);
+    }
+
+    public static function buscarUsuario(Usuario $usuario): Usuario
+    {
+        return array_map(
+            fn($row) => self::armazenarPodeExcluir((new Usuario)
+                ->setId($row['id_usuario'])
+                ->setNome($row['nome'])
+                ->setTipo($row['tipo'])   // valor das enums coincide com o que é armazenado diretamente no banco
+                ->setLogin($row['login'])),
+            Query::select('SELECT id_usuario, nome, tipo, login FROM usuario WHERE id_usuario = :id', [':id' => $usuario->getId()])
+        )[0];
     }
 }

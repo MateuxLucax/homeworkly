@@ -5,6 +5,9 @@ require_once $root.'/exceptions/QueryException.php';
 
 class Query
 {
+    /**
+     * @throws QueryException
+     */
     public static function select(string $sql, array $params = []) : array | false
     {
         try {
@@ -14,10 +17,11 @@ class Query
         } catch (PDOException $e) {
             throw new QueryException($sql, $params, $e);
         }
-
-        return false;
     }
 
+    /**
+     * @throws QueryException
+     */
     public static function execute(string $sql, array $params) : bool
     {
         try {
@@ -26,7 +30,5 @@ class Query
         } catch (PDOException $e) {
             throw new QueryException($sql, $params, $e);
         }
-
-        return false;
     }
 }

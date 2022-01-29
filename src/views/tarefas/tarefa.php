@@ -24,12 +24,12 @@
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="/<?=TipoUsuario::pasta($_SESSION['tipo'])?>/turmas/listar?ano=<?=$turma->getAno()?>">
+                <a href="/<?=TipoUsuario::toString($_SESSION['tipo'])?>/turmas/listar?ano=<?=$turma->getAno()?>">
                     <?= $turma->getAno() ?>
                 </a>
             </li>
             <li class="breadcrumb-item">
-                <a href="/<?=TipoUsuario::pasta($_SESSION['tipo'])?>/turmas/turma?id=<?= $turma->getId() ?>">
+                <a href="/<?=TipoUsuario::toString($_SESSION['tipo'])?>/turmas/turma?id=<?= $turma->getId() ?>">
                     <?= $turma->getNome() ?>
                 </a>
             </li>

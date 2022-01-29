@@ -7,9 +7,9 @@ require_once $root.'/utils/HttpCodes.php';
  * 
  * @param int $code código HTTP da resposta a ser dada
  * @param mixed $body valor a ser codificado em JSON a ser enviado como corpo da resposta
- * @return void
+ * @return never
  */
-function respondJson(int $code, mixed $body = ''): void
+function respondJson(int $code, mixed $body = ''): never
 {
     // PHP 8.1: mudar de void pra never
     header('Content-Type: application/json; charset=utf-8');
@@ -36,7 +36,7 @@ function respondWithNotFoundPage(string $message): void
  * @param string $heading mensagem para aprecer como título do alerta na página; pode conter HTML.
  * @param string $message texto explicando o erro ocorrido; pode conter HTML.
  */
-function respondWithErrorPage(int $code, string $heading, string $message): void
+function respondWithErrorPage(int $code, string $heading, string $message): never
 {
     global $root;
 
