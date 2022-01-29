@@ -71,7 +71,7 @@ create table if not exists entrega (
 
 create table if not exists historico_tarefa (
       id_historico_tarefa serial    primary key
-    , id_tarefa           serial    references tarefa
+    , id_tarefa           serial    references tarefa on delete cascade
     , titulo              text      not null
     , descricao           text      not null
     , data_alteracao      timestamp not null
@@ -83,7 +83,7 @@ create table if not exists historico_entrega (
     , id_aluno      bigint
     , conteudo      text      not null
     , data_alteracao      timestamp not null
-    , foreign key (id_tarefa, id_aluno) references entrega (id_tarefa, id_aluno)
+    , foreign key (id_tarefa, id_aluno) references entrega (id_tarefa, id_aluno) on delete cascade
 );
 
 create or replace function registra_historico_tarefa()

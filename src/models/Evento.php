@@ -88,16 +88,17 @@ class Evento
         return $this;
     }
 
-    public function toJson(): string
+    public function toArray(): array
     {
-        return json_encode([
-            'title' => ($this->entregue() ? '[Entregue] - ' : '') .$this->titulo(),
+        return [
+            'title' => $this->titulo(),
+            'icon' => $this->entregue() ? '<i class="far fa-check-square me-2"></i>' : '',
             'start' => $this->dataInicial(),
             'end' => $this->dataFinal(),
             'url' => $this->destino(),
             'color' => $this->corEvento(),
             'className' => 'text-center'
-        ]);
+        ];
     }
 
     public static function tarefasToEventos(array $tarefas): array

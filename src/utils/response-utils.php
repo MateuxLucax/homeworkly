@@ -11,7 +11,6 @@ require_once $root.'/utils/HttpCodes.php';
  */
 function respondJson(int $code, mixed $body = ''): never
 {
-    // PHP 8.1: mudar de void pra never
     header('Content-Type: application/json; charset=utf-8');
     http_response_code($code);
     echo json_encode($body);
