@@ -13,11 +13,6 @@
     $professor = $tarefa->professor();
 
     $permissaoTarefa = $view['permissaoTarefa'];
-
-    if ($_SESSION['tipo'] == TipoUsuario::ALUNO) {
-        $entrega = $view['entrega'];
-        $permissaoEntrega = $view['permissaoEntrega'];
-    }
 ?>
 
 <main class="container">
@@ -172,8 +167,19 @@
         </div>
     </div>
 
+    <!-- TODO separar em arquivos diferentes as partes de aluno e professor -->
+
     <?php
-    if ($_SESSION['tipo'] == TipoUsuario::ALUNO):
+
+    //
+    // Aluno
+    //
+
+    if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
+    {
+        $entrega = $view['entrega'];
+        $permissaoEntrega = $view['permissaoEntrega'];
+
         $alunoEntregou = $entrega != null;
         $entregaHabilitada = $permissaoEntrega == PermissaoEntrega::PODE; ?>
 
@@ -286,9 +292,118 @@
 
             </div>
         </div>
-    <?php endif; ?>
+    <?php } ?>
+
+    <?php
+    //
+    // Professor
+    //
+
+    if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
+    {
+        $entregasPorAluno = $view['entregasPorAluno'];
+        ?>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Entregas</div>
+            </div>
+            <div class="card-body">
+                <table class="table <?= count($entregasPorAluno) == 0 ? 'd-none' : '' ?>">
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Situação</th> <!-- Rascunho, Atrasado ou A tempo? -->
+                        <!-- TODO usar as mesmas categorias na visão do aluno quando ele estiver vendo a entrega dele -->
+
+                        <th>Avaliação</th> <!-- Avaliação pendente ou Nota ou Visto -->
+                        <th>Data</th>
+                    </tr>
+                    <?php foreach ($entregasPorAluno as $alunoEntrega):
+                        $dataHora = null;
+                        if ($alunoEntrega['data_hora'] != null) {
+                            $dataHora = DateUtil::toLocalDateTime($alunoEntrega['data_hora']);
+                        }
+
+                        // TODO enum EntregaSituacao
+                        // TODO fazer um método situacao() no modelo da entrega que encapsula essa lógica:
+                        if ($alunoEntrega['entrega_feita']) {
+                            if (! $alunoEntrega['em_definitivo']) {
+                                $situacao = 'Rascunho';
+                                $bgSituacao = 'bg-secondary';
+                            } else if ($dataHora > $tarefa->dataHoraEntrega()) {
+                                $situacao = 'Atrasada';
+                                $bgSituacao = 'bg-warning';
+                            } else {
+                                $situacao = 'Entregue';
+                                $bgSituacao = 'bg-success';
+                            }
+                        } else {
+                            $agora = DateUtil::toLocalDateTime('now');
+                            if ($agora < $tarefa->dataHoraFechamento()) {
+                                $situacao = 'Pendente';
+                                $bgSituacao = 'bg-secondary';
+                            } else {
+                                $situacao = 'Não feita';
+                                $bgSituacao = 'bg-warning';
+                            }
+                        }
+                        $corSituacao = $bgSituacao == 'bg-warning' ? 'text-dark' : 'text-white';
+
+                        $avaliacao = '';
+                        // @Copypaste "Avaliação do professor" logo acima,
+                        // TODO extrair para algum lugar
+                        // o mais imediato seria uma função dentro desse arquivo mesmo
+                        if ($tarefa->comNota()) {
+                            $nota = $alunoEntrega['nota'];
+                            if ($nota == null) {
+                                $textoAvaliacao = 'Sem nota';
+                                $bgAvaliacao = 'bg-secondary';
+                            } else {
+                                $textoAvaliacao = $nota . '/10';
+                                $bgAvaliacao = $nota < 7 ? 'bg-warning' : 'bg-success';
+                            }
+                        } else {
+                            if ($alunoEntrega['visto'] === null) {
+                                $textoAvaliacao = 'Não visto';
+                                $bgAvaliacao = 'bg-secondary';
+                            } else if ($alunoEntrega['visto']) {
+                                $textoAvaliacao = 'Visto';
+                                $bgAvaliacao = 'bg-success';
+                            } else {
+                                $textoAvaliacao = 'Não aceito';
+                                $bgAvaliacao = 'bg-danger';
+                            }
+                        }
+                        $corTextoAvaliacao = $bgAvaliacao == 'bg-warning' ? 'text-dark' : '';
+
+                        $avaliacao = '
+                            <span class="badge '.$bgAvaliacao.' '.$corTextoAvaliacao.'">
+                                '.$textoAvaliacao.'
+                            </span>';
+                        ?>
+                        <tr>
+                            <td><?= $alunoEntrega['aluno_nome'] ?></td>
+                            <td><span class="badge <?= $bgSituacao ?> <?= $corSituacao ?>">
+                                <?= $situacao ?>
+                            </span></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <?= $avaliacao ?>
+                                </div>
+                            </td>
+                            <td><?= $dataHora?->format('d/m/Y H:i') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+        </div>
+        
+        <?php
+    }
+    ?>
 </main>
 
+<?php if ($_SESSION['tipo'] == TipoUsuario::ALUNO): ?>
 <div class="modal fade" id="modal-confirmar-entrega-em-definitivo">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -306,6 +421,7 @@
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <script>
 
