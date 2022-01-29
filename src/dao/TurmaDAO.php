@@ -193,4 +193,22 @@ class TurmaDAO
             throw $e;
         }
     }
+
+    public static function turmaAtualDeAluno($idAluno): ?Turma 
+    {
+        $rows = Query::select("SELECT t.id_turma, t.nome, t.ano 
+                                 FROM turma t
+                                 JOIN aluno_em_turma aet
+                                   ON aet.id_turma = t.id_turma
+                                WHERE t.ano = date_part('year', CURRENT_DATE)
+                                  AND aet.id_aluno = :id_aluno",
+                            ['id_aluno' => $idAluno]);
+        return array_map(
+            fn ($row) => (new Turma)
+                ->setId($row['id_turma'])
+                ->setNome($row['nome'])
+                ->setAno($row['ano']),
+            $rows
+        )[0];
+    }
 }

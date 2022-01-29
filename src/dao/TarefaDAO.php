@@ -67,6 +67,61 @@ class TarefaDAO
         return $tarefa;
     }
 
+    public static function listarPorAluno(int $idAluno, int $idTurma): array
+    {
+        $rows = Query::select(
+            'SELECT ta.id_tarefa
+                  , pro.id_usuario AS id_professor
+                  , pro.nome AS nome_professor
+                  , di.id_disciplina
+                  , di.nome AS nome_disciplina
+                  , tu.id_turma
+                  , tu.nome AS nome_turma
+                  , tu.ano AS turma_ano
+                  , ta.titulo
+                  , ta.descricao
+                  , ta.esforco_minutos
+                  , ta.com_nota
+                  , ta.abertura
+                  , ta.entrega
+                  , ta.fechamento
+                  , ta.fechada
+               FROM tarefa ta
+               JOIN usuario pro ON ta.id_professor = pro.id_usuario
+               JOIN disciplina di ON ta.id_disciplina = di.id_disciplina
+               JOIN turma tu ON di.id_turma = tu.id_turma
+               JOIN aluno_em_turma aet ON aet.id_turma = tu.id_turma
+              WHERE aet.id_aluno = :id_aluno
+                AND tu.id_turma = :id_turma',
+            ['id_aluno' => $idAluno, 'id_turma' => $idTurma]
+        );
+
+        return array_map(
+            fn ($row) => (new Tarefa)
+                ->setId($row['id_tarefa'])
+                ->setTitulo($row['titulo'])
+                ->setDescricao($row['descricao'])
+                ->setEsforcoMinutos($row['esforco_minutos'])
+                ->setComNota($row['com_nota'])
+                ->setDataHoraAbertura(DateUtil::toLocalDateTime($row['abertura']))
+                ->setDataHoraEntrega(DateUtil::toLocalDateTime($row['entrega']))
+                ->setDataHoraFechamento($row['fechamento'] ? DateUtil::toLocalDateTime($row['fechamento']) : null)
+                ->setFechadaManualmente($row['fechada'])
+                ->setProfessor((new Usuario)
+                    ->setId($row['id_professor'])
+                    ->setNome($row['nome_professor'])
+                    ->setTipo(TipoUsuario::PROFESSOR))
+                ->setDisciplina((new Disciplina)
+                    ->setId($row['id_disciplina'])
+                    ->setNome($row['nome_disciplina'])
+                    ->setTurma((new Turma)
+                        ->setId($row['id_turma'])
+                        ->setNome($row['nome_turma'])
+                        ->setAno($row['turma_ano']))),
+            $rows
+        );
+    }
+
     public static function existe(int $idTarefa): bool
     {
         return Query::select(
