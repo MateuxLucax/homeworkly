@@ -71,11 +71,9 @@ class Evento
         date_default_timezone_set("America/Sao_Paulo");
         $diasFaltando = round(((($this->dataFinal->getTimestamp() - time()) / 24) / 60) / 60);
         if ($diasFaltando > 7) {
-            $this->corEvento = CorEvento::AZUL;
+            $this->corEvento = CorEvento::VERDE;
         } else if ($diasFaltando > 3) {
             $this->corEvento = CorEvento::AMARELO;
-        } else if ($this->entregue()) {
-            $this->corEvento = CorEvento::VERDE;
         } else {
             $this->corEvento = CorEvento::VERMELHO;
         }
@@ -92,7 +90,6 @@ class Evento
     {
         return [
             'title' => $this->titulo(),
-            'icon' => $this->entregue() ? '<i class="far fa-check-square me-2"></i>' : '',
             'start' => $this->dataInicial(),
             'end' => $this->dataFinal(),
             'url' => $this->destino(),
@@ -108,7 +105,6 @@ class Evento
                 ->setTitulo($row->titulo())
                 ->setDataInicial($row->dataHoraAbertura())
                 ->setDataFinal($row->dataHoraFechamento())
-                ->setEntregue(!empty($row->dataHoraEntrega()))
                 ->setCorEvento()
                 ->setDestino('tarefas/tarefa?id=' . $row->id()),
             $tarefas
