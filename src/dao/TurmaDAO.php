@@ -194,7 +194,7 @@ class TurmaDAO
         }
     }
 
-    public static function turmaAtualDeAluno($idAluno): ?Turma 
+    public static function turmaAtualDeAluno(int $idAluno): ?Turma 
     {
         $rows = Query::select("SELECT t.id_turma, t.nome, t.ano 
                                  FROM turma t

@@ -102,7 +102,7 @@ class Evento
     {
         return array_map(
             fn (Tarefa $row) => (new Evento)
-                ->setTitulo($row->titulo())
+                ->setTitulo($row->disciplina()->getNome() . ' - ' .  $row->titulo())
                 ->setDataInicial($row->dataHoraAbertura())
                 ->setDataFinal($row->dataHoraFechamento())
                 ->setCorEvento()

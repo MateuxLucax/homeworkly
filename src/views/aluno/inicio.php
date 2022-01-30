@@ -1,7 +1,5 @@
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
-        const response = await fetch(`<?= $view['inicio_eventos'] ?>`);
-        const eventos = await response.json();
         const calendarEl = document.querySelector('#calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -16,9 +14,13 @@
             //     const title = prompt('Informe o Título da tarefa;');
             //     console.log([selectInfo, title]);
             // }
-            events: eventos
         });
         calendar.render();
+        const response = await fetch(`<?= $view['inicio_eventos'] ?>`);
+        const eventos = await response.json();
+        eventos.forEach((evento) => {
+            calendar.addEvent(evento);
+        });
     });
 </script>
 
