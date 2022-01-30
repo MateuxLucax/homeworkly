@@ -1,6 +1,6 @@
 <?php
     function active($current_page) : string {
-        return $current_page == basename($_SERVER['PHP_SELF']) ? 'active' : '';
+        return $current_page == $_SERVER['REQUEST_URI'] ? 'active' : '';
     }
 ?>
 <div class="d-flex flex-column flex-shrink-0 p-3 vh-100">

@@ -11,5 +11,5 @@ UsuarioDAO::validaSessaoTipo(TipoUsuario::ALUNO);
 $view['title'] = 'Inicio';
 $view['content_path'] = 'views/aluno/inicio.php';
 $view['sidebar_links'] = 'aluno/componentes/sidebar.php';
-$view['inicio_eventos'] = '/aluno/tarefas/listar.php';
+$view['inicio_eventos'] = '/aluno/tarefas/eventos.php';
 require_once $root . 'views/componentes/base.php';
