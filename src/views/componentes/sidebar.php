@@ -11,4 +11,5 @@
     <ul class="nav nav-pills flex-column mb-auto">
         <?php require $root .'/views/' . $view['sidebar_links'] ?>
     </ul>
+    <p class="text-center">HomeWorkly - <?= date("Y"); ?></p>
 </div>

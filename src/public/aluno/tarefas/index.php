@@ -11,7 +11,6 @@ UsuarioDAO::validaSessaoTipo(TipoUsuario::ALUNO);
 require_once $root . 'dao/TurmaDAO.php';
 require_once $root . 'dao/TarefaDAO.php';
 require_once $root . 'models/TipoUsuario.php';
-require_once $root . 'utils/response-utils.php';
 require_once $root . 'models/Evento.php';
 require_once $root . 'utils/SessionUtil.php';
 

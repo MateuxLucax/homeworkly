@@ -24,9 +24,9 @@ try {
 
     if (!empty($loggedInUser)) {
         $whereIGo = match ($loggedInUser->getTipo()) {
-            TipoUsuario::ALUNO         => "/aluno/inicio",  // ?turma= opcional, por padrão pega a do ano atual
-            TipoUsuario::ADMINISTRADOR => "/admin/inicio",
-            TipoUsuario::PROFESSOR     => "/professor/inicio",
+            TipoUsuario::ALUNO         => "/aluno",  // ?turma= opcional, por padrão pega a do ano atual
+            TipoUsuario::ADMINISTRADOR => "/admin",
+            TipoUsuario::PROFESSOR     => "/professor",
             default                    => "/entrar",
         };
 
