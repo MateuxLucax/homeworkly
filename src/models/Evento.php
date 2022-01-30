@@ -104,7 +104,7 @@ class Evento
             fn (Tarefa $row) => (new Evento)
                 ->setTitulo($row->disciplina()->getNome() . ' - ' .  $row->titulo())
                 ->setDataInicial($row->dataHoraAbertura())
-                ->setDataFinal($row->dataHoraFechamento())
+                ->setDataFinal($row->dataHoraEntrega())
                 ->setCorEvento()
                 ->setDestino('tarefas/tarefa?id=' . $row->id()),
             $tarefas
