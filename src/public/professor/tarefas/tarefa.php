@@ -1,11 +1,11 @@
 <?php
 
-$root = '../../..';
+$root = '../../../';
 
-require_once $root . '/utils/response-utils.php';
+require_once $root . 'utils/response-utils.php';
 forbidMethodsNot('GET');
-require_once $root . '/dao/UsuarioDAO.php';
-require_once $root . '/models/TipoUsuario.php';
+require_once $root . 'dao/UsuarioDAO.php';
+require_once $root . 'models/TipoUsuario.php';
 UsuarioDAO::validaSessaoTipo(TipoUsuario::PROFESSOR);
 
 require_once $root . '/public/base/tarefas/tarefa.php';
@@ -44,4 +44,8 @@ $entregasPorAluno = Query::select($sqlEntregas, [':idTarefa' => $tarefa->id(), '
 $view['tarefa'] = $tarefa;
 $view['permissaoTarefa'] = $permissao;
 $view['entregasPorAluno'] = $entregasPorAluno;
-require $root . '/views/tarefas/tarefa.php';
+
+$view['content_path'] = 'views/tarefas/tarefa.php';
+$view['sidebar_links'] = 'aluno/componentes/sidebar.php';
+
+require_once $root . 'views/componentes/base.php';
