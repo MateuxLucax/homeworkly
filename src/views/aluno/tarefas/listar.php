@@ -6,7 +6,9 @@
             <div class="card-body d-flex flex-column h-100">
                 <div>
                     <h5 class="pb-2"><?= $tarefa->disciplina()->getNome() ?> - <?= $tarefa->titulo() ?></h5>
-                    <p><i class="far fa-calendar-minus me-2"></i><?= DateUtil::formatTo($tarefa->dataHoraAbertura(), 'd/m/Y') ?> - <?= DateUtil::formatTo($tarefa->dataHoraEntrega(), 'd/m/Y') ?></p>
+                    <small>
+                        <p><i class="far fa-calendar-minus me-2"></i><?= DateUtil::formatTo($tarefa->dataHoraAbertura(), 'd/m/Y') ?> - <?= DateUtil::formatTo($tarefa->dataHoraEntrega(), 'd/m/Y') ?></p>
+                    </small>
                     <p><?= $tarefa->descricao() ?></p>
                 </div>
                 <a href="tarefa?id=<?= $tarefa->id() ?>" type="button" class="btn btn-outline-dark mt-auto">Responder tarefa<i class="far fa-edit ms-2"></i></a>
