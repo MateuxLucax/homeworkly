@@ -78,7 +78,7 @@ try
 
         respondJson(
             HttpCodes::BAD_REQUEST,
-            'A entrega não pôde ser feita. Motivo: '.$mensagem
+            ['message' => 'A entrega não pôde ser feita. Motivo: '.$mensagem]
         );
     }
 }
