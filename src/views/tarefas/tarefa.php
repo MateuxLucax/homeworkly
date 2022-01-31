@@ -143,8 +143,6 @@
     </div>
 </div>
 
-<!-- TODO separar em arquivos diferentes as partes de aluno e professor -->
-
 <?php
 
 //
@@ -154,16 +152,14 @@
 if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
 {
     $entrega = $view['entrega'];
-    $permissaoEntrega = $view['permissaoEntrega'];
-
-    $alunoEntregou = $entrega != null;
-    $entregaHabilitada = $permissaoEntrega == PermissaoEntrega::PODE; ?>
+    $entregaSituacao = $tarefa->entregaSituacao($entrega);
+    ?>
 
     <div class="card mb-3">
         <div class="card-header d-flex align-items-center">
-            <?php if ($alunoEntregou && $entrega->emDefinitivo()) {
+            <?php if ($entregaSituacao->entregue()) {
                 echo '<span>Entregue em <i>'.$entrega->dataHora()->format('d/m H:i').'</i></span>';
-                if ($entrega->dataHora() > $tarefa->dataHoraEntrega()) {
+                if ($entregaSituacao == EntregaSituacao::ENTREGUE_ATRASADA) {
                     echo '<h5 class="mb-0" style="margin-left: 15px;"><span class="badge bg-warning text-dark">Atrasada</span></h5>';
                 }
             } else {
@@ -171,7 +167,7 @@ if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
             } ?>
         </div>
         <div class="card-body">
-            <?php if ($alunoEntregou && $entrega->emDefinitivo() && ($estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA)): ?>
+            <?php if ($entregaSituacao->entregue() && $tarefa->fechada()): ?>
                 <div class="d-flex align-items-center">
                     <div>Avaliação do professor</div>
                     <?php if ($tarefa->comNota()) {
@@ -208,64 +204,60 @@ if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
 
             <?php endif; ?>
 
-            <?php if ($alunoEntregou || $entregaHabilitada):
-                if ($alunoEntregou) {
+            <?php
+            $conteudoEntrega = $entrega == null ? '' : $entrega->conteudo();
+
+            $formMethod = $formAction = $endpointEntrega = $iconeBotao = $textoBotao = '';
+
+            if ($entregaSituacao->pendente()) {
+                if ($entrega != null) {
                     $formMethod = 'PUT';
                     $endpointEntrega = 'alterar?aluno='.$_SESSION['id_usuario'].'&tarefa='.$tarefa->id();
-                    $conteudoEntrega = $entrega->conteudo();
                     $iconeBotao = 'fa-paper-plane';
                     $textoBotao = 'Alterar';
                 } else {
                     $formMethod = 'POST';
                     $endpointEntrega = 'criar?tarefa='.$tarefa->id();
-                    $conteudoEntrega = '';
                     $iconeBotao = 'fa-paper-plane';
                     $textoBotao = 'Salvar';
                 }
                 $formAction = "/aluno/entregas/$endpointEntrega";
 
-                if (!$entrega->emDefinitivo()) {
-                    if (!$entregaHabilitada) {
-                        echo
-                        '<div class="alert alert-warning">
-                            Você não pode mais entregar a tarefa em definitivo.
-                        </div>';
-                    } else if (DateUtil::toLocalDateTime('now') >= $tarefa->dataHoraEntrega()) {
-                        echo
-                        '<div class="alert alert-warning">
-                            Já passou da data de entrega, então sua entrega ficará marcada como <b>atrasada</b>.
-                        </div>';
-                    }
+                if ($entregaSituacao == EntregaSituacao::PENDENTE_ATRASADA) {
+                    echo
+                    '<div class="alert alert-warning">
+                        Já passou da data de entrega, então sua entrega ficará marcada como <b>atrasada</b>.
+                    </div>';
                 }
-                ?>
+            } else if ($entregaSituacao == EntregaSituacao::NAO_FEITA) {
+                echo
+                '<div class="alert alert-warning">
+                    Você não pode mais entregar a tarefa em definitivo.
+                </div>';
+            }
+            ?>
 
-                <!-- method de form aparentemente só pode ser GET ou POST, então colocado como data attribute -->
-                <form id="form-fazer-entrega" data-method="<?= $formMethod ?>" action="<?= $formAction ?>">
-                    <textarea
-                        class="mb-0 form-control" name="conteudo" id="conteudo" rows="3" required
-                        <?= $alunoEntregou && !$entregaHabilitada ? 'disabled readonly' : ''?>
-                    ><?= $conteudoEntrega ?></textarea>
-                    <?php if ($entregaHabilitada): ?>
-                        <div class="float-end">
-                            <button type="button" id="btn-fazer-entrega" class="mt-3 btn btn-primary">
-                                <i class="fas <?= $iconeBotao ?>"></i>
-                                <?= $textoBotao ?>
+            <!-- method de form aparentemente só pode ser GET ou POST, então colocado como data attribute -->
+            <form id="form-fazer-entrega" data-method="<?= $formMethod ?>" action="<?= $formAction ?>">
+                <textarea
+                    class="mb-0 form-control" name="conteudo" id="conteudo" rows="3" required
+                    <?= $entregaSituacao->pendente() ? '' : 'disabled readonly'?>
+                ><?= $conteudoEntrega ?></textarea>
+                <?php if ($entregaSituacao->pendente()): ?>
+                    <div class="float-end">
+                        <button type="button" id="btn-fazer-entrega" class="mt-3 btn btn-primary">
+                            <i class="fas <?= $iconeBotao ?>"></i>
+                            <?= $textoBotao ?>
+                        </button>
+                        <?php if ($entrega != null): ?>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#modal-confirmar-entrega-em-definitivo" class="mt-3 btn btn-success">
+                                <i class="fas fa-check"></i>
+                                Entregar em definitivo
                             </button>
-                            <?php if ($alunoEntregou): ?>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#modal-confirmar-entrega-em-definitivo" class="mt-3 btn btn-success">
-                                    <i class="fas fa-check"></i>
-                                    Entregar em definitivo
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-                </form>
-            <?php else: ?>
-                <div class="mb-0 alert alert-danger">
-                    Você não pode mais realizar a entrega desta tarefa.
-                </div>
-            <?php endif; ?>
-
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+            </form>
         </div>
     </div>
 <?php } ?>
@@ -300,30 +292,21 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                         $dataHora = DateUtil::toLocalDateTime($alunoEntrega['data_hora']);
                     }
 
-                    // TODO enum EntregaSituacao
-                    // TODO fazer um método situacao() no modelo da entrega que encapsula essa lógica:
-                    if ($alunoEntrega['entrega_feita']) {
-                        if (! $alunoEntrega['em_definitivo']) {
-                            $situacao = 'Rascunho';
-                            $bgSituacao = 'bg-secondary';
-                        } else if ($dataHora > $tarefa->dataHoraEntrega()) {
-                            $situacao = 'Atrasada';
-                            $bgSituacao = 'bg-warning';
-                        } else {
-                            $situacao = 'Entregue';
-                            $bgSituacao = 'bg-success';
-                        }
-                    } else {
-                        $agora = DateUtil::toLocalDateTime('now');
-                        if ($agora < $tarefa->dataHoraFechamento()) {
-                            $situacao = 'Pendente';
-                            $bgSituacao = 'bg-secondary';
-                        } else {
-                            $situacao = 'Não feita';
-                            $bgSituacao = 'bg-warning';
-                        }
-                    }
-                    $corSituacao = $bgSituacao == 'bg-warning' ? 'text-dark' : 'text-white';
+                    // TODO!! modificar $alunoEntrega para instanciar Entrega para chamar ->entregaSituacao
+                    /*
+                    $entregaSituacao = EntregaSituacao::buscar($tarefa->id(), $alunoEntrega['aluno_id']);
+
+                    list($textoSituacao, $bgSituacao, $corSituacao) = match($entregaSituacao) {
+                        EntregaSituacao::PENDENTE             => ['Pendente', 'bg-info', 'text-dark'],
+                        EntregaSituacao::PENDENTE_ATRASADA    => ['Atrasada', 'bg-warning', 'text-dark'],
+                        EntregaSituacao::NAO_FEITA            => ['Não feita', 'bg-danger', 'text-white'],
+                        EntregaSituacao::ENTREGUE => ['Entregue', 'bg-success', 'text-white'],
+                        EntregaSituacao::ENTREGUE_ATRASADA    => ['Entregue com atraso', 'bg-success', 'text-white']
+                    };
+                    */
+                    list($textoSituacao, $bgSituacao, $corSituacao)
+                    = ['TODO :InstanciarEntrega', 'bg-dark', 'text-white'];
+
 
                     $avaliacao = '';
                     // @Copypaste "Avaliação do professor" logo acima,
@@ -360,7 +343,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                     <tr>
                         <td><?= $alunoEntrega['aluno_nome'] ?></td>
                         <td><span class="badge <?= $bgSituacao ?> <?= $corSituacao ?>">
-                            <?= $situacao ?>
+                            <?= $textoSituacao ?>
                         </span></td>
                         <td>
                             <div class="d-flex align-items-center">
@@ -384,7 +367,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
         <div class="modal-content">
             <div class="modal-body text-center">
                 <p>Tem certeza que deseja entregar essa tarefa em definitivo?</p>
-                <p>Você não poderá mais alterar a tarefa.</p>
+                <p>Você não poderá mais alterar a entrega.</p>
 
                 <button class="btn btn-success" id="btn-confirmar-entrega-em-definitivo">
                     Ok
