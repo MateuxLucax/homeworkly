@@ -2,6 +2,7 @@
 
 require_once $root . '/utils/DateUtil.php';
 require_once $root . '/models/TarefaEstado.php';
+require_once $root . '/models/EntregaSituacao.php';
 
 class Tarefa
 {
@@ -97,5 +98,31 @@ class Tarefa
         if ($agora < $this->abertura) return TarefaEstado::ESPERANDO_ABERTURA;
         if ($this->fechamento != null && $agora < $this->fechamento) return TarefaEstado::ABERTA; 
         return TarefaEstado::FECHADA; 
+    }
+
+    public function fechada(): bool
+    {
+        $estado = $this->estado();
+        return $estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA;
+    }
+
+    public function entregaSituacao(?Entrega $entrega): EntregaSituacao
+    {
+        $agora = DateUtil::toLocalDateTime('now');
+        $dataEntregaPassou = $agora >= $this->dataHoraEntrega();
+
+        if ($entrega == null || !$entrega->emDefinitivo()) {
+            if (!$this->fechada()) {
+                return $dataEntregaPassou
+                     ? EntregaSituacao::PENDENTE_ATRASADA
+                     : EntregaSituacao::PENDENTE;
+            } else {
+                return EntregaSituacao::NAO_FEITA;
+            }
+        } else {
+            return $dataEntregaPassou
+                 ? EntregaSituacao::ENTREGUE_ATRASADA
+                 : EntregaSituacao::ENTREGUE;
+        }
     }
 }
