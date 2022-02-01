@@ -41,6 +41,34 @@ $turma = $tarefa->disciplina()->getTurma();
 
 $entregasPorAluno = Query::select($sqlEntregas, [':idTarefa' => $tarefa->id(), ':idTurma' => $turma->getId() ]);
 
+$entregasPorAluno = array_map(
+    function(array $a) use ($tarefa) {
+        $aluno = (new Usuario)
+            ->setId($a['aluno_id'])
+            ->setNome($a['aluno_nome'])
+            ->setTipo(TipoUsuario::ALUNO);
+
+        $entrega = null;
+        if ($a['entrega_feita']) {
+            $entrega = (new Entrega)
+                ->setTarefa($tarefa)
+                ->setAluno($aluno)
+                ->setConteudo($a['conteudo'])
+                ->setDataHora(DateUtil::toLocalDateTime($a['data_hora']))
+                ->setEmDefinitivo($a['em_definitivo'])
+                ->setVisto($a['visto'])
+                ->setNota($a['nota'])
+                ->setComentario($a['comentario']);
+        }
+
+        return [
+            'aluno' => $aluno,
+            'entrega' => $entrega
+        ];
+    },
+    $entregasPorAluno
+);
+
 $view['tarefa'] = $tarefa;
 $view['permissaoTarefa'] = $permissao;
 $view['entregasPorAluno'] = $entregasPorAluno;
