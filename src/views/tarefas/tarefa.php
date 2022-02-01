@@ -10,7 +10,7 @@
     $permissaoTarefa = $view['permissaoTarefa'];
 ?>
 
-<div class="card mb-3">
+<div class="card px-0 mb-3">
     <div class="card-header d-flex align-items-center">
         Tarefa
         &nbsp;
@@ -155,7 +155,7 @@ if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
     $entregaSituacao = $tarefa->entregaSituacao($entrega);
     ?>
 
-    <div class="card mb-3">
+    <div class="card px-0 mb-3">
         <div class="card-header d-flex align-items-center">
             <?php if ($entregaSituacao->entregue()) {
                 echo '<span>Entregue em <i>'.$entrega->dataHora()->format('d/m H:i').'</i></span>';
@@ -272,7 +272,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
     $entregasPorAluno = $view['entregasPorAluno'];
     ?>
 
-    <div class="card">
+    <div class="card px-0">
         <div class="card-header">
             <div class="card-title">Entregas</div>
         </div>
