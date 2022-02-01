@@ -75,7 +75,7 @@ class DisciplinaDAO
                                 LEFT JOIN entrega e ON 
                                     e.id_tarefa = ta.id_tarefa
                                 GROUP BY 1, 2', 
-                                ['id_turma' => $idTurma, 'id_aluno' => $idTurma]);
+                                ['id_turma' => $idTurma, 'id_aluno' => $idAluno]);
 
         return array_map(
             fn ($row) => [
