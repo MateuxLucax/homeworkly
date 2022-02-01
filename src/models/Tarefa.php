@@ -106,6 +106,7 @@ class Tarefa
         return $estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA;
     }
 
+    // TODO! remover estado NAO_FEITA, é implícito quando a entrega é null, e mover esse método para a própria entrega (->situacao())
     public function entregaSituacao(?Entrega $entrega): EntregaSituacao
     {
         $agora = DateUtil::toLocalDateTime('now');

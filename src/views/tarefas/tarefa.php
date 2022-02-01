@@ -287,14 +287,10 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                     <th>Data</th>
                 </tr>
                 <?php foreach ($entregasPorAluno as $alunoEntrega):
-                    $dataHora = null;
-                    if ($alunoEntrega['data_hora'] != null) {
-                        $dataHora = DateUtil::toLocalDateTime($alunoEntrega['data_hora']);
-                    }
+                    $aluno = $alunoEntrega['aluno'];
+                    $entrega = $alunoEntrega['entrega'];
 
-                    // TODO!! modificar $alunoEntrega para instanciar Entrega para chamar ->entregaSituacao
-                    /*
-                    $entregaSituacao = EntregaSituacao::buscar($tarefa->id(), $alunoEntrega['aluno_id']);
+                    $entregaSituacao = $tarefa->entregaSituacao($entrega);
 
                     list($textoSituacao, $bgSituacao, $corSituacao) = match($entregaSituacao) {
                         EntregaSituacao::PENDENTE             => ['Pendente', 'bg-info', 'text-dark'],
@@ -303,9 +299,6 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                         EntregaSituacao::ENTREGUE => ['Entregue', 'bg-success', 'text-white'],
                         EntregaSituacao::ENTREGUE_ATRASADA    => ['Entregue com atraso', 'bg-success', 'text-white']
                     };
-                    */
-                    list($textoSituacao, $bgSituacao, $corSituacao)
-                    = ['TODO :InstanciarEntrega', 'bg-dark', 'text-white'];
 
 
                     $avaliacao = '';
@@ -313,7 +306,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                     // TODO extrair para algum lugar
                     // o mais imediato seria uma função dentro desse arquivo mesmo
                     if ($tarefa->comNota()) {
-                        $nota = $alunoEntrega['nota'];
+                        $nota = $entrega?->nota();
                         if ($nota == null) {
                             $textoAvaliacao = 'Sem nota';
                             $bgAvaliacao = 'bg-secondary';
@@ -322,10 +315,10 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                             $bgAvaliacao = $nota < 7 ? 'bg-warning' : 'bg-success';
                         }
                     } else {
-                        if ($alunoEntrega['visto'] === null) {
+                        if ($entrega?->visto() === null) {
                             $textoAvaliacao = 'Não visto';
                             $bgAvaliacao = 'bg-secondary';
-                        } else if ($alunoEntrega['visto']) {
+                        } else if ($entrega->visto()) {
                             $textoAvaliacao = 'Visto';
                             $bgAvaliacao = 'bg-success';
                         } else {
@@ -341,7 +334,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                         </span>';
                     ?>
                     <tr>
-                        <td><?= $alunoEntrega['aluno_nome'] ?></td>
+                        <td><?= $aluno->getNome() ?></td>
                         <td><span class="badge <?= $bgSituacao ?> <?= $corSituacao ?>">
                             <?= $textoSituacao ?>
                         </span></td>
@@ -350,7 +343,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                                 <?= $avaliacao ?>
                             </div>
                         </td>
-                        <td><?= $dataHora?->format('d/m/Y H:i') ?></td>
+                        <td><?= $entrega?->dataHora()?->format('d/m/Y H:i') ?></td>
                     </tr>
                 <?php endforeach; ?>
             </table>
