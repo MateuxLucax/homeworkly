@@ -152,7 +152,7 @@
 if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
 {
     $entrega = $view['entrega'];
-    $entregaSituacao = $tarefa->entregaSituacao($entrega);
+    $entregaSituacao = Entrega::situacao($entrega);
     ?>
 
     <div class="card px-0 mb-3">
@@ -286,17 +286,17 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                     <th>Avaliação</th> <!-- Avaliação pendente ou Nota ou Visto -->
                     <th>Data</th>
                 </tr>
-                <?php foreach ($entregasPorAluno as $alunoEntrega):
+                <?php foreach ($entregasPorAluno as $alunoEntrega) {
                     $aluno = $alunoEntrega['aluno'];
                     $entrega = $alunoEntrega['entrega'];
 
-                    $entregaSituacao = $tarefa->entregaSituacao($entrega);
+                    $entregaSituacao = Entrega::situacao($entrega);
 
                     list($textoSituacao, $bgSituacao, $corSituacao) = match($entregaSituacao) {
                         EntregaSituacao::PENDENTE             => ['Pendente', 'bg-info', 'text-dark'],
                         EntregaSituacao::PENDENTE_ATRASADA    => ['Atrasada', 'bg-warning', 'text-dark'],
                         EntregaSituacao::NAO_FEITA            => ['Não feita', 'bg-danger', 'text-white'],
-                        EntregaSituacao::ENTREGUE => ['Entregue', 'bg-success', 'text-white'],
+                        EntregaSituacao::ENTREGUE             => ['Entregue', 'bg-success', 'text-white'],
                         EntregaSituacao::ENTREGUE_ATRASADA    => ['Entregue com atraso', 'bg-success', 'text-white']
                     };
 
@@ -345,7 +345,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                         </td>
                         <td><?= $entrega?->dataHora()?->format('d/m/Y H:i') ?></td>
                     </tr>
-                <?php endforeach; ?>
+                <?php } // foreach ?>
             </table>
         </div>
     </div>

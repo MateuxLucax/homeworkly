@@ -105,25 +105,4 @@ class Tarefa
         $estado = $this->estado();
         return $estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA;
     }
-
-    // TODO! remover estado NAO_FEITA, é implícito quando a entrega é null, e mover esse método para a própria entrega (->situacao())
-    public function entregaSituacao(?Entrega $entrega): EntregaSituacao
-    {
-        $agora = DateUtil::toLocalDateTime('now');
-        $dataEntregaPassou = $agora >= $this->dataHoraEntrega();
-
-        if ($entrega == null || !$entrega->emDefinitivo()) {
-            if (!$this->fechada()) {
-                return $dataEntregaPassou
-                     ? EntregaSituacao::PENDENTE_ATRASADA
-                     : EntregaSituacao::PENDENTE;
-            } else {
-                return EntregaSituacao::NAO_FEITA;
-            }
-        } else {
-            return $dataEntregaPassou
-                 ? EntregaSituacao::ENTREGUE_ATRASADA
-                 : EntregaSituacao::ENTREGUE;
-        }
-    }
 }
