@@ -74,19 +74,22 @@ class UsuarioDAO
     }
 
     public static function validaSessao() : bool {
-        session_start();
+        if(!isset($_SESSION)) {
+            session_start();
+        }
+
         if (isset($_SESSION['id_usuario'])) {
             return true;
         }
 
-        header("location: http://" .  $_SERVER["HTTP_HOST"] . "/entrar");
+        header("location: /entrar");
         return false;
     }
 
     public static function sair() : bool {
         self::removerSessao();
 
-        header("location: http://" . $_SERVER["HTTP_HOST"]);
+        header("location: /entrar");
         return true;
     }
 
@@ -98,7 +101,9 @@ class UsuarioDAO
     }
 
     private static function removerSessao() : void {
-        session_start();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
         unset($_SESSION['id_usuario']);
         unset($_SESSION['nome']);
         unset($_SESSION['tipo']);
@@ -109,6 +114,15 @@ class UsuarioDAO
         if (self::validaSessao()) {
             $tipoSessao = (string) $_SESSION['tipo'];
             if ($tipoSessao != TipoUsuario::ADMINISTRADOR && $tipoSessao != $tipo) {
+                self::sair();
+            }
+        }
+    }
+
+    public static function validaSessaoTipos(array $tipos) : void {
+        if (self::validaSessao()) {
+            $tipoSessao = (string) $_SESSION['tipo'];
+            if (in_array(TipoUsuario::ADMINISTRADOR, $tipos) || !in_array($tipoSessao, $tipos)) {
                 self::sair();
             }
         }
