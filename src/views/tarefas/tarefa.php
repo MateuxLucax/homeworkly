@@ -273,8 +273,18 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
     ?>
 
     <div class="card px-0">
-        <div class="card-header">
-            <div class="card-title">Entregas</div>
+        <div class="card-header d-flex align-items-center">
+            <div class="card-title mb-0">Entregas</div>
+
+            <?php if ($tarefa->estado() != TarefaEstado::ARQUIVADA): ?>
+                <a href="../entregas/?tarefa=<?=$tarefa->id()?>" class="ms-auto btn btn-primary">
+                    <i class="fas fa-spell-check"></i>
+                    Avaliar entregas
+                </a>
+            <?php endif; ?>
+            
+            <!-- TODO atalho para avaliar entrega de cada aluno, passando por get o id do aluno ao /entregas/?tarefa -->
+
         </div>
         <div class="card-body">
             <table class="table <?= count($entregasPorAluno) == 0 ? 'd-none' : '' ?>">
