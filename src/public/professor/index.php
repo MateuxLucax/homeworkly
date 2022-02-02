@@ -23,4 +23,5 @@ $view['sidebar_links'] = 'professor/componentes/sidebar.php';
 $view['inicio_eventos'] = '/professor/tarefas/eventos.php?id_turma=' . $turmaAtual->getId();
 $view['adicionar_tarefa'] = '/professor/tarefas/eventos.php?id_turma=' . $turmaAtual->getId();
 $view['ano_turma'] = $turmaAtual->getAno();
+$view['criar_tarefa_modal'] = 'views/professor/componentes/criar_tarefa.php';
 require_once $root . 'views/componentes/base.php';

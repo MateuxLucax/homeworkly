@@ -20,6 +20,8 @@
             </div>
         </div>
     </div>
+
+    <?php if (isset($view['criar_tarefa_modal'])) { require $root . $view['criar_tarefa_modal']; } ?>
 </main>
 </body>
 </html>

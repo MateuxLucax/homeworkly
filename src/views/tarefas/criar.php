@@ -315,10 +315,10 @@
             titulo:         form.titulo.value,
             descricao:      form.descricao.value,
             esforcoMinutos: Number(form.esforcoHoras.value) * 60 + Number(form.esforcoMinutos.value),
-            comNota:        form.comNota.value == 'true',
+            comNota:        form.comNota.value === 'true',
             abertura:       switchAbrirAgora.checked ? agora.toISOString() : form.abertura.value,
             entrega:        form.entrega.value,
-            fechamento:     form.fechamento.value == '' ? null : form.fechamento.value
+            fechamento:     form.fechamento.value === '' ? null : form.fechamento.value
         };
 
         if (paginaAlterar) {
@@ -329,7 +329,7 @@
         const textRet = await response.text();
         try {
             const ret = JSON.parse(textRet);
-            if (response.status != status) {
+            if (response.status !== status) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Erro do sistema',
@@ -356,7 +356,7 @@
         document.getElementById('btn-confirmar-exclusao').onclick = async () => {
             const response = await fetch('excluir', { method: 'DELETE', body: JSON.stringify({id: form.id.value}) });
             const ret = await response.json();
-            if (response.status != 200) {
+            if (response.status !== 200) {
                 Swal.fire({
                     icon: 'error',
                     text: ret.message

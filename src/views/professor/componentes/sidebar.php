@@ -16,3 +16,12 @@
         Disciplinas
     </a>
 </li>
+
+<hr>
+
+<li class="nav-item">
+    <button type="button" class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#criar-tarefa-modal">
+        Criar uma tarefa
+        <i class="fas fa-plus ms-2"></i>
+    </button>
+</li>

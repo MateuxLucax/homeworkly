@@ -11,8 +11,9 @@
             },
             selectable: true,
             select: (selectInfo) => {
-                const title = prompt('Informe o Título da tarefa;');
-                console.log([selectInfo, title]);
+                let modalCriarTarefa = new bootstrap.Modal(document.querySelector('#criar-tarefa-modal'), {});
+                modalCriarTarefa.show();
+
             }
         });
         calendar.render();
