@@ -8,13 +8,13 @@ require_once $root . 'dao/UsuarioDAO.php';
 require_once $root . 'models/TipoUsuario.php';
 require_once $root.'utils/SessionUtil.php';
 
-UsuarioDAO::validaSessaoTipo(TipoUsuario::ALUNO);
+UsuarioDAO::validaSessaoTipos([TipoUsuario::ALUNO, TipoUsuario::PROFESSOR]);
 $usuario = SessionUtil::usuarioLogado();
 $usuario = UsuarioDAO::buscarUsuario($usuario);
 
 $view['title'] = 'Perfil';
 $view['content_path'] = 'views/componentes/perfil.php';
-$view['sidebar_links'] = 'aluno/componentes/sidebar.php';
+$view['sidebar_links'] = 'professor/componentes/sidebar.php';
 $view['perfil_nome'] = $usuario->getNome();
 $view['perfil_login'] = $usuario->getLogin();
 $view['perfil_id_usuario'] = $usuario->getId();

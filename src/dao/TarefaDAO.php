@@ -96,8 +96,57 @@ class TarefaDAO
             ['id_aluno' => $idAluno, 'id_turma' => $idTurma]
         );
 
+        return self::tarefaParaObjeto($rows);
+    }
+
+    public static function existe(int $idTarefa): bool
+    {
+        return Query::select(
+            'SELECT EXISTS(SELECT 1 FROM tarefa WHERE id_tarefa = :id) as existe',
+            ['id' => $idTarefa]
+        )[0]['existe'];
+    }
+
+    public static function listarPorProfessor(int $idAluno, int $idTurma): array
+    {
+        $rows = Query::select(
+            'SELECT ta.id_tarefa
+                  , pro.id_usuario AS id_professor
+                  , pro.nome AS nome_professor
+                  , di.id_disciplina
+                  , di.nome AS nome_disciplina
+                  , tu.id_turma
+                  , tu.nome AS nome_turma
+                  , tu.ano AS turma_ano
+                  , ta.titulo
+                  , ta.descricao
+                  , ta.esforco_minutos
+                  , ta.com_nota
+                  , ta.abertura
+                  , ta.entrega
+                  , ta.fechamento
+                  , ta.fechada
+               FROM tarefa ta
+               JOIN usuario pro ON ta.id_professor = pro.id_usuario
+               JOIN disciplina di ON ta.id_disciplina = di.id_disciplina
+               JOIN turma tu ON di.id_turma = tu.id_turma
+               JOIN professor_de_disciplina pdd on di.id_disciplina = pdd.id_disciplina
+              WHERE pdd.id_professor = :id_professor
+                AND tu.id_turma = :id_turma',
+            ['id_professor' => $idAluno, 'id_turma' => $idTurma]
+        );
+
+        return self::tarefaParaObjeto($rows);
+    }
+
+    /**
+     * @param bool|array $rows
+     * @return array|Tarefa[]
+     */
+    public static function tarefaParaObjeto(bool|array $rows): array
+    {
         return array_map(
-            fn ($row) => (new Tarefa)
+            fn($row) => (new Tarefa)
                 ->setId($row['id_tarefa'])
                 ->setTitulo($row['titulo'])
                 ->setDescricao($row['descricao'])
@@ -120,13 +169,5 @@ class TarefaDAO
                         ->setAno($row['turma_ano']))),
             $rows
         );
-    }
-
-    public static function existe(int $idTarefa): bool
-    {
-        return Query::select(
-            'SELECT EXISTS(SELECT 1 FROM tarefa WHERE id_tarefa = :id) as existe',
-            ['id' => $idTarefa]
-        )[0]['existe'];
     }
 }
