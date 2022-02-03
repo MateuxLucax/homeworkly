@@ -4,6 +4,8 @@
 <body>
 
 <?php
+    require_once $root . '/models/TarefaEstado.php';
+
     $turma = $view['turma'];
     $disciplina = $view['disciplina'];
 
@@ -91,9 +93,35 @@
                     <textarea class="form-control" name="descricao" id="descricao"><?= $tarefa?->descricao() ?></textarea>
                 </div>
 
-                <?php function dataISO(DateTime $data) : string {
-                    return $data->format('Y-m-d\TH:i');
-                } ?>
+                <?php 
+                    function dataISO(DateTime $data) : string 
+                    {
+                        return $data->format('Y-m-d\TH:i');
+                    }
+
+                    $aberturaPassou = $paginaAlterar && $tarefa->estado() != TarefaEstado::ESPERANDO_ABERTURA;
+                    
+                    function dataAbertura() : string {
+                        if ($paginaAlterar) {
+                            return dataISO($tarefa?->dataHoraAbertura());
+                        } else if (isset($_COOKIE['dataAbertura'])) {
+                            dataIso(DateTime::createFromFormat('d/M/Y h:i:s', $_COOKIE['dataAbertura']));
+                        } else {
+                            return '';
+                        }
+                    }
+
+                    function dataEntrega(): string
+                    {
+                        if ($paginaAlterar) {
+                            return dataISO($tarefa?->dataHoraEntrega());
+                        } else if (isset($_COOKIE['dataEntrega'])) {
+                            dataIso(DateTime::createFromFormat('d/M/Y h:i:s', $_COOKIE['dataEntrega']));
+                        } else {
+                            return '';
+                        }
+                    }
+                ?>
 
                 <div class="row">
                     <div class="mb-3 col-12 col-md-4">
@@ -102,12 +130,11 @@
                             &nbsp;
                             <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Quando a tarefa se torna disponível para os alunos."></i>
                         </label>
-                        <?php $aberturaPassou = $paginaAlterar && $tarefa->estado() != TarefaEstado::ESPERANDO_ABERTURA; ?>
 
                         <input class="form-control mb-2" type="datetime-local" name="abertura" id="abertura"
                                <?= $aberturaPassou ? 'readonly disabled' : '' ?>
                                <?= $aberturaPassou ? 'data-bs-toggle="tooltip" title="A tarefa já foi aberta, então sua data de abertura não pode ser modificada."' : '' ?>
-                               value="<?=$paginaAlterar ? dataISO($tarefa?->dataHoraAbertura()) : '' ?>"/>
+                               value="<?= dataAbertura() ?>"/>
                         <div class="form-check form-switch <?= $aberturaPassou ? 'd-none' : '' ?>">
                             <input type="checkbox" class="form-check-input" id="abrir-agora"
                                    <?= $aberturaPassou ? '' : 'checked' ?>/>

@@ -23,9 +23,7 @@ services:
 
   server:
     container_name: homeworkly-server
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile
+    build: ./docker/Dockerfile 
     restart: unless-stopped
     tty: true
     ports:

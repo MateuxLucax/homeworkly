@@ -1,4 +1,23 @@
 <script>
+    const padTo2Digits = (num) => {
+        return num.toString().padStart(2, '0');
+    }
+
+    const formatDate = (date) => {
+        return (
+            [
+                date.getFullYear(),
+                padTo2Digits(date.getMonth() + 1),
+                padTo2Digits(date.getDate()),
+            ].join('-') +
+            ' ' + [
+                padTo2Digits(date.getHours()),
+                padTo2Digits(date.getMinutes()),
+                padTo2Digits(date.getSeconds()),
+            ].join(':')
+        );
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
         const calendarEl = document.querySelector('#calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -13,7 +32,8 @@
             select: (selectInfo) => {
                 let modalCriarTarefa = new bootstrap.Modal(document.querySelector('#criar-tarefa-modal'), {});
                 modalCriarTarefa.show();
-
+                Cookies.set('dataAbertura', formatDate(selectInfo.start));
+                Cookies.set('dataEntrega', formatDate(selectInfo.end));
             }
         });
         calendar.render();

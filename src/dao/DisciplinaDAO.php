@@ -87,4 +87,28 @@ class DisciplinaDAO
             $result
         );
     }
+
+    public static function disciplinaDeTurmaProfessor(int $idProfessor, int $idTurma): array
+    {
+        $result = Query::select(
+            'SELECT
+                    d.id_disciplina,
+                    d.nome 
+                FROM
+                    disciplina d
+                JOIN professor_de_disciplina pdd ON
+                    d.id_disciplina = pdd.id_disciplina
+                WHERE
+                    d.id_turma = :id_turma
+                    AND pdd.id_professor = :id_professor',
+            ['id_turma' => $idTurma, 'id_professor' => $idProfessor]
+        );
+
+        return array_map(
+            fn ($row) => (new Disciplina)
+                ->setId($row['id_disciplina'])
+                ->setNome($row['nome']),
+            $result
+        );
+    }
 }
