@@ -10,6 +10,23 @@
     $permissaoTarefa = $view['permissaoTarefa'];
 ?>
 
+<?php $rootUsuario = '/' . TipoUsuario::toString($_SESSION['tipo']) . '/'; ?>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <?=$turma->getAno()?>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="<?=$rootUsuario?>turmas/turma?id=<?=$turma->getId()?>">
+            <?=$turma->getNome()?>
+        </a>
+    </li>
+    <li class="breadcrumb-item active">
+        <a href="<?=$rootUsuario?>disciplinas/disciplina?id=<?=$disciplina->getId()?>">
+            <?=$disciplina->getNome()?>
+        </a>
+    </li>
+</ol>
+
 <div class="card px-0 mb-3">
     <div class="card-header d-flex align-items-center">
         Tarefa
@@ -276,12 +293,12 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
         <div class="card-header d-flex align-items-center">
             <div class="card-title mb-0">Entregas</div>
 
-            <?php if ($tarefa->estado() != TarefaEstado::ARQUIVADA): ?>
-                <a href="../entregas/?tarefa=<?=$tarefa->id()?>" class="ms-auto btn btn-primary">
-                    <i class="fas fa-spell-check"></i>
-                    Avaliar entregas
-                </a>
-            <?php endif; ?>
+            <?php $verboBotaoEntregas = $tarefa->estado() == TarefaEstado::ARQUIVADA ? 'Ver' : 'Avaliar'; ?>
+
+            <a href="../entregas/?tarefa=<?=$tarefa->id()?>" class="ms-auto btn btn-primary">
+                <i class="fas fa-spell-check"></i>
+                <?= $verboBotaoEntregas ?> entregas
+            </a>
             
             <!-- TODO atalho para avaliar entrega de cada aluno, passando por get o id do aluno ao /entregas/?tarefa -->
 

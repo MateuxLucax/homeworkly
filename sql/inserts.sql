@@ -32,6 +32,7 @@ insert into aluno_em_turma (id_aluno, id_turma) values
 , (4, 2)
 , (5, 3)
 , (6, 1)
+, (5, 1)
 on conflict do nothing;
 
 insert into disciplina (id_turma, nome) values
@@ -53,7 +54,7 @@ on conflict do nothing;
 insert into tarefa (titulo, descricao, esforco_minutos, com_nota, abertura, entrega, fechamento, fechada, id_professor, id_disciplina) values
   ('Contas', 'Realize as contas: 1+1, 2+2, 3+3, 5*7, 9*1, 0^0', 30, true, current_timestamp, current_timestamp + interval '1' day, current_timestamp + interval '3' day, false, 5, 1)
 , ('Contas', 'Realize as contas: 2+2, 9+2+3, 9*9*9, e^i', 60, false, current_timestamp + interval '7' day, current_timestamp + interval '9' day, current_timestamp + interval '10' day, false, 5, 2)
-, ('Cagar no mato', 'Cague no mato por 10h', 600, false, current_timestamp, current_timestamp + interval '5' day, current_timestamp + interval '7' day, false, 5, 2)
+, ('Nada', 'Fazer nada por 10h', 600, false, current_timestamp, current_timestamp + interval '5' day, current_timestamp + interval '7' day, false, 5, 2)
 , ('Procurar aipim', 'procure aipim no mato', 30, false, current_timestamp, current_timestamp + interval '1' day, current_timestamp + interval '2' day, false, 5, 2)
 , ('Catar carrapatos das costas do inimigo', 'procure carrapatos para espancar', 3000, false, current_timestamp, current_timestamp + interval '30' day, current_timestamp + interval '45' day, false, 5, 2)
 on conflict do nothing;
