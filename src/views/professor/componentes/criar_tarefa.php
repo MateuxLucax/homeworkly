@@ -24,11 +24,15 @@ $disciplinas = DisciplinaDAO::disciplinaDeTurmaProfessor($professor, $turma);
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h6>Informe qual disciplina você deseja criar a tarefa:</h6>
+                <h6>Informe em qual disciplina você deseja criar a tarefa:</h6>
                 <select class="form-select" onchange="escolherDisciplina(this)" aria-label="Opção inicial">
+
                     <?php foreach ($disciplinas as $disciplina) : ?>
-                        <option value="<?= $disciplina->getId() ?>"><?= $disciplina->getNome() ?></option>
+                        <option value="<?= $disciplina->getId() ?>">
+                            <?=$turma->getNome()?> – <?=$disciplina->getNome()?>
+                        </option>
                     <?php endforeach; ?>
+
                 </select>
             </div>
             <div class="modal-footer">
