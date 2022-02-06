@@ -99,18 +99,17 @@ class Tarefa
     public function entregaSituacao(?Entrega $entrega): EntregaSituacao
     {
         $agora = DateUtil::toLocalDateTime('now');
-        $dataEntregaPassou = $agora >= $this->dataHoraEntrega();
 
         if ($entrega == null || !$entrega->emDefinitivo()) {
             if (!$this->fechada()) {
-                return $dataEntregaPassou
+                return $agora >= $this->dataHoraEntrega()
                      ? EntregaSituacao::PENDENTE_ATRASADA
                      : EntregaSituacao::PENDENTE;
             } else {
                 return EntregaSituacao::NAO_FEITA;
             }
         } else {
-            return $dataEntregaPassou
+            return $entrega->dataHora() >= $this->dataHoraEntrega()
                  ? EntregaSituacao::ENTREGUE_ATRASADA
                  : EntregaSituacao::ENTREGUE;
         }
