@@ -20,6 +20,6 @@ $view['permissaoTarefa'] = $permissao;
 $view['entregasPorAluno'] = EntregaDAO::entregasPorAluno($tarefa);
 
 $view['content_path'] = 'views/tarefas/tarefa.php';
-$view['sidebar_links'] = 'aluno/componentes/sidebar.php';
+$view['sidebar_links'] = 'professor/componentes/sidebar.php';
 
 require_once $root . 'views/componentes/base.php';

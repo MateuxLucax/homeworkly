@@ -40,9 +40,9 @@ function responsePermissaoNaoPode(int $permissao): never
             $motivo = 'Não é aluno da turma da tarefa';
             break;
         default:
-            $codigo = HttpCodes::INTERNAL_SERVER_ERROR;
-            $titulo = 'Erro do sistema';
-            $motivo = 'Desconhecido (<b>erro do sistema</b>: o usuário é administrador mas não está autorizado a ver a tarefa)';
+            $codigo = HttpCodes::BAD_REQUEST;
+            $titulo = 'Não autorizado';
+            $motivo = 'É um administrador';
             break;
         }
 
