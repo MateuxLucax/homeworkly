@@ -48,7 +48,7 @@ class PermissaoTarefa
      */
     public static function criar(int $idUsuario, string $tipoUsuario, int $idDisciplina)
     {
-        if ($tipoUsuario == TipoUsuario::ALUNO) return self::NAO_AUTORIZADO;
+        if ($tipoUsuario != TipoUsuario::PROFESSOR) return self::NAO_AUTORIZADO;
 
         $anoTurma = Query::select(
             'SELECT t.ano
@@ -59,8 +59,6 @@ class PermissaoTarefa
         )[0]['ano'];
 
         if ($anoTurma != date('Y')) return self::ARQUIVADA;
-        if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::PODE;
-        assert($tipoUsuario == TipoUsuario::PROFESSOR);
 
         $professorDaDisciplina = Query::select(
             'SELECT EXISTS(
@@ -81,9 +79,7 @@ class PermissaoTarefa
      */
     public function alterar(int $idUsuario, string $tipoUsuario): int
     {
-        if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::PODE;
-        if ($tipoUsuario == TipoUsuario::ALUNO) return self::NAO_AUTORIZADO;
-        assert($tipoUsuario == TipoUsuario::PROFESSOR);
+        if ($tipoUsuario != TipoUsuario::PROFESSOR) return self::NAO_AUTORIZADO;
         if ($this->idProfessor != $idUsuario) return self::NAO_AUTORIZADO;
         if ($this->arquivada) return self::ARQUIVADA;
         if ($this->fechada) return self::FECHADA;
@@ -95,10 +91,8 @@ class PermissaoTarefa
      */
     public function excluir(int $idUsuario, string $tipoUsuario): int
     {
-        if ($tipoUsuario == TipoUsuario::ALUNO) return self::NAO_AUTORIZADO;
-        // Nem admin pode excluir se tiver entregas porque nem o BD vai deixar (fere FK id_tarefa da tabela de entrega)
+        if ($tipoUsuario != TipoUsuario::PROFESSOR) return self::NAO_AUTORIZADO;
         if ($this->temEntregas) return self::TEM_ENTREGAS;
-        if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::PODE;
         assert($tipoUsuario == TipoUsuario::PROFESSOR);
         if ($this->idProfessor != $idUsuario) return self::NAO_AUTORIZADO;
         if ($this->arquivada) return self::ARQUIVADA;
@@ -111,7 +105,7 @@ class PermissaoTarefa
      */
     public function visualizar(int $idUsuario, string $tipoUsuario): int
     {
-        if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::PODE;
+        if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::NAO_AUTORIZADO;
         if ($tipoUsuario == TipoUsuario::ALUNO) {
             $alunoDaTurma = Query::select(
                 'SELECT EXISTS(
