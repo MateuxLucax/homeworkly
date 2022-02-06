@@ -29,7 +29,7 @@ $disciplinas = DisciplinaDAO::disciplinaDeTurmaProfessor($professor, $turma);
 
                     <?php foreach ($disciplinas as $disciplina) : ?>
                         <option value="<?= $disciplina->getId() ?>">
-                            <?=$turma->getNome()?> – <?=$disciplina->getNome()?>
+                            <?=$disciplina->getTurma()->getNome()?> – <?=$disciplina->getNome()?>
                         </option>
                     <?php endforeach; ?>
 

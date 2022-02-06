@@ -93,21 +93,24 @@ class DisciplinaDAO
         $result = Query::select(
             'SELECT
                     d.id_disciplina,
-                    d.nome 
+                    d.nome as nome_disciplina,
+                    t.nome as nome_turma
                 FROM
                     disciplina d
                 JOIN professor_de_disciplina pdd ON
                     d.id_disciplina = pdd.id_disciplina
-                WHERE
+                JOIN turma t ON
                     d.id_turma = :id_turma
-                    AND pdd.id_professor = :id_professor',
+                WHERE
+                    pdd.id_professor = :id_professor',
             ['id_turma' => $idTurma, 'id_professor' => $idProfessor]
         );
 
         return array_map(
             fn ($row) => (new Disciplina)
                 ->setId($row['id_disciplina'])
-                ->setNome($row['nome']),
+                ->setNome($row['nome_disciplina'])
+                ->setTurma((new Turma)->setId($idTurma)->setNome($row['nome_turma'])),
             $result
         );
     }
