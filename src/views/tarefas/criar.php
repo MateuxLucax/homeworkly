@@ -77,13 +77,13 @@
                     <?php
                     function dataISO(DateTime $data): string
                     {
-
                         return $data->format('Y-m-d\TH:i');
                     }
 
                     function dataAbertura(): string
                     {
-                        if (!empty($paginaAlterar)) {
+                        global $tarefa, $paginaAlterar;
+                        if ($paginaAlterar) {
                             return dataISO($tarefa?->dataHoraAbertura());
                         } else if (isset($_COOKIE['dataAbertura'])) {
                             return dataIso(DateTime::createFromFormat('Y-m-d H:i:s', $_COOKIE['dataAbertura']));
@@ -94,7 +94,8 @@
 
                     function dataEntrega(): string
                     {
-                        if (!empty($paginaAlterar)) {
+                        global $tarefa, $paginaAlterar;
+                        if ($paginaAlterar) {
                             return dataISO($tarefa?->dataHoraEntrega());
                         } else if (isset($_COOKIE['dataEntrega'])) {
                             return dataIso(DateTime::createFromFormat('Y-m-d H:i:s', $_COOKIE['dataEntrega']));
@@ -315,7 +316,7 @@
             titulo: form.titulo.value,
             descricao: form.descricao.value,
             esforcoMinutos: Number(form.esforcoHoras.value) * 60 + Number(form.esforcoMinutos.value),
-            comNota: form.comNota.value === 'true',
+            comNota: form.comNota.checked,
             abertura: switchAbrirAgora.checked ? agora.toISOString() : form.abertura.value,
             entrega: form.entrega.value,
             fechamento: form.fechamento.value === '' ? null : form.fechamento.value
@@ -363,22 +364,27 @@
                     id: form.id.value
                 })
             });
-            const ret = await response.json();
-            if (response.status !== 200) {
-                Swal.fire({
-                    icon: 'error',
+            const text = await response.text();
+            try {
+                const ret = JSON.parse(text);
+                if (response.status !== 200) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: ret.message
+                    });
+                    document.getElementById('btn-cancelar-exclusao').click(); // Fechar modal
+                    return;
+                }
+                agendarAlertaSwal({
+                    icon: 'success',
                     text: ret.message
                 });
-                document.getElementById('btn-cancelar-exclusao').click(); // Fechar modal
-                return;
+                // TODO trocar para location.assign('/{tipoUsuario}/disciplinas/disciplina?id=...);
+                // quando esse endpoint existir
+                history.back();
+            } catch (e) {
+                console.error(e, '\n', text);
             }
-            agendarAlertaSwal({
-                icon: 'success',
-                text: ret.message
-            });
-            // TODO trocar para location.assign('/{tipoUsuario}/disciplinas/disciplina?id=...);
-            // quando esse endpoint existir
-            history.back();
         }
     }
 </script>
