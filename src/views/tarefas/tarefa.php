@@ -214,6 +214,10 @@ if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
 
                 <hr/>
 
+            <?php elseif ($entrega != null && $entrega->emDefinitivo()): ?>
+                <div class="alert alert-warning">
+                    Você só poderá ver a avaliação do professor quando a tarefa for fechada.
+                </div>
             <?php endif; ?>
 
             <?php

@@ -175,7 +175,7 @@
                             <br />
                             <div class="form-check form-switch">
                                 <input class="form-check-input" name="comNota" type="checkbox" id="avaliacao-nota" <?= $comNota ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="avaliacao-nota">Possui avaliação?</label>
+                                <label class="form-check-label" for="avaliacao-nota">Possui nota?</label>
                             </div>
                         </div>
                     </div>
