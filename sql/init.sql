@@ -54,7 +54,7 @@ create table if not exists tarefa (
     , fechamento      timestamp
     , fechada         boolean   not null default false
     , check (entrega is null or entrega > abertura)
-    , check (fechamento is null or entrega is null or fechamento > entrega)
+    , check (fechamento is null or entrega is null or fechamento >= entrega)
     );
 
 create table if not exists entrega (
