@@ -169,7 +169,7 @@
 if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
 {
     $entrega = $view['entrega'];
-    $entregaSituacao = Entrega::situacao($entrega);
+    $entregaSituacao = $tarefa->entregaSituacao($entrega);
     ?>
 
     <div class="card px-0 mb-3">
@@ -256,6 +256,7 @@ if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
 
             <!-- method de form aparentemente só pode ser GET ou POST, então colocado como data attribute -->
             <form id="form-fazer-entrega" data-method="<?= $formMethod ?>" action="<?= $formAction ?>">
+                <label for="conteudo" class="form-label">Sua entrega</label>
                 <textarea
                     class="mb-0 form-control" name="conteudo" id="conteudo" rows="3" required
                     <?= $entregaSituacao->pendente() ? '' : 'disabled readonly'?>
@@ -317,7 +318,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                     $aluno = $alunoEntrega['aluno'];
                     $entrega = $alunoEntrega['entrega'];
 
-                    $entregaSituacao = Entrega::situacao($entrega);
+                    $entregaSituacao = $tarefa->entregaSituacao($entrega);
 
                     list($textoSituacao, $bgSituacao, $corSituacao) = match($entregaSituacao) {
                         EntregaSituacao::PENDENTE             => ['Pendente', 'bg-info', 'text-dark'],

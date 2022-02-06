@@ -36,26 +36,6 @@ class Entrega
 
     public static function situacao(?Entrega $entrega): EntregaSituacao
     {
-        return $entrega?->_situacao() ?? EntregaSituacao::NAO_FEITA;
     }
 
-    private function _situacao(): EntregaSituacao
-    {
-        $agora = DateUtil::toLocalDateTime('now');
-        $dataEntregaPassou = $agora >= $this->tarefa->dataHoraEntrega();
-
-        if (!$this->emDefinitivo) {
-            if (!$this->tarefa->fechada()) {
-                return $dataEntregaPassou
-                     ? EntregaSituacao::PENDENTE_ATRASADA
-                     : EntregaSituacao::PENDENTE;
-            } else {
-                return EntregaSituacao::NAO_FEITA;
-            }
-        } else {
-            return $dataEntregaPassou
-                 ? EntregaSituacao::ENTREGUE_ATRASADA
-                 : EntregaSituacao::ENTREGUE;
-        }
-    }
 }

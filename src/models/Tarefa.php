@@ -96,7 +96,7 @@ class Tarefa
 
         if ($this->disciplina->getTurma()->getAno() < $agora->format('Y')) return TarefaEstado::ARQUIVADA;
         if ($agora < $this->abertura) return TarefaEstado::ESPERANDO_ABERTURA;
-        if ($this->fechamento != null && $agora < $this->fechamento) return TarefaEstado::ABERTA; 
+        if ($this->fechamento == null || $agora < $this->fechamento) return TarefaEstado::ABERTA; 
         return TarefaEstado::FECHADA; 
     }
 
@@ -104,5 +104,25 @@ class Tarefa
     {
         $estado = $this->estado();
         return $estado == TarefaEstado::FECHADA || $estado == TarefaEstado::ARQUIVADA;
+    }
+
+    public function entregaSituacao(?Entrega $entrega): EntregaSituacao
+    {
+        $agora = DateUtil::toLocalDateTime('now');
+        $dataEntregaPassou = $agora >= $this->dataHoraEntrega();
+
+        if ($entrega == null || !$entrega->emDefinitivo()) {
+            if (!$this->fechada()) {
+                return $dataEntregaPassou
+                     ? EntregaSituacao::PENDENTE_ATRASADA
+                     : EntregaSituacao::PENDENTE;
+            } else {
+                return EntregaSituacao::NAO_FEITA;
+            }
+        } else {
+            return $dataEntregaPassou
+                 ? EntregaSituacao::ENTREGUE_ATRASADA
+                 : EntregaSituacao::ENTREGUE;
+        }
     }
 }
