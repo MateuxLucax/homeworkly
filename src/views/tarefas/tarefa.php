@@ -352,6 +352,12 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                         <span class="badge '.$bgAvaliacao.' '.$corTextoAvaliacao.'">
                             '.$textoAvaliacao.'
                         </span>';
+
+                    $comentario = '';
+                    if ($entrega?->comentario() != null) {
+                        // espaços em branco com alt+255
+                        $comentario = '  <h5 class="mb-1 text-secondary"><i class="fas fa-comment-dots" data-bs-toggle="tooltip" title="'.$entrega->comentario().'"></i></h5>';
+                    }
                     ?>
                     <tr>
                         <td><?= $aluno->getNome() ?></td>
@@ -361,6 +367,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                         <td>
                             <div class="d-flex align-items-center">
                                 <?= $avaliacao ?>
+                                <?= $comentario ?>
                             </div>
                         </td>
                         <td><?= $entrega?->dataHora()?->format('d/m/Y H:i') ?></td>
