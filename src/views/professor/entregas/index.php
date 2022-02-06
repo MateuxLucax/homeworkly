@@ -66,7 +66,15 @@ $idAlunoEntregaAberta = $entregasPorAluno[0]['aluno']->getId()
                          class="card-entrega card mt-3 <?= $aluno->getId() == $idAlunoEntregaAberta ? '' : 'd-none' ?>"
                     >
                         <div class="card-header">
-                            <div class="card-title">Entrega</div>
+                            <div class="card-title">
+                                Entrega
+                                <?php if ($entrega != null): ?>
+                                    &nbsp;
+                                    <small class="text-muted">
+                                        (feita em <i><?=$entrega->dataHora()->format('d/m/Y H:i')?></i>)
+                                    </small>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         <div class="card-body">
 
@@ -86,7 +94,6 @@ $idAlunoEntregaAberta = $entregasPorAluno[0]['aluno']->getId()
                                 <?php endif; ?>
 
                                 <textarea readonly disabled class="mb-3 form-control"><?=$entrega->conteudo()?></textarea>
-                                <p>Feita em <i><?=$entrega->dataHora()->format('d/m/Y H:i')?></i></p>
 
                                 <hr>
 
@@ -97,7 +104,7 @@ $idAlunoEntregaAberta = $entregasPorAluno[0]['aluno']->getId()
                                     { ?>
                                         <label class="form-label" for="nota">
                                             Nota
-                                            <small><span class="text-muted">(usar ponto)</span></small>
+                                                <small><span class="text-muted">(usar ponto, por exemplo 9.5 em vez de 9,5)</span></small>
                                         </label>
                                         <div class="input-group mb-3" style="width: 100px">
                                             <input id="nota" class="text-end form-control" type="text" pattern="((0*\d)(\.\d+)?)|(10)" align="left" required
