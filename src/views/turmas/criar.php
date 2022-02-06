@@ -247,8 +247,7 @@
                         type="button"
                         class="btn btn-secondary"
                         id="btn-fechar-modal-adicionar-aluno"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-adicionar-aluno"
+                        data-bs-dismiss="modal"
                     >
                         Cancelar
                     </button>
