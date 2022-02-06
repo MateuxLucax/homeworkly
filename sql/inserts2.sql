@@ -23,8 +23,8 @@ INSERT INTO disciplina VALUES (4, 1, 'Português');
 
 INSERT INTO tarefa VALUES (1, 4, 3, 'Apresentação sobre segunda guerra mundial!', 'Conforme a divisão de grupos e tópicos feitas na sala, preparar uma apresentação a ser apresentada 31/12/2022
 Todos os alunos do grupo devem enviar o link para a apresentação, pois o sistema não me deixa dar uma nota sem haver uma entrega
-Ok?', 900, true, '2022-02-01 00:00:00', '2022-02-09 00:00:00', NULL, false);
-INSERT INTO tarefa VALUES (3, 4, 3, 'Apresentação sobre primeira guerra mundial', '', 480, true, '2022-02-01 00:00:00', '2022-02-05 22:05:00', '2022-05-09 22:06:00', false);
+Ok?', 900, true, '2022-02-01 00:00:00', '2022-12-31 00:00:00', '2022-12-31 00:00:00');
+INSERT INTO tarefa VALUES (3, 4, 3, 'Apresentação sobre primeira guerra mundial', '', 480, true, '2022-02-01 00:00:00', '2022-02-05 22:05:00', '2022-05-09 22:06:00');
 
 INSERT INTO aluno_em_turma VALUES (7, 1);
 INSERT INTO aluno_em_turma VALUES (8, 1);

@@ -51,10 +51,9 @@ create table if not exists tarefa (
     , com_nota        boolean   not null
     , abertura        timestamp not null
     , entrega         timestamp not null
-    , fechamento      timestamp
-    , fechada         boolean   not null default false
-    , check (entrega is null or entrega > abertura)
-    , check (fechamento is null or entrega is null or fechamento >= entrega)
+    , fechamento      timestamp not null
+    , check (entrega > abertura)
+    , check (fechamento >= entrega)
     );
 
 create table if not exists entrega (

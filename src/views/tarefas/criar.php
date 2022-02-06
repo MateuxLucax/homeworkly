@@ -84,7 +84,7 @@
                     {
                         global $tarefa, $paginaAlterar;
                         if ($paginaAlterar) {
-                            return dataISO($tarefa?->dataHoraAbertura());
+                            return dataISO($tarefa->dataHoraAbertura());
                         } else if (isset($_COOKIE['dataAbertura'])) {
                             return dataIso(DateTime::createFromFormat('Y-m-d H:i:s', $_COOKIE['dataAbertura']));
                         } else {
@@ -96,12 +96,17 @@
                     {
                         global $tarefa, $paginaAlterar;
                         if ($paginaAlterar) {
-                            return dataISO($tarefa?->dataHoraEntrega());
+                            return dataISO($tarefa->dataHoraEntrega());
                         } else if (isset($_COOKIE['dataEntrega'])) {
                             return dataIso(DateTime::createFromFormat('Y-m-d H:i:s', $_COOKIE['dataEntrega']));
                         } else {
                             return '';
                         }
+                    }
+
+                    function dataFechamento(): string {
+                        global $tarefa, $paginaAlterar;
+                        return $paginaAlterar ? dataISO($tarefa->dataHoraFechamento()) : '';
                     }
                     ?>
 
@@ -133,7 +138,7 @@
                                 &nbsp;
                                 <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Opcional – se não informar, você pode fechar manualmente depois. Depois dela, alunos não podem mais fazer entregas."></i>
                             </label>
-                            <input class="form-control" type="datetime-local" name="fechamento" id="fechamento" value="<?= $paginaAlterar && $tarefa?->dataHoraFechamento() != null ? dataISO($tarefa->dataHoraFechamento()) : '' ?>" />
+                            <input class="form-control" type="datetime-local" name="fechamento" id="fechamento" value="<?= dataFechamento() ?>" />
                         </div>
                     </div>
                     <div class="row">

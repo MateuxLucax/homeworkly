@@ -29,7 +29,6 @@ class TarefaDAO
                   , ta.abertura
                   , ta.entrega
                   , ta.fechamento
-                  , ta.fechada
                FROM tarefa ta
                JOIN usuario pro ON ta.id_professor = pro.id_usuario
                JOIN disciplina di ON ta.id_disciplina = di.id_disciplina
@@ -40,31 +39,7 @@ class TarefaDAO
 
         if (count($result) == 0) return null;
 
-        $ta = $result[0];
-
-        $tarefa = (new Tarefa)
-            ->setId($ta['id_tarefa'])
-            ->setTitulo($ta['titulo'])
-            ->setDescricao($ta['descricao'])
-            ->setEsforcoMinutos($ta['esforco_minutos'])
-            ->setComNota($ta['com_nota'])
-            ->setDataHoraAbertura(DateUtil::toLocalDateTime($ta['abertura']))
-            ->setDataHoraEntrega(DateUtil::toLocalDateTime($ta['entrega']))
-            ->setDataHoraFechamento($ta['fechamento'] ? DateUtil::toLocalDateTime($ta['fechamento']) : null)
-            ->setFechadaManualmente($ta['fechada'])
-            ->setProfessor((new Usuario)
-                ->setId($ta['id_professor'])
-                ->setNome($ta['nome_professor'])
-                ->setTipo(TipoUsuario::PROFESSOR))
-            ->setDisciplina((new Disciplina)
-                ->setId($ta['id_disciplina'])
-                ->setNome($ta['nome_disciplina'])
-                ->setTurma((new Turma)
-                    ->setId($ta['id_turma'])
-                    ->setNome($ta['nome_turma'])
-                    ->setAno($ta['turma_ano'])));
-
-        return $tarefa;
+        return self::toModel($result[0]);
     }
 
     public static function listarPorAluno(int $idAluno, int $idTurma): array
@@ -85,7 +60,6 @@ class TarefaDAO
                   , ta.abertura
                   , ta.entrega
                   , ta.fechamento
-                  , ta.fechada
                FROM tarefa ta
                JOIN usuario pro ON ta.id_professor = pro.id_usuario
                JOIN disciplina di ON ta.id_disciplina = di.id_disciplina
@@ -96,7 +70,7 @@ class TarefaDAO
             ['id_aluno' => $idAluno, 'id_turma' => $idTurma]
         );
 
-        return self::tarefaParaObjeto($rows);
+        return array_map(self::toModel(...), $rows);
     }
 
     public static function existe(int $idTarefa): bool
@@ -125,7 +99,6 @@ class TarefaDAO
                   , ta.abertura
                   , ta.entrega
                   , ta.fechamento
-                  , ta.fechada
                FROM tarefa ta
                JOIN usuario pro ON ta.id_professor = pro.id_usuario
                JOIN disciplina di ON ta.id_disciplina = di.id_disciplina
@@ -136,38 +109,30 @@ class TarefaDAO
             ['id_professor' => $idAluno, 'id_turma' => $idTurma]
         );
 
-        return self::tarefaParaObjeto($rows);
+        return array_map(self::toModel(...), $rows);
     }
 
-    /**
-     * @param bool|array $rows
-     * @return array|Tarefa[]
-     */
-    public static function tarefaParaObjeto(bool|array $rows): array
+    public static function toModel(array $row): Tarefa
     {
-        return array_map(
-            fn($row) => (new Tarefa)
-                ->setId($row['id_tarefa'])
-                ->setTitulo($row['titulo'])
-                ->setDescricao($row['descricao'])
-                ->setEsforcoMinutos($row['esforco_minutos'])
-                ->setComNota($row['com_nota'])
-                ->setDataHoraAbertura(DateUtil::toLocalDateTime($row['abertura']))
-                ->setDataHoraEntrega(DateUtil::toLocalDateTime($row['entrega']))
-                ->setDataHoraFechamento($row['fechamento'] ? DateUtil::toLocalDateTime($row['fechamento']) : null)
-                ->setFechadaManualmente($row['fechada'])
-                ->setProfessor((new Usuario)
-                    ->setId($row['id_professor'])
-                    ->setNome($row['nome_professor'])
-                    ->setTipo(TipoUsuario::PROFESSOR))
-                ->setDisciplina((new Disciplina)
-                    ->setId($row['id_disciplina'])
-                    ->setNome($row['nome_disciplina'])
-                    ->setTurma((new Turma)
-                        ->setId($row['id_turma'])
-                        ->setNome($row['nome_turma'])
-                        ->setAno($row['turma_ano']))),
-            $rows
-        );
+        return (new Tarefa)
+            ->setId($row['id_tarefa'])
+            ->setTitulo($row['titulo'])
+            ->setDescricao($row['descricao'])
+            ->setEsforcoMinutos($row['esforco_minutos'])
+            ->setComNota($row['com_nota'])
+            ->setDataHoraAbertura(DateUtil::toLocalDateTime($row['abertura']))
+            ->setDataHoraEntrega(DateUtil::toLocalDateTime($row['entrega']))
+            ->setDataHoraFechamento(DateUtil::toLocalDateTime($row['fechamento']))
+            ->setProfessor((new Usuario)
+                ->setId($row['id_professor'])
+                ->setNome($row['nome_professor'])
+                ->setTipo(TipoUsuario::PROFESSOR))
+            ->setDisciplina((new Disciplina)
+                ->setId($row['id_disciplina'])
+                ->setNome($row['nome_disciplina'])
+                ->setTurma((new Turma)
+                    ->setId($row['id_turma'])
+                    ->setNome($row['nome_turma'])
+                    ->setAno($row['turma_ano'])));
     }
 }

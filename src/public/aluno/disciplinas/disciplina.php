@@ -62,7 +62,6 @@ $sql =
       , t.abertura
       , t.entrega
       , t.fechamento
-      , t.fechada 
    FROM tarefa t
   WHERE t.id_disciplina = :id';
 
@@ -79,7 +78,6 @@ while ($t = $stmt->fetch(PDO::FETCH_ASSOC)) {
         ->setDataHoraAbertura(DateUtil::toLocalDateTime($t['abertura']))
         ->setDataHoraEntrega(DateUtil::toLocalDateTime($t['entrega']))
         ->setDataHoraFechamento($ta['fechamento'] ? DateUtil::toLocalDateTime($ta['fechamento']) : null)
-        ->setFechadaManualmente($t['fechada'])
         ->setProfessor($professoresPorId[$t['id_professor']]);
 
     // Buscar entrega do aluno

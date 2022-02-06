@@ -51,12 +51,12 @@ insert into professor_de_disciplina (id_professor, id_disciplina) values
 , (8, 5)
 on conflict do nothing;
 
-insert into tarefa (titulo, descricao, esforco_minutos, com_nota, abertura, entrega, fechamento, fechada, id_professor, id_disciplina) values
-  ('Contas', 'Realize as contas: 1+1, 2+2, 3+3, 5*7, 9*1, 0^0', 30, true, current_timestamp, current_timestamp + interval '1' day, current_timestamp + interval '3' day, false, 5, 1)
-, ('Contas', 'Realize as contas: 2+2, 9+2+3, 9*9*9, e^i', 60, false, current_timestamp + interval '7' day, current_timestamp + interval '9' day, current_timestamp + interval '10' day, false, 5, 2)
-, ('Nada', 'Fazer nada por 10h', 600, false, current_timestamp, current_timestamp + interval '5' day, current_timestamp + interval '7' day, false, 5, 2)
-, ('Procurar aipim', 'procure aipim no mato', 30, false, current_timestamp, current_timestamp + interval '1' day, current_timestamp + interval '2' day, false, 5, 2)
-, ('Catar carrapatos das costas do inimigo', 'procure carrapatos para espancar', 3000, false, current_timestamp, current_timestamp + interval '30' day, current_timestamp + interval '45' day, false, 5, 2)
+insert into tarefa (titulo, descricao, esforco_minutos, com_nota, abertura, entrega, fechamento, id_professor, id_disciplina) values
+  ('Contas', 'Realize as contas: 1+1, 2+2, 3+3, 5*7, 9*1, 0^0', 30, true, current_timestamp, current_timestamp + interval '1' day, current_timestamp + interval '3' day, 5, 1)
+, ('Contas', 'Realize as contas: 2+2, 9+2+3, 9*9*9, e^i', 60, false, current_timestamp + interval '7' day, current_timestamp + interval '9' day, current_timestamp + interval '10' day, 5, 2)
+, ('Nada', 'Fazer nada por 10h', 600, false, current_timestamp, current_timestamp + interval '5' day, current_timestamp + interval '7' day, 5, 2)
+, ('Procurar aipim', 'procure aipim no mato', 30, false, current_timestamp, current_timestamp + interval '1' day, current_timestamp + interval '2' day, 5, 2)
+, ('Catar carrapatos das costas do inimigo', 'procure carrapatos para espancar', 3000, false, current_timestamp, current_timestamp + interval '30' day, current_timestamp + interval '45' day, 5, 2)
 on conflict do nothing;
 
 insert into entrega (id_tarefa, id_aluno, visto, nota, data_hora, conteudo, comentario, em_definitivo) values

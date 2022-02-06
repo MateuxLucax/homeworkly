@@ -22,7 +22,7 @@ class PermissaoTarefa
     {
         $dados = Query::select(
             'SELECT ta.id_professor
-                  , ta.fechada OR (ta.fechamento IS NOT NULL AND ta.fechamento < CURRENT_TIMESTAMP) AS fechada
+                  , ta.fechamento < CURRENT_TIMESTAMP AS fechada
                   , di.id_disciplina
                   , tu.id_turma
                   , tu.ano != :ano AS arquivada

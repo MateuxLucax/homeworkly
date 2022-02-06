@@ -99,18 +99,10 @@
                     value="<?=dataISO($tarefa->dataHoraEntrega())?>"/>
             </div>
 
-            <!-- TODO deixar explícito que nenhuma data de fechamento foi informada -->
-
             <div class="col-sm-6">
-                <?php if (!is_null($tarefa->dataHoraFechamento())): ?>
-                    <label class="form-label" for="fechamento">Data de fechamento</label>
-                    <input disabled readonly class="form-control" id="fechamento" type="datetime-local"
-                        value="<?=dataISO($tarefa->dataHoraFechamento())?>"/>
-                <?php else: ?>
-                    <label class="form-label" for="fechada">Fechada manualmente</label>
-                    <input disabled readonly class="form-control" id="fechamento" type="text"
-                        value="<?=$tarefa->fechadaManualmente() ? 'Sim' : 'Não'?>"/>
-                <?php endif; ?>
+                <label class="form-label" for="fechamento">Data de fechamento</label>
+                <input disabled readonly class="form-control" id="fechamento" type="datetime-local"
+                       value="<?=dataISO($tarefa->dataHoraFechamento())?>"/>
             </div>
         </div>
 
