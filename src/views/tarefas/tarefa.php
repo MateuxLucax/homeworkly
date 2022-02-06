@@ -93,13 +93,19 @@
         } ?>
 
         <div class="row mb-3">
-            <div class="col-12 mb-3 col-sm-6 mb-sm-0">
+            <div class="col-12 mb-3 col-sm-4 mb-sm-0">
+                <label class="form-label" for="abertura">Data de abertura</label>
+                <input disabled readonly class="form-control" id="abertura" type="datetime-local"
+                    value="<?=dataISO($tarefa->dataHoraAbertura())?>"/>
+            </div>
+
+            <div class="col-12 mb-3 col-sm-4 mb-sm-0">
                 <label class="form-label" for="entrega">Data de entrega</label>
                 <input disabled readonly class="form-control" id="entrega" type="datetime-local"
                     value="<?=dataISO($tarefa->dataHoraEntrega())?>"/>
             </div>
 
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <label class="form-label" for="fechamento">Data de fechamento</label>
                 <input disabled readonly class="form-control" id="fechamento" type="datetime-local"
                        value="<?=dataISO($tarefa->dataHoraFechamento())?>"/>
@@ -112,7 +118,7 @@
             $minsVal = sprintf('%02d', $minsTotal % 60);
         ?>
         
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-12 mb-3 col-sm-6 mb-sm-0 col-md-4">
                 <label class="form-label" for="esforco">Esforço</label>
                 <div class="input-group">
@@ -136,7 +142,6 @@
                 </div>
             </div>
         </div>
-        <hr/>
 
         <!-- TODO link para o perfil do professor quando páginas de perfil forem criadas -->
         <!-- TODO uma imagem de perfil circular ficaria bonita aqui... -->
@@ -144,10 +149,8 @@
         <!-- TODO só mostrar em baixo assim quando a tarefa já estiver aberta.
                 Senão, mostrar junto as outras datas como campo de formulário -- a data de abertura é depois e ainda pode ser alterada -->
         <span>
-            Aberta por
+            Criada por
             <b><?= $professor->getNome() ?></b>
-            em
-            <i><?= $tarefa->dataHoraAbertura()->format('d/m/Y H:i') ?></i>
         </span>
     </div>
 </div>
