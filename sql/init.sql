@@ -69,6 +69,8 @@ create table if not exists entrega (
     , primary key (id_tarefa, id_aluno)
     );
 
+/*
+// REMOVIDO POIS INTERFERE NO $pdo->lastInsertId()
 create table if not exists historico_tarefa (
       id_historico_tarefa serial    primary key
     , id_tarefa           serial    references tarefa
@@ -126,3 +128,5 @@ create trigger tr_registra_historico_entrega
     after update or insert on entrega
         for each row
             execute procedure registra_historico_entrega();
+
+*/
