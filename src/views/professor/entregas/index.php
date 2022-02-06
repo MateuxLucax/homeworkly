@@ -9,8 +9,7 @@ $entragasPorAluno = $view['entregasPorAluno'];
 
 $arquivada = $tarefa->estado() == TarefaEstado::ARQUIVADA;
 
-// Por padrão deixar a entrega do primeiro aluno aberta, caso contrário do que vier no GET (TODO)
-$idAlunoEntregaAberta = $entregasPorAluno[0]['aluno']->getId()
+$idAlunoEntregaAberta = isset($_GET['aluno']) ? $_GET['aluno'] : $entregasPorAluno[0]['aluno']->getId()
 ?>
 
 <!-- mostrar dados da tarefa em algum lugar aqui, onde?

@@ -292,8 +292,6 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                 <i class="fas fa-spell-check"></i>
                 <?= $verboBotaoEntregas ?> entregas
             </a>
-            
-            <!-- TODO atalho para avaliar entrega de cada aluno, passando por get o id do aluno ao /entregas/?tarefa -->
 
         </div>
         <div class="card-body">
@@ -305,6 +303,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
 
                     <th>Avaliação</th> <!-- Avaliação pendente ou Nota ou Visto -->
                     <th>Data</th>
+                    <th></th>
                 </tr>
                 <?php foreach ($entregasPorAluno as $alunoEntrega) {
                     $aluno = $alunoEntrega['aluno'];
@@ -371,6 +370,11 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                             </div>
                         </td>
                         <td><?= $entrega?->dataHora()?->format('d/m/Y H:i') ?></td>
+                        <td>
+                            <a href="../entregas/?tarefa=<?=$tarefa->id()?>&aluno=<?=$aluno->getId()?>" class="ms-auto btn btn-primary">
+                                <i class="fas fa-spell-check"></i>
+                            </a>
+                        </td>
                     </tr>
                 <?php } // foreach ?>
             </table>
