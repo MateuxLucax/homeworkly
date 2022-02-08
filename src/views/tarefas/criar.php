@@ -138,7 +138,7 @@
                                 &nbsp;
                                 <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Opcional – se não informar, você pode fechar manualmente depois. Depois dela, alunos não podem mais fazer entregas."></i>
                             </label>
-                            <input class="form-control" type="datetime-local" name="fechamento" id="fechamento" value="<?= dataFechamento() ?>" />
+                            <input class="form-control" type="datetime-local" name="fechamento" id="fechamento" required value="<?= dataFechamento() ?>" />
                         </div>
                     </div>
                     <div class="row">
@@ -272,8 +272,6 @@
         if (form.fechamento.value) {
             if (fechamento < entrega) {
                 validFechamento = 'A data de fechamento deve vir depois da data de entrega;'
-            } else if (fechamento < abertura) {
-                validFechamento = 'A data de fechamento deve vir depois da data de abertura';
             } else if (fechamento.getFullYear() > agora.getFullYear()) {
                 validFechamento = 'A tarefá deverá ser fechada este ano';
             }
