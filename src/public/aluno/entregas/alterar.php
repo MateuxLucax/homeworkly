@@ -32,13 +32,14 @@ try
     //
 
     $entrega = EntregaDAO::buscar($idAluno, $idTarefa);
-    $entrega->setTarefa(
-        TarefaDAO::buscar($entrega->tarefa()->id())
-    );
 
     if ($entrega == null) respondJson(
         HttpCodes::NOT_FOUND,
         ['message' => 'Não existe entrega feita pelo aluno de ID '.$idAluno.' na tarefa de ID '.$idTarefa ]
+    );
+
+    $entrega->setTarefa(
+        TarefaDAO::buscar($entrega->tarefa()->id())
     );
 
     $permissao = PermissaoEntrega::alterar($_SESSION['id_usuario'], $_SESSION['tipo'], $entrega);

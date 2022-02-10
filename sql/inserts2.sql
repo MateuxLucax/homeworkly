@@ -38,5 +38,8 @@ INSERT INTO professor_de_disciplina VALUES (6, 2);
 INSERT INTO professor_de_disciplina VALUES (4, 3);
 INSERT INTO professor_de_disciplina VALUES (3, 4);
 
-INSERT INTO entrega VALUES (1, 7, 'google.com/apresentacao-slides-segunda-guerra', '2022-02-05 21:23:45', false, NULL, 9.5, 'asdasdsa');
-INSERT INTO entrega VALUES (3, 7, 'google.com/apresentacao', '2022-02-05 21:57:43', true, NULL, 9.5, 'Muito boa a apresentação, parabéns!');
+INSERT INTO entrega VALUES (1, 7, 'google.com/apresentacao-slides-segunda-guerra', '2022-02-05 21:23:45', false);
+INSERT INTO entrega VALUES (3, 7, 'google.com/apresentacao', '2022-02-05 21:57:43', true);
+
+INSERT INTO avaliacao VALUES (1, 7, NULL, 8.5, 'asdasdsa');
+INSERT INTO avaliacao VALUES (3, 7, NULL, 9.5, 'Muito boa a apresentação, parabéns');

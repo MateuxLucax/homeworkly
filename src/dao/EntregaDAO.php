@@ -5,6 +5,7 @@ require_once $root . '/database/Query.php';
 require_once $root . '/models/Tarefa.php';
 require_once $root . '/models/Usuario.php';
 require_once $root . '/models/Entrega.php';
+require_once $root . '/models/Avaliacao.php';
 
 
 class EntregaDAO
@@ -15,9 +16,6 @@ class EntregaDAO
         'SELECT conteudo
               , data_hora
               , em_definitivo
-              , visto
-              , nota
-              , comentario
            FROM entrega
           WHERE (id_aluno, id_tarefa)
               = (:idAluno, :idTarefa)';
@@ -40,10 +38,7 @@ class EntregaDAO
             ->setAluno((new Usuario)->setId($idAluno))
             ->setConteudo($e['conteudo'])
             ->setDataHora(DateUtil::toLocalDateTime($e['data_hora']))
-            ->setEmDefinitivo($e['em_definitivo'])
-            ->setVisto($e['visto'])
-            ->setNota($e['nota'])
-            ->setComentario($e['comentario']);
+            ->setEmDefinitivo($e['em_definitivo']);
     }
 
     public static function alterar(Entrega $entrega): bool
@@ -84,33 +79,37 @@ class EntregaDAO
     }
 
     /**
-     * Retorna todos os alunos da turma e, para cada, sua entrega na tarefa dada (ou null se não fez).
+     * Retorna todos os alunos da turma e, para cada, sua entrega na tarefa dada (ou null se não fez) e a avaliação do professor (ou null se não fez).
      * Ordem: primeiro as entregas em definitivo e depois as pendentes, e dentro de cada segmento primeiro as que ainda não foram avaliadas.
      * 
      * @param Tarefa $tarefa (deve ter ->disciplina(), e a disciplina deve ter ->getTurma())
      * 
-     * @return array [['aluno' => objAluno, 'entrega' => objEntrega], ...]
+     * @return array [['aluno' => objAluno, 'entrega' => objEntrega, 'avaliacao' => objAvaliacao], ...]
      */
     public static function entregasPorAluno(Tarefa $tarefa): array
     {
         $sqlEntregas =
-            'SELECT a.id_usuario AS aluno_id
-                  , a.nome AS aluno_nome
+            'SELECT u.id_usuario AS aluno_id
+                  , u.nome AS aluno_nome
                   , e.conteudo
-                  , e.visto
-                  , e.nota
                   , e.data_hora
                   , e.em_definitivo
-                  , e.comentario
-                  , (e.visto IS NULL AND e.nota IS NULL) AS avaliacao_pendente
+                  , a.visto
+                  , a.nota
+                  , a.comentario
+                  , (a.visto IS NULL AND a.nota IS NULL) AS avaliacao_pendente
                   , (e.id_aluno IS NOT NULL) as entrega_feita
-              FROM usuario a
+                  , (a.id_aluno IS NOT NULL) as avaliacao_feita
+              FROM usuario u
               JOIN aluno_em_turma aet
-                ON aet.id_aluno = a.id_usuario
+                ON aet.id_aluno = u.id_usuario
                AND aet.id_turma = :idTurma
          LEFT JOIN entrega e
-                ON e.id_aluno = a.id_usuario
+                ON e.id_aluno = u.id_usuario
                AND e.id_tarefa = :idTarefa
+         LEFT JOIN avaliacao a
+                ON a.id_aluno = u.id_usuario
+               AND a.id_Tarefa = :idTarefa
           ORDER BY e.em_definitivo, avaliacao_pendente DESC';  // PostgreSQL: true < false
 
         $entregasPorAluno = Query::select($sqlEntregas, [':idTarefa' => $tarefa->id(), ':idTurma' => $tarefa->disciplina()->getTurma()->getId() ]);
@@ -128,14 +127,22 @@ class EntregaDAO
                         ->setAluno($aluno)
                         ->setConteudo($a['conteudo'])
                         ->setDataHora(DateUtil::toLocalDateTime($a['data_hora']))
-                        ->setEmDefinitivo($a['em_definitivo'])
+                        ->setEmDefinitivo($a['em_definitivo']);
+                }
+                $avaliacao = null;
+                if ($a['avaliacao_feita']) {
+                    $avaliacao = (new Avaliacao)
+                        ->setTarefa($tarefa)
+                        ->setAluno($aluno)
                         ->setVisto($a['visto'])
                         ->setNota($a['nota'])
                         ->setComentario($a['comentario']);
                 }
+
                 return [
                     'aluno' => $aluno,
-                    'entrega' => $entrega
+                    'entrega' => $entrega,
+                    'avaliacao' => $avaliacao
                 ];
             },
             $entregasPorAluno

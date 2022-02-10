@@ -59,8 +59,14 @@ insert into tarefa (titulo, descricao, esforco_minutos, com_nota, abertura, entr
 , ('Catar carrapatos das costas do inimigo', 'procure carrapatos para espancar', 3000, false, current_timestamp, current_timestamp + interval '30' day, current_timestamp + interval '45' day, 5, 2)
 on conflict do nothing;
 
-insert into entrega (id_tarefa, id_aluno, visto, nota, data_hora, conteudo, comentario, em_definitivo) values
-  (1, 3, null, 8.0, current_timestamp + interval '3' hour, '2, 4, 6, 40, 9, 1', null, true)
-, (1, 4, null, 0.0, current_timestamp + interval '2' day, '1, 2, 3, 4, 5, 6', 'O quê??', true)
-, (1, 5, null, 10.0, current_timestamp, '2, 4, 6, 35, 9, indeterminado', 'Parabéns!', true)
+insert into entrega (id_tarefa, id_aluno, data_hora, conteudo, em_definitivo) values
+  (1, 3, current_timestamp + interval '3' hour, '2, 4, 6, 40, 9, 1', true)
+, (1, 4, current_timestamp + interval '2' day, '1, 2, 3, 4, 5, 6', true)
+, (1, 5, current_timestamp, '2, 4, 6, 35, 9, indeterminado', true)
+on conflict do nothing;
+
+insert into avaliacao (id_tarefa, id_aluno, visto, nota, comentario) values
+  (1, 3, null, 8.0, null)
+, (1, 4, null, 0.0, 'O quê??')
+, (1, 5, null, 10.0, 'Parabéns')
 on conflict do nothing;

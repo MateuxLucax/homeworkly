@@ -144,10 +144,6 @@
         </div>
 
         <!-- TODO link para o perfil do professor quando páginas de perfil forem criadas -->
-        <!-- TODO uma imagem de perfil circular ficaria bonita aqui... -->
-
-        <!-- TODO só mostrar em baixo assim quando a tarefa já estiver aberta.
-                Senão, mostrar junto as outras datas como campo de formulário -- a data de abertura é depois e ainda pode ser alterada -->
         <span>
             Criada por
             <b><?= $professor->getNome() ?></b>
@@ -165,60 +161,85 @@ if ($_SESSION['tipo'] == TipoUsuario::ALUNO)
 {
     $entrega = $view['entrega'];
     $entregaSituacao = $tarefa->entregaSituacao($entrega);
+
+    $avaliacao = $view['avaliacao'];
     ?>
 
     <div class="card px-0 mb-3">
         <div class="card-header d-flex align-items-center">
-            <?php if ($entregaSituacao->entregue()) {
+            <?php
+            if ($entregaSituacao->entregue()) {
                 echo '<span>Entregue em <i>'.$entrega->dataHora()->format('d/m H:i').'</i></span>';
                 if ($entregaSituacao == EntregaSituacao::ENTREGUE_ATRASADA) {
                     echo '<h5 class="mb-0" style="margin-left: 15px;"><span class="badge bg-warning text-dark">Atrasada</span></h5>';
                 }
             } else {
                 echo 'Entrega pendente';
-            } ?>
+            }
+            ?>
         </div>
+
         <div class="card-body">
-            <?php if ($entregaSituacao->entregue() && $tarefa->fechada()): ?>
-                <div class="d-flex align-items-center">
-                    <div>Avaliação do professor</div>
-                    <?php if ($tarefa->comNota()) {
-                        $nota = $entrega->nota();
-                        $textoAvaliacao = ($nota ?? '?') .'/10';
-                        $bgAvaliacao = !$nota ? 'bg-secondary' : ($nota < 7 ? 'bg-warning' : 'bg-success');
-                    } else {
-                        if ($entrega->visto() === null) {
-                            $textoAvaliacao = 'Não visto';
-                            $bgAvaliacao = 'bg-secondary';
-                        } else if ($entrega->visto()) {
-                            $textoAvaliacao = 'Visto';
-                            $bgAvaliacao = 'bg-success';
+
+            <!-- Avaliação -->
+            
+            <?php
+            if ($entregaSituacao->entregue() && $tarefa->fechada()) {
+                if ($avaliacao != null) { ?>
+
+                    <div class="d-flex align-items-center">
+                        <div>Avaliação do professor</div>
+                        <?php
+                        if ($tarefa->comNota()) {
+                            $nota = $avaliacao->nota();
+                            $textoAvaliacao = ($nota ?? '?') .'/10';
+                            $bgAvaliacao = !$nota ? 'bg-secondary' : ($nota < 7 ? 'bg-warning' : 'bg-success');
                         } else {
-                            $textoAvaliacao = 'Não aceito';
-                            $bgAvaliacao = 'bg-danger';
+                            if ($avaliacao->visto() === null) {
+                                $textoAvaliacao = 'Não visto';
+                                $bgAvaliacao = 'bg-secondary';
+                            } else if ($avaliacao->visto()) {
+                                $textoAvaliacao = 'Visto';
+                                $bgAvaliacao = 'bg-success';
+                            } else {
+                                $textoAvaliacao = 'Não aceito';
+                                $bgAvaliacao = 'bg-danger';
+                            }
                         }
-                    }
-                    $corTextoAvaliacao = $bgAvaliacao == 'bg-warning' ? 'text-dark' : '';
-                    ?>
-                    <h5 class="mb-0" style="margin-left: 15px;">
-                        <span class="badge <?= $bgAvaliacao ?> <?= $corTextoAvaliacao ?>">
-                            <?= $textoAvaliacao ?>
-                        </span>
-                    </h5>
-                </div>
+                        $corTextoAvaliacao = $bgAvaliacao == 'bg-warning' ? 'text-dark' : '';
+                        ?>
+                        <h5 class="mb-0" style="margin-left: 15px;">
+                            <span class="badge <?= $bgAvaliacao ?> <?= $corTextoAvaliacao ?>">
+                                <?= $textoAvaliacao ?>
+                            </span>
+                        </h5>
+                    </div>
 
-                <?php if (!empty($entrega->comentario())): ?>
-                    <textarea disabled readonly id="entrega-comentario" class="mt-3 form-control" rows="3"
-                    ><?= $entrega->comentario() ?></textarea>
-                <?php endif; ?>
+                    <?php
+                    if ($avaliacao->comentario() != null) {
+                        echo '
+                        <textarea disabled readonly id="entrega-comentario" class="mt-3 form-control" rows="3"
+                        >'. $avaliacao->comentario() .'</textarea>';
+                    } ?>
 
-                <hr/>
+                    <hr/>
 
-            <?php elseif ($entrega != null && $entrega->emDefinitivo()): ?>
+                <?php
+                } else {
+                    echo '
+                    <div class="alert alert-warning">O(a) professor(a) ainda não não avaliou a sua entrega.</div>';
+                }?>
+
+
+            <?php
+            } else if ($entrega != null && $entrega->emDefinitivo()) {
+                echo '
                 <div class="alert alert-warning">
                     Você só poderá ver a avaliação do professor quando a tarefa for fechada.
-                </div>
-            <?php endif; ?>
+                </div>';
+            } ?>
+
+            <!-- Entrega -->
 
             <?php
             $conteudoEntrega = $entrega == null ? '' : $entrega->conteudo();
@@ -315,6 +336,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                 <?php foreach ($entregasPorAluno as $alunoEntrega) {
                     $aluno = $alunoEntrega['aluno'];
                     $entrega = $alunoEntrega['entrega'];
+                    $avaliacao = $alunoEntrega['avaliacao'];
 
                     $entregaSituacao = $tarefa->entregaSituacao($entrega);
 
@@ -327,12 +349,12 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                     };
 
 
-                    $avaliacao = '';
+                    $badgeAvaliacao = '';
                     // @Copypaste "Avaliação do professor" logo acima,
                     // TODO extrair para algum lugar
                     // o mais imediato seria uma função dentro desse arquivo mesmo
                     if ($tarefa->comNota()) {
-                        $nota = $entrega?->nota();
+                        $nota = $avaliacao?->nota();
                         if ($nota == null) {
                             $textoAvaliacao = 'Sem nota';
                             $bgAvaliacao = 'bg-secondary';
@@ -341,10 +363,10 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                             $bgAvaliacao = $nota < 7 ? 'bg-warning' : 'bg-success';
                         }
                     } else {
-                        if ($entrega?->visto() === null) {
+                        if ($avaliacao?->visto() === null) {
                             $textoAvaliacao = 'Não visto';
                             $bgAvaliacao = 'bg-secondary';
-                        } else if ($entrega->visto()) {
+                        } else if ($avaliacao->visto()) {
                             $textoAvaliacao = 'Visto';
                             $bgAvaliacao = 'bg-success';
                         } else {
@@ -354,15 +376,15 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                     }
                     $corTextoAvaliacao = $bgAvaliacao == 'bg-warning' ? 'text-dark' : '';
 
-                    $avaliacao = '
+                    $badgeAvaliacao = '
                         <span class="badge '.$bgAvaliacao.' '.$corTextoAvaliacao.'">
                             '.$textoAvaliacao.'
                         </span>';
 
                     $comentario = '';
-                    if ($entrega?->comentario() != null) {
+                    if ($avaliacao?->comentario() != null) {
                         // espaços em branco com alt+255
-                        $comentario = '  <h5 class="mb-1 text-secondary"><i class="fas fa-comment-dots" data-bs-toggle="tooltip" title="'.$entrega->comentario().'"></i></h5>';
+                        $comentario = '  <h5 class="mb-1 text-secondary"><i class="fas fa-comment-dots" data-bs-toggle="tooltip" title="'.$avaliacao->comentario().'"></i></h5>';
                     }
                     ?>
                     <tr>
@@ -372,7 +394,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                         </span></td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <?= $avaliacao ?>
+                                <?= $badgeAvaliacao ?>
                                 <?= $comentario ?>
                             </div>
                         </td>

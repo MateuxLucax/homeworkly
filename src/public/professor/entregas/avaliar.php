@@ -37,7 +37,7 @@ try
 
     if (count($resultadoComNota) == 0) respondJson(
         HttpCodes::NOT_FOUND,
-        ['message' => 'Erro do sistema. Não existe entrega do aluno de ID '.$idAluno.' para a tarefa de ID'.$idTarefa ]
+        ['message' => 'Erro do sistema. Não existe tarefa de ID '.$idTarefa ]
     );
 
     $comNota = (bool) $resultadoComNota[0]['com_nota'];
@@ -49,22 +49,18 @@ try
     // ------------------------------
 
     $sql = '
-        UPDATE entrega
-        SET comentario = :comentario
-            , '.($comNota ? 'nota = :nota' : 'visto = :visto').'
-        WHERE (id_tarefa, id_aluno) = (:idTarefa, :idAluno)';
+        INSERT INTO avaliacao (id_aluno, id_tarefa, nota, visto, comentario)
+        VALUES (:idAluno, :idTarefa, :nota, :visto, :comentario)
+        ON CONFLICT (id_aluno, id_tarefa) DO
+          UPDATE SET nota = :nota, visto = :visto, comentario = :comentario';
 
     $params = [
         ':comentario' => $dados['comentario'],
         ':idTarefa'   => $idTarefa,
-        ':idAluno'    => $idAluno
+        ':idAluno'    => $idAluno,
+        ':visto'      => $comNota ? null : $dados['visto'],
+        ':nota'       => $comNota ? $dados['nota'] : null
     ];
-
-    if ($comNota) {
-        $params[':nota'] = $dados['nota'];
-    } else {
-        $params[':visto'] = $dados['visto'];
-    }
 
     $ok = Query::execute($sql, $params);
 

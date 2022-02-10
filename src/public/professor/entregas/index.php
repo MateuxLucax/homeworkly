@@ -56,4 +56,7 @@ $view['tarefa'] = $tarefa;
 $view['podeAvaliarEntregas'] = $podeAvaliarEntregas;
 $view['entregasPorAluno'] = $entregasPorAluno;
 
+// TODO acho que o $podeAvaliarEntregas nem é considerado na view, considerar!
+// i.e. botar disabled readonly nos campos, remover botão de salvar
+
 require $root . 'views/professor/entregas/index.php';

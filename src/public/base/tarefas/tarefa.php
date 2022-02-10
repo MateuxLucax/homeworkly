@@ -3,6 +3,7 @@
 require_once $root . '/models/Tarefa.php';
 require_once $root . '/models/Entrega.php';
 require_once $root . '/models/EntregaSituacao.php';
+require_once $root . '/models/Avaliacao.php';
 require_once $root . '/dao/EntregaDAO.php';
 require_once $root . '/dao/TarefaDAO.php';
 require_once $root . '/dao/PermissaoTarefa.php';
