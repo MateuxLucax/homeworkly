@@ -1,3 +1,3 @@
 <?php
-phpinfo();
-# header("location: ./entrar");
+
+header("location: ./entrar");

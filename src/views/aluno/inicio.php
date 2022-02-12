@@ -8,11 +8,6 @@
             validRange: {
                 start: '<?= $view['ano_turma'] ?>-01-01',
                 end: '<?= $view['ano_turma'] + 1 ?>-01-01'
-            },
-            selectable: true,
-            select: (selectInfo) => {
-                const title = prompt('Informe o Título da tarefa;');
-                console.log([selectInfo, title]);
             }
         });
         calendar.render();

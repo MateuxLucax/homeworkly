@@ -1,0 +1,91 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>190</x><y>15</y><w>180</w><h>150</h></coordinates><panel_attributes>Usuario
+--
+- id: int
+- tipo: TipoUsuario
+- nome: string
+- login: string
+- hash_senha: string
+- cadastro: DateTime
+- ultumo_acesso: DateTime
+- podeExcluir: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>370</x><y>15</y><w>250</w><h>150</h></coordinates><panel_attributes>Turma
+--
+- id: int
+- nome: string
+- ano: int
+- disciplinas: Disciplina[]
+- alunos: Usuario[]
+--
++ addDisciplina(disciplina Disciplina): Turma
++ podeAlterar(): bool
++ podeExcluir(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>15</y><w>140</w><h>100</h></coordinates><panel_attributes>Disciplina
+--
+- id: int
+- nome: string
+- turma: Turma
+- professores: Usuario[]
+- podeExcluir: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>620</x><y>15</y><w>310</w><h>230</h></coordinates><panel_attributes>Tarefa
+--
+- id: int
+- professor: Usuario
+- disciplina: Disciplina
+- titulo: string
+- descricao: string
+- esforco_minutos: int
+- com_nota: bool
+- abertura: DateTime
+- entrega: DateTime
+- fechamento: DateTime
+--
++ estado(): TarefaEstado
++ fechada(): bool
++ entregaSituacao(entrega: Entrega): EntregaSituacao </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>265</y><w>140</w><h>100</h></coordinates><panel_attributes>Entrega
+--
+- tarefa: Tarefa
+- aluno: Usuario
+- conteudo: string
+- dataHora: DateTime
+- emDefinitivo: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>190</x><y>265</y><w>140</w><h>100</h></coordinates><panel_attributes>Avaliacao
+--
+- tarefa: Tarefa
+- aluno: Usuario
+- nota: float
+- visto: bool
+- comentario: string</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>330</x><y>265</y><w>90</w><h>100</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
+CorEvento
+--
+Azul
+Amarelo
+Vermelho
+Verde</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>420</x><y>265</y><w>130</w><h>170</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
+EntregaSituacao
+--
+Pendente
+Pendente_atrasada
+Nao_feita
+Entregue_atrasada
+Entregue
+--
++ pendente(): bool
++ entrege(): bool
++ atrasada(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>550</x><y>265</y><w>100</w><h>90</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
+TipoUsuario
+--
+Administrador
+Aluno
+Professor</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>650</x><y>265</y><w>120</w><h>100</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
+TarefaEstado
+--
+Esperando_abertura
+Aberta
+Fechada
+Arquivdada</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>455</y><w>180</w><h>150</h></coordinates><panel_attributes>Usuario
+--
+- titulo: string
+- dataInicial: DateTime
+- dataFinal: DateTime
+- destino: string
+- corEvento: CorEvento
+- entregue: bool
+--
++ toArray(): array
++ tarefasToEventos(tarefas: Tarefa[]): Eventos[]</panel_attributes><additional_attributes></additional_attributes></element></diagram>
