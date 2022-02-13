@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
             ':fechamento'     => $dados['fechamento'],
         ]);
 
-        // TODO se reativarmos a historico_tarefa vai dar problema aqui porque o lastInsertId() acaba sendo o último id da historico_tarefa e não da tabela tarefa
+        // FIXME se reativarmos a historico_tarefa vai dar problema aqui porque o lastInsertId() acaba sendo o último id da historico_tarefa e não da tabela tarefa
         // então trocar para um SELECT MAX(id_tarefa) FROM tarefa
         respondJson(HttpCodes::CREATED, ['id' => $pdo->lastInsertId()]);
     }

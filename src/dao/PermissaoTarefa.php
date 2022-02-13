@@ -100,6 +100,7 @@ class PermissaoTarefa
     {
         if ($tipoUsuario == TipoUsuario::ADMINISTRADOR) return self::NAO_AUTORIZADO;
         if ($tipoUsuario == TipoUsuario::ALUNO) {
+            if (!$this->aberta) return self::ESPERANDO_ABERTURA;
             $alunoDaTurma = Query::select(
                 'SELECT EXISTS(
                     SELECT 1
@@ -118,7 +119,7 @@ class PermissaoTarefa
     /**
      * @return int PODE, NAO_AUTORIZADO, ARQUIVADA, FECHADA ou ESPERANDO_ABERTURA
      */
-    public static function fechar(int $idUsuario, string $tipoUsuario)
+    public function fechar(int $idUsuario, string $tipoUsuario)
     {
         $permAlterar = self::alterar($idUsuario, $tipoUsuario);
         if ($permAlterar != self::PODE) return $permAlterar;

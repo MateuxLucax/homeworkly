@@ -1,6 +1,3 @@
-<!-- TODO estado da tarefa em relação ao aluno: pendente; entregue -->
-<!-- mostrar que nem o estado da tarefa -->
-
 <?php
     $tarefa = $view['tarefa'];
     $disciplina = $tarefa->disciplina();

@@ -23,8 +23,6 @@ if ($permissaoTarefaVisualizar != PermissaoTarefa::PODE) {
     responsePermissaoNaoPode($permissaoTarefaVisualizar);
 }
 
-// TODO FIXME aluno está podendo visualizar uma tarefa com estado "Esperando abertura", não deveria
-
 $view['tarefa'] = $tarefa;
 $view['permissaoTarefa'] = $permissaoTarefa;
 

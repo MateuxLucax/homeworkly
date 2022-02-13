@@ -53,6 +53,14 @@ function responsePermissaoNaoPode(int $permissao): never
             'Você não tem autorização para visualizar essa tarefa.<br/>Motivo: '.$motivo
         );
     }
+    else if ($permissao == PermissaoTarefa::ESPERANDO_ABERTURA)
+    {
+        respondWithErrorPage(
+            HttpCodes::BAD_REQUEST,
+            'Tarefa esperando abertura',
+            'Você não pode visualizar essa tarefa pois ela ainda não foi aberta'
+        );
+    }
     else
     {
         respondWithErrorPage(
