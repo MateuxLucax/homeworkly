@@ -65,8 +65,7 @@ $idAlunoEntregaAberta = isset($_GET['aluno']) ? $_GET['aluno'] : $entregasPorAlu
             <div class="card-header">
               <div class="card-title">
                 Entrega
-                <!-- TODO usar badge de situação da entrega aqui também 
-                     melhor extrair para alguma função e chamar ela nos lugares onde existe -->
+                <!-- TODO dizer quando a tarefa foi entregue com atraso -->
                 <?php if ($entrega != null): ?>
                   &nbsp;
                   <small class="text-muted">
@@ -93,9 +92,11 @@ $idAlunoEntregaAberta = isset($_GET['aluno']) ? $_GET['aluno'] : $entregasPorAlu
                 }
               } ?>
 
-              <textarea readonly disabled class="mb-3 form-control"><?=$entrega?->conteudo()?></textarea>
-
-              <hr>
+              <?php if ($entrega != null && !empty($entrega->conteudo())): ?>
+                <textarea readonly disabled class="mb-3 form-control"
+                ><?=$entrega->conteudo()?></textarea>
+                <hr>
+              <?php endif; ?>
 
               <form class="form-avaliar-entrega" data-id-aluno="<?=$aluno->getId()?>">
                 <input type="hidden" name="tarefa" value="<?=$tarefa->id()?>">
@@ -104,7 +105,7 @@ $idAlunoEntregaAberta = isset($_GET['aluno']) ? $_GET['aluno'] : $entregasPorAlu
                 { ?>
                   <label class="form-label" for="nota">
                     Nota
-                      <small><span class="text-muted">(usar ponto, por exemplo 9.5 em vez de 9,5)</span></small>
+                    <?= $arquivada ? '' : '<small><span class="text-muted">(usar ponto, por exemplo 9.5 em vez de 9,5)</span></small>' ?>
                   </label>
                   <div class="input-group mb-3" style="width: 100px">
                     <input id="nota" class="text-end form-control" type="text"
