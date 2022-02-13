@@ -5,6 +5,8 @@ $root = '../../../';
 require_once $root . 'utils/response-utils.php';
 forbidMethodsNot('GET');
 require_once $root . 'dao/UsuarioDAO.php';
+require_once $root . 'dao/PermissaoTarefa.php';
+require_once $root . 'dao/PermissaoEntrega.php';
 require_once $root . 'models/TipoUsuario.php';
 UsuarioDAO::validaSessaoTipo(TipoUsuario::PROFESSOR);
 
@@ -17,6 +19,7 @@ if ($permissaoVisualizar != PermissaoTarefa::PODE) responsePermissaoNaoPode($per
 
 $view['tarefa'] = $tarefa;
 $view['permissaoTarefa'] = $permissao;
+$view['permissaoAvaliar'] = PermissaoEntrega::avaliar($_SESSION['id_usuario'], $_SESSION['tipo'], $tarefa);
 $view['entregasPorAluno'] = EntregaDAO::entregasPorAluno($tarefa);
 
 $view['content_path'] = 'views/tarefas/tarefa.php';

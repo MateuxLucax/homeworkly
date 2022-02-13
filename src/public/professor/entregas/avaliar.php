@@ -10,6 +10,7 @@ UsuarioDAO::validaSessaoTipo(TipoUsuario::PROFESSOR);
 // ------------------------------
 
 require_once $root . 'database/Query.php';
+require_once $root . 'dao/PermissaoEntrega.php';
 
 try
 {
@@ -30,21 +31,29 @@ try
     $idAluno = $dados['aluno'];
     $idTarefa = $dados['tarefa'];
 
-    $resultadoComNota = Query::select(
-        'SELECT com_nota FROM tarefa WHERE id_tarefa = :idTarefa',
-        [ ':idTarefa' => $idTarefa ]
-    );
+    $tarefa = TarefaDAO::buscar($idTarefa);
 
-    if (count($resultadoComNota) == 0) respondJson(
+    if (is_null($tarefa)) respondJson(
         HttpCodes::NOT_FOUND,
         ['message' => 'Erro do sistema. Não existe tarefa de ID '.$idTarefa ]
     );
 
-    $comNota = (bool) $resultadoComNota[0]['com_nota'];
+    responderErroSeCampoAusente($tarefa->comNota() ? 'nota' : 'visto');
 
-    responderErroSeCampoAusente($comNota ? 'nota' : 'visto');
-
-    // TODO? verificar se professor ($_SESSION['id_usuario']) fazendo avaliação é professor da disciplina da tarefa dessa entrega
+    $permAvaliar = PermissaoEntrega::avaliar($_SESSION['id_usuario'], $_SESSION['tipo'], $tarefa);
+    if ($permAvaliar != PermissaoEntrega::PODE) {
+        list($codigo, $motivo) = match($permAvaliar) {
+            PermissaoEntrega::NAO_EH_PROFESSOR => [HttpCodes::UNAUTHORIZED, 'não é um usuário do tipo professor'],
+            PermissaoEntrega::NAO_EH_DA_DISCIPLINA => [HttpCodes::UNAUTHORIZED, 'não é um professor da disciplina'],
+            PermissaoEntrega::ESPERANDO_ABERTURA => [HttpCodes::BAD_REQUEST, 'a tarefa ainda não foi aberta'],
+            PermissaoEntrega::ARQUIVADA => [HttpCodes::BAD_REQUEST, 'a tarefa está arquivada'],
+            default => [HttpCodes::INTERNAL_SERVER_ERROR, 'ErroMatchAvaliarNaoExaustivo']
+        };
+        respondJson(
+            HttpCodes::BAD_REQUEST,
+            ['message' => 'Você não pode avaliar entregas dessa tarefa pois '.$motivo]
+        );
+    }
 
     // ------------------------------
 
@@ -58,8 +67,8 @@ try
         ':comentario' => $dados['comentario'],
         ':idTarefa'   => $idTarefa,
         ':idAluno'    => $idAluno,
-        ':visto'      => $comNota ? null : $dados['visto'],
-        ':nota'       => $comNota ? $dados['nota'] : null
+        ':visto'      => $tarefa->comNota() ? null : $dados['visto'],
+        ':nota'       => $tarefa->comNota() ? $dados['nota'] : null
     ];
 
     $ok = Query::execute($sql, $params);

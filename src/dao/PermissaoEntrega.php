@@ -16,6 +16,10 @@ class PermissaoEntrega
     public const FECHADA = 4;
     public const JA_ENTREGUE = 5;
     public const ESPERANDO_ABERTURA = 6;
+
+    public const NAO_EH_PROFESSOR = 7;
+    public const NAO_EH_DA_DISCIPLINA = 8;
+    // 1, 2, 7 e 8 podiam ser só um NAO_AUTORIZADO
     
     /**
      * Retorna PODE se o usuário pode alterar a entrega fornecida ou, caso não possa, o motivo disso.
@@ -53,8 +57,26 @@ class PermissaoEntrega
         if (!UsuarioDAO::alunoDaTurma($idUsuario, $tarefa->disciplina()->getTurma()->getId())) {
             return self::NAO_EH_DA_TURMA;
         }
-        if ($tarefa->estado() == TarefaEstado::ESPERANDO_ABERTURA) return self::ESPERANDO_ABERTURA;
-        if ($tarefa->estado() == TarefaEstado::FECHADA) return self::FECHADA;
+        $estado = $tarefa->estado();
+        if ($estado == TarefaEstado::ESPERANDO_ABERTURA) return self::ESPERANDO_ABERTURA;
+        if ($estado == TarefaEstado::FECHADA) return self::FECHADA;
+        return self::PODE;
+    }
+
+    /**
+     * Retorna se o usuário dado pode avaliar as entregas da tarefa dada.
+     * 
+     * @return int NAO_EH_PROFESSOR, NAO_EH_DA_DISCIPLINA, ESPERANDO_ABERTURA, ARQUIVADA ou PODE
+     */
+    public static function avaliar(int $idUsuario, string $tipoUsuario, Tarefa $tarefa)
+    {
+        $idDisciplina = $tarefa->disciplina()->getId();
+        $estado = $tarefa->estado();
+
+        if ($tipoUsuario != TipoUsuario::PROFESSOR) return self::NAO_EH_PROFESSOR;
+        if (!UsuarioDAO::professorDaDisciplina($idUsuario, $idDisciplina)) return self::NAO_EH_DA_DISCIPLINA;
+        if ($estado == TarefaEstado::ESPERANDO_ABERTURA) return self::ESPERANDO_ABERTURA;
+        if ($estado == TarefaEstado::ARQUIVADA) return self::ARQUIVADA;
         return self::PODE;
     }
 }

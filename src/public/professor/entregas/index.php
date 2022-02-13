@@ -13,6 +13,7 @@ require_once $root . 'models/Tarefa.php';
 require_once $root . 'models/Entrega.php';
 require_once $root . 'dao/TarefaDAO.php';
 require_once $root . 'dao/EntregaDAO.php';
+require_once $root . 'dao/PermissaoEntrega.php';
 
 if (!isset($_GET['tarefa'])) respondWithErrorPage(
     HttpCodes::BAD_REQUEST,
@@ -27,36 +28,25 @@ if ($tarefa == null) respondWithNotFoundPage(
     'Não existe tarefa de ID ' . $idTarefa
 );
 
-$professorDaDisciplina = (bool) Query::select(
-    'SELECT EXISTS(
-        SELECT 1
-          FROM professor_de_disciplina
-         WHERE (id_professor, id_disciplina) = (:idProf, :idDisc)
-    ) AS professor_da_disciplina', [
-        ':idProf' => $_SESSION['id_usuario'],
-        ':idDisc' => $tarefa->disciplina()->getId()
-    ]
-)[0]['professor_da_disciplina'];
+$permAvaliar = PermissaoEntrega::avaliar($_SESSION['id_usuario'], $_SESSION['tipo'], $tarefa);
+if ($permAvaliar != PermissaoEntrega::PODE && $permAvaliar != PermissaoEntrega::ARQUIVADA) {
+    list($codigo, $titulo, $motivo) = match($permAvaliar) {
+        PermissaoEntrega::NAO_EH_PROFESSOR => [HttpCodes::UNAUTHORIZED, 'Não autorizado', 'não é um usuário do tipo professor'],
+        PermissaoEntrega::NAO_EH_DA_DISCIPLINA => [HttpCodes::UNAUTHORIZED, 'Não autorizado', 'não é um professor da disciplina'],
+        PermissaoEntrega::ESPERANDO_ABERTURA => [HttpCodes::BAD_REQUEST, 'Tarefa esperando abertura', 'a tarefa ainda não foi aberta'],
+        default => [HttpCodes::INTERNAL_SERVER_ERROR, 'Erro do servidor', 'ErroMatchAvaliarNaoExaustivo']
+    };
+    respondWithErrorPage($codigo, $titulo, 'O usuário não pode avaliar as entregas pois '.$motivo);
+}
 
-$professorDaDisciplina = true;
 
-if (!$professorDaDisciplina) respondWithErrorPage(
-    HttpCodes::UNAUTHORIZED,
-    'Não autorizado',
-    'Você não é um professor da disciplina dessa tarefa, então não pode visualizar suas entregas'
-);
-
-$podeAvaliarEntregas = $tarefa->estado() != TarefaEstado::ARQUIVADA;
+$podeAvaliarEntregas = $permAvaliar == PermissaoEntrega::PODE;
 
 $entregasPorAluno = EntregaDAO::entregasPorAluno($tarefa);
 
 // ------------------------------
 
 $view['tarefa'] = $tarefa;
-$view['podeAvaliarEntregas'] = $podeAvaliarEntregas;
 $view['entregasPorAluno'] = $entregasPorAluno;
-
-// TODO acho que o $podeAvaliarEntregas nem é considerado na view, considerar!
-// i.e. botar disabled readonly nos campos, remover botão de salvar
 
 require $root . 'views/professor/entregas/index.php';

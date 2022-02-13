@@ -314,12 +314,18 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
         <div class="card-header d-flex align-items-center">
             <div class="card-title mb-0">Entregas</div>
 
-            <?php $verboBotaoEntregas = $tarefa->estado() == TarefaEstado::ARQUIVADA ? 'Ver' : 'Avaliar'; ?>
-
-            <a href="../entregas/?tarefa=<?=$tarefa->id()?>" class="ms-auto btn btn-primary">
-                <i class="fas fa-spell-check"></i>
-                <?= $verboBotaoEntregas ?> entregas
-            </a>
+            <?php
+            $permAvaliar = $view['permissaoAvaliar'];
+            $mostrarLinkAvaliar = $permAvaliar == PermissaoEntrega::ARQUIVADA || $permAvaliar == PermissaoEntrega::PODE;
+            if ($mostrarLinkAvaliar) {
+                $verboBotaoEntregas = $permAvaliar == PermissaoEntrega::ARQUIVADA ? 'Ver' : 'Avaliar';
+                echo '
+                <a href="../entregas/?tarefa='.$tarefa->id().'" class="ms-auto btn btn-primary">
+                    <i class="fas fa-spell-check"></i>
+                    '.$verboBotaoEntregas.' entregas
+                </a>';
+            }
+            ?>
 
         </div>
         <div class="card-body">
@@ -331,7 +337,7 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
 
                     <th>Avaliação</th> <!-- Avaliação pendente ou Nota ou Visto -->
                     <th>Data</th>
-                    <th></th>
+                    <?= $mostrarLinkAvaliar ? '<th></th>' : '' ?>
                 </tr>
                 <?php foreach ($entregasPorAluno as $alunoEntrega) {
                     $aluno = $alunoEntrega['aluno'];
@@ -398,12 +404,22 @@ if ($_SESSION['tipo'] == TipoUsuario::PROFESSOR)
                                 <?= $comentario ?>
                             </div>
                         </td>
-                        <td><?= $entrega?->dataHora()?->format('d/m/Y H:i') ?></td>
                         <td>
-                            <a href="../entregas/?tarefa=<?=$tarefa->id()?>&aluno=<?=$aluno->getId()?>" class="ms-auto btn btn-primary">
-                                <i class="fas fa-spell-check"></i>
-                            </a>
+                            <?php 
+                                $data = $entrega?->dataHora() ?? null;
+                                echo $data ? $data->format('d/m/Y H:i') : '—'
+                            ?>
                         </td>
+                        <?php
+                        if ($mostrarLinkAvaliar) {
+                            echo '
+                            <td>
+                                <a href="../entregas/?tarefa='.$tarefa->id().'&aluno='.$aluno->getId().'" class="ms-auto btn btn-primary">
+                                    <i class="fas fa-spell-check"></i>
+                                </a>
+                            </td>';
+                        }
+                        ?>
                     </tr>
                 <?php } // foreach ?>
             </table>
