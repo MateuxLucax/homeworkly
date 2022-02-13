@@ -114,4 +114,15 @@ class PermissaoTarefa
         assert($tipoUsuario == TipoUsuario::PROFESSOR);
         return UsuarioDAO::professorDaDisciplina($idUsuario, $this->idDisciplina) ? self::PODE : self::NAO_AUTORIZADO;
     }
+
+    /**
+     * @return int PODE, NAO_AUTORIZADO, ARQUIVADA, FECHADA ou ESPERANDO_ABERTURA
+     */
+    public static function fechar(int $idUsuario, string $tipoUsuario)
+    {
+        $permAlterar = self::alterar($idUsuario, $tipoUsuario);
+        if ($permAlterar != self::PODE) return $permAlterar;
+        if (!$this->aberta) return self::ESPERANDO_ABERTURA;
+        return self::PODE;
+    }
 }
