@@ -6,6 +6,7 @@ $professor = $_COOKIE['professor'];
 $turma = isset($_COOKIE['turmaSelecionada']) ? $_COOKIE['turmaSelecionada'] : $_COOKIE['turmaInicial'];
 
 $disciplinas = DisciplinaDAO::disciplinaDeTurmaProfessor($professor, $turma);
+// TODO nvdd fazer um select das disciplinas do professor das turmas do ano atual
 
 ?>
 

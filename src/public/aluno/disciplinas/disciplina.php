@@ -40,12 +40,6 @@ foreach ($disciplina->getProfessores() as $professor) {
 // TODO para colocar as tarefas em cada índice (atrasada, pendente ou entregue)
 // instanciar elas após o select para poder chamar ->entregaSituacao() da tarefa
 
-// TODO objeto para encapsular/tornar reutilizável essa listagem de tarefas para o aluno
-// porque vai ser usada tanto para mostrar todas as tarefas do aluno
-// quanto para mostrar dentro de cada tarefa 
-// a única diferença é que, ao listar todas as tarefas, precisamos mostrar em cada tarefa
-// de qual disciplina é, enquanto na listagem dentro da disciplina podemos dispensar isso
-
 $tarefasPorSituacao = [
     'atrasadas' => [],
     'pendentes' => [],

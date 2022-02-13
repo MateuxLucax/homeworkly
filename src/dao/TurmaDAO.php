@@ -20,7 +20,6 @@ class TurmaDAO
         );
     }
 
-    // TODO Tratar corretamente dos casos em que retorna null
     public static function buscar(int $id): ?Turma
     {
         $res = Query::select(
