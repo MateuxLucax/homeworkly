@@ -1,4 +1,4 @@
-<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>190</x><y>15</y><w>180</w><h>150</h></coordinates><panel_attributes>Usuario
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>510</x><y>0</y><w>180</w><h>150</h></coordinates><panel_attributes>Usuario
 --
 - id: int
 - tipo: TipoUsuario
@@ -7,7 +7,7 @@
 - hash_senha: string
 - cadastro: DateTime
 - ultumo_acesso: DateTime
-- podeExcluir: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>370</x><y>15</y><w>250</w><h>150</h></coordinates><panel_attributes>Turma
+- podeExcluir: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>240</x><y>280</y><w>250</w><h>150</h></coordinates><panel_attributes>Turma
 --
 - id: int
 - nome: string
@@ -17,13 +17,13 @@
 --
 + addDisciplina(disciplina Disciplina): Turma
 + podeAlterar(): bool
-+ podeExcluir(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>15</y><w>140</w><h>100</h></coordinates><panel_attributes>Disciplina
++ podeExcluir(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>770</x><y>290</y><w>140</w><h>100</h></coordinates><panel_attributes>Disciplina
 --
 - id: int
 - nome: string
 - turma: Turma
 - professores: Usuario[]
-- podeExcluir: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>620</x><y>15</y><w>310</w><h>230</h></coordinates><panel_attributes>Tarefa
+- podeExcluir: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>230</x><y>480</y><w>310</w><h>230</h></coordinates><panel_attributes>Tarefa
 --
 - id: int
 - professor: Usuario
@@ -38,25 +38,25 @@
 --
 + estado(): TarefaEstado
 + fechada(): bool
-+ entregaSituacao(entrega: Entrega): EntregaSituacao </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>265</y><w>140</w><h>100</h></coordinates><panel_attributes>Entrega
++ entregaSituacao(entrega: Entrega): EntregaSituacao </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>600</x><y>410</y><w>140</w><h>100</h></coordinates><panel_attributes>Entrega
 --
 - tarefa: Tarefa
 - aluno: Usuario
 - conteudo: string
 - dataHora: DateTime
-- emDefinitivo: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>190</x><y>265</y><w>140</w><h>100</h></coordinates><panel_attributes>Avaliacao
+- emDefinitivo: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>70</x><y>360</y><w>140</w><h>100</h></coordinates><panel_attributes>Avaliacao
 --
 - tarefa: Tarefa
 - aluno: Usuario
 - nota: float
 - visto: bool
-- comentario: string</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>330</x><y>265</y><w>90</w><h>100</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
+- comentario: string</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>930</x><y>690</y><w>90</w><h>100</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
 CorEvento
 --
 Azul
 Amarelo
 Vermelho
-Verde</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>420</x><y>265</y><w>130</w><h>170</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
+Verde</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>810</x><y>410</y><w>130</w><h>170</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
 EntregaSituacao
 --
 Pendente
@@ -67,18 +67,18 @@ Entregue
 --
 + pendente(): bool
 + entrege(): bool
-+ atrasada(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>550</x><y>265</y><w>100</w><h>90</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
++ atrasada(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>240</x><y>0</y><w>100</w><h>90</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
 TipoUsuario
 --
 Administrador
 Aluno
-Professor</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>650</x><y>265</y><w>120</w><h>100</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
+Professor</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>70</x><y>620</y><w>120</w><h>100</h></coordinates><panel_attributes>&lt;&lt;Enum&gt;&gt;
 TarefaEstado
 --
 Esperando_abertura
 Aberta
 Fechada
-Arquivdada</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>455</y><w>180</w><h>150</h></coordinates><panel_attributes>Usuario
+Arquivdada</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>640</x><y>640</y><w>180</w><h>150</h></coordinates><panel_attributes>Evento
 --
 - titulo: string
 - dataInicial: DateTime
@@ -88,4 +88,32 @@ Arquivdada</panel_attributes><additional_attributes></additional_attributes></el
 - entregue: bool
 --
 + toArray(): array
-+ tarefasToEventos(tarefas: Tarefa[]): Eventos[]</panel_attributes><additional_attributes></additional_attributes></element></diagram>
++ tarefasToEventos(tarefas: Tarefa[]): Eventos[]</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>550</x><y>200</y><w>100</w><h>30</h></coordinates><panel_attributes>Administrador</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>330</x><y>150</y><w>80</w><h>30</h></coordinates><panel_attributes>Aluno</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>800</x><y>150</y><w>80</w><h>30</h></coordinates><panel_attributes>Professor</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>680</x><y>70</y><w>180</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;160;10;160;80</additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>70</y><w>170</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>150;10;10;10;10;80</additional_attributes></element><element><id>Relation</id><coordinates><x>590</x><y>140</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;60</additional_attributes></element><element><id>Relation</id><coordinates><x>830</x><y>169</y><w>60</w><h>140</h></coordinates><panel_attributes>lt=-
+m1=1..*
+m2=1..2
+ensina</panel_attributes><additional_attributes>10;120;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>168</y><w>80</w><h>130</h></coordinates><panel_attributes>lt=-
+m1=1..*
+m2=1..*
+pertence</panel_attributes><additional_attributes>10;10;10;110</additional_attributes></element><element><id>Relation</id><coordinates><x>480</x><y>328</y><w>310</w><h>50</h></coordinates><panel_attributes>lt=-
+m1=1..*
+m2=1..1
+possui</panel_attributes><additional_attributes>10;20;290;20</additional_attributes></element><element><id>Relation</id><coordinates><x>330</x><y>29</y><w>200</w><h>40</h></coordinates><panel_attributes>lt=&lt;-
+tipo</panel_attributes><additional_attributes>10;20;180;20</additional_attributes></element><element><id>Relation</id><coordinates><x>730</x><y>449</y><w>100</w><h>40</h></coordinates><panel_attributes>lt=&lt;-
+situacao</panel_attributes><additional_attributes>80;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>530</x><y>498</y><w>180</w><h>100</h></coordinates><panel_attributes>lt=-
+m1=1..*
+m2=1..1
+pertence</panel_attributes><additional_attributes>10;70;140;70;140;10</additional_attributes></element><element><id>Relation</id><coordinates><x>530</x><y>156</y><w>520</w><h>480</h></coordinates><panel_attributes>lt=-
+m1=1..1
+m2=0..*
+responsavel</panel_attributes><additional_attributes>10;450;440;450;440;10;350;10</additional_attributes></element><element><id>Relation</id><coordinates><x>130</x><y>156</y><w>220</w><h>220</h></coordinates><panel_attributes>lt=-
+m1=0..n
+m2=0..*
+possui</panel_attributes><additional_attributes>10;200;10;10;200;10</additional_attributes></element><element><id>Relation</id><coordinates><x>210</x><y>165</y><w>410</w><h>320</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1..1
+pertence</panel_attributes><additional_attributes>120;10;120;60;10;60;10;290;390;290</additional_attributes></element><element><id>Relation</id><coordinates><x>810</x><y>710</y><w>140</w><h>40</h></coordinates><panel_attributes>lt=&lt;-
+situacao</panel_attributes><additional_attributes>10;20;120;20</additional_attributes></element><element><id>Relation</id><coordinates><x>120</x><y>570</y><w>130</w><h>70</h></coordinates><panel_attributes>lt=&lt;-
+estado</panel_attributes><additional_attributes>10;50;10;10;110;10</additional_attributes></element><element><id>Relation</id><coordinates><x>120</x><y>449</y><w>130</w><h>90</h></coordinates><panel_attributes>lt=-
+m1=1..*
+m2=1..1
+pertence</panel_attributes><additional_attributes>110;60;10;60;10;10</additional_attributes></element></diagram>
