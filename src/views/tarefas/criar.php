@@ -118,7 +118,11 @@
                                 <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Quando a tarefa se torna disponível para os alunos."></i>
                             </label>
 
-                            <input class="form-control mb-2" type="datetime-local" name="abertura" id="abertura" <?= $aberturaPassou ? 'readonly disabled' : '' ?> <?= $aberturaPassou ? 'data-bs-toggle="tooltip" title="A tarefa já foi aberta, então sua data de abertura não pode ser modificada."' : '' ?> value="<?= dataAbertura() ?>" />
+                            <input class="form-control mb-2" type="datetime-local" name="abertura" id="abertura"
+                                   <?= $aberturaPassou ? 'readonly disabled' : '' ?>
+                                   <?= $aberturaPassou ? 'data-bs-toggle="tooltip" title="A tarefa já foi aberta, então sua data de abertura não pode ser modificada."' : '' ?>
+                                   value="<?= dataAbertura() ?>"
+                            />
                             <div class="form-check form-switch <?= $aberturaPassou ? 'd-none' : '' ?>">
                                 <input type="checkbox" class="form-check-input" id="abrir-agora" <?= $aberturaPassou ? '' : 'checked' ?> />
                                 <label class="form-check-label" for="abrir-agora">Abrir agora</label>
@@ -240,6 +244,12 @@
         trocarTipoAbertura(switchAbrirAgora.checked);
     });
 
+    // Caso o professor tenha criado com alguma data de abertura no futuro, queremos mostrar ela em vez do "abrir agora" marcado
+    // HACK melhor seria fazer direto no servidor acho, assim fica mais difícil de encontrar
+    <?php if ($paginaAlterar) { ?>
+        if (switchAbrirAgora.checked) switchAbrirAgora.click();
+    <?php } ?>
+
     //
     // Validação extra das datas
     //
@@ -261,7 +271,7 @@
         form.abertura.setCustomValidity(validAbertura);
 
         let validEntrega = '';
-        if (entrega < abertura) {
+        if (entrega <= abertura) {
             validEntrega = 'A data de entrega deve vir depois da data de abertura';
         } else if (entrega.getFullYear() > agora.getFullYear()) {
             validEntrega = 'A entrega deverá ocorrer este ano';
