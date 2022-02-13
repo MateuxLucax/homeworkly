@@ -30,13 +30,18 @@ $turmas = match ($usuario_header->getTipo()) {
     <div class="d-grid gap-3 align-items-center" style="grid-template-columns: 1fr 2fr;">
         <select class="form-select" id="" aria-label="Opção inicial" onchange="escolherTurma(this)">
             <?php foreach ($turmas as $turma) : ?>
-                <option value="<?= $turma->getId() ?>" <?= $isAluno ? 'selected disabled' : '' ?>><?= $turma->getNome() ?></option>
+                <option value="<?= $turma->getId() ?>" <?= $isAluno ? 'selected disabled' : '' ?>>
+                    <?= $turma->getAno() ?> / <?= $turma->getNome() ?>
+                </option>
             <?php endforeach; ?>
         </select>
         <div class="d-flex flex-row-reverse">
             <a href="/sair" class="btn btn-outline-dark"><i class="fas fa-sign-out-alt me-2"></i>Desconectar</a>
             <div class="mx-2"></div>
-            <a href="/<?= $usuario_header->getTipo() ?>/perfil" type="button" class="btn btn-outline-dark"><i class="far fa-user me-2"></i>Perfil</a>
+            <a href="/<?= $usuario_header->getTipo() ?>/perfil" type="button" class="btn btn-outline-dark">
+                <i class="far fa-user me-2"></i>
+                <?= $usuario_header->getNome() ?>
+            </a>
         </div>
     </div>
 </header>
