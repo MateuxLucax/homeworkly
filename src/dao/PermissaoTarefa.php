@@ -10,6 +10,7 @@ class PermissaoTarefa
     private int $idProfessor;
     private bool $arquivada;
     private bool $temEntregas;
+    private bool $aberta;
     private bool $fechada;
 
     public const PODE = 0;
@@ -17,12 +18,14 @@ class PermissaoTarefa
     public const TEM_ENTREGAS = 2;
     public const NAO_AUTORIZADO = 3;
     public const FECHADA = 4;
+    public const ESPERANDO_ABERTURA = 5;
 
     public function __construct(int $idTarefa)
     {
         $dados = Query::select(
             'SELECT ta.id_professor
                   , ta.fechamento < CURRENT_TIMESTAMP AS fechada
+                  , ta.abertura >= CURRENT_TIMESTAMP AS aberta
                   , di.id_disciplina
                   , tu.id_turma
                   , tu.ano != :ano AS arquivada
@@ -60,17 +63,7 @@ class PermissaoTarefa
 
         if ($anoTurma != date('Y')) return self::ARQUIVADA;
 
-        $professorDaDisciplina = Query::select(
-            'SELECT EXISTS(
-                SELECT 1
-                    FROM professor_de_disciplina
-                    WHERE id_professor = :idProfessor
-                    AND id_disciplina = :idDisciplina
-                ) AS professor_da_disciplina',
-            [ ':idProfessor'  => $idUsuario, 
-              ':idDisciplina' => $idDisciplina ]
-        )[0]['professor_da_disciplina'];
-        return $professorDaDisciplina ? self::PODE : self::NAO_AUTORIZADO;
+        return UsuarioDAO::professorDaDisciplina($idUsuario, $idDisciplina) ? self::PODE : self::NAO_AUTORIZADO;
     }
 
 
@@ -119,16 +112,6 @@ class PermissaoTarefa
             return $alunoDaTurma ? self::PODE : self::NAO_AUTORIZADO;
         }
         assert($tipoUsuario == TipoUsuario::PROFESSOR);
-        $professorDaDisciplina = Query::select(
-            'SELECT EXISTS(
-                SELECT 1
-                    FROM professor_de_disciplina
-                    WHERE id_professor = :idProfessor
-                    AND id_disciplina = :idDisciplina
-                ) AS professor_da_disciplina',
-            [ ':idProfessor' => $idUsuario, 
-                ':idDisciplina' => $this->idDisciplina ]
-        )[0]['professor_da_disciplina'];
-        return $professorDaDisciplina ? self::PODE : self::NAO_AUTORIZADO;
+        return UsuarioDAO::professorDaDisciplina($idUsuario, $this->idDisciplina) ? self::PODE : self::NAO_AUTORIZADO;
     }
 }

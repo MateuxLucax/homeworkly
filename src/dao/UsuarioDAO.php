@@ -3,10 +3,9 @@
 require_once $root."/models/Usuario.php";
 require_once $root."/database/Query.php";
 require_once $root."/utils/PasswordUtil.php";
+require_once $root."/utils/DateUtil.php";
 require_once $root."/exceptions/UnauthorizedException.php";
 require_once $root."/exceptions/UserNotFoundException.php";
-
-// TODO trazer as datas de cadastro, último acesso também
 
 class UsuarioDAO
 {
@@ -48,14 +47,14 @@ class UsuarioDAO
             throw new UnauthorizedException();
         }
 
-        $usuario->setId($foundUser['id_usuario']);
-        $usuario->setTipo($foundUser['tipo']);
-        $usuario->setNome($foundUser['nome']);
-        $usuario->setLogin($foundUser['login']);
-        $usuario->setHashSenha($foundUser['hash_senha']);
-        // TODO: Parse timestamp to dateTime
-        // $usuario->setCadastro(DateUtil::parseTimestamp($foundUser['cadastro']));
-        // $usuario->setUltimoAcesso($foundUser['ultimo_acesso']);
+        $usuario
+            ->setId($foundUser['id_usuario'])
+            ->setTipo($foundUser['tipo'])
+            ->setNome($foundUser['nome'])
+            ->setLogin($foundUser['login'])
+            ->setHashSenha($foundUser['hash_senha'])
+            ->setCadastro(DateUtil::toLocalDateTime($foundUser['cadastro']))
+            ->setUltimoAcesso(is_null($foundUser['ultimo_acesso']) ? null : DateUtil::toLocalDateTime($foundUser['ultimo_acesso']));
 
         self::criarSessao($usuario);
 
@@ -67,9 +66,11 @@ class UsuarioDAO
             fn($row) => self::armazenarPodeExcluir((new Usuario)
                 ->setId($row['id_usuario'])
                 ->setNome($row['nome'])
-                ->setTipo($row['tipo'])   // valor das enums coincide com o que é armazenado diretamente no banco
-                ->setLogin($row['login'])),
-            Query::select('SELECT id_usuario, nome, tipo, login FROM usuario')
+                ->setTipo($row['tipo'])
+                ->setLogin($row['login']))
+                ->setCadastro(DateUtil::toLocalDateTime($row['cadastro']))
+                ->setUltimoAcesso(is_null($row['ultimo_acesso']) ? null : DateUtil::toLocalDateTime($row['ultimo_acesso'])),
+            Query::select('SELECT id_usuario, nome, tipo, login, cadastro, ultimo_acesso FROM usuario')
         );
     }
 
@@ -259,9 +260,25 @@ class UsuarioDAO
             fn($row) => self::armazenarPodeExcluir((new Usuario)
                 ->setId($row['id_usuario'])
                 ->setNome($row['nome'])
-                ->setTipo($row['tipo'])   // valor das enums coincide com o que é armazenado diretamente no banco
-                ->setLogin($row['login'])),
-            Query::select('SELECT id_usuario, nome, tipo, login FROM usuario WHERE id_usuario = :id', [':id' => $usuario->getId()])
+                ->setTipo($row['tipo'])
+                ->setLogin($row['login']))
+                ->setCadastro(DateUtil::toLocalDateTime($row['cadastro']))
+                ->setUltimoAcesso(is_null($row['ultimo_acesso']) ? null : DateUtil::toLocalDateTime($row['ultimo_acesso'])),
+            Query::select('SELECT id_usuario, nome, tipo, login, cadastro, ultimo_acesso FROM usuario WHERE id_usuario = :id', [':id' => $usuario->getId()])
         )[0];
+    }
+
+    public static function professorDaDisciplina(int $idProfessor, int $idDisciplina): bool
+    {
+        return (bool) Query::select(
+            'SELECT EXISTS(
+                SELECT 1
+                  FROM professor_de_disciplina
+                 WHERE (id_professor, id_disciplina) = (:idProf, :idDisc)
+            ) AS professor_da_disciplina', [
+                ':idProf' => $idProfessor,
+                ':idDisc' => $idDisciplina
+            ]
+        )[0]['professor_da_disciplina'];
     }
 }
