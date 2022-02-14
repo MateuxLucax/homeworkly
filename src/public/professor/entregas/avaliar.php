@@ -3,7 +3,7 @@
 $root = '../../../';
 require_once $root . 'utils/response-utils.php';
 forbidMethodsNot('POST');
-require_once $root . 'dao/usuarioDAO.php';
+require_once $root . 'dao/UsuarioDAO.php';
 require_once $root . 'models/TipoUsuario.php';
 UsuarioDAO::validaSessaoTipo(TipoUsuario::PROFESSOR);
 
@@ -11,6 +11,7 @@ UsuarioDAO::validaSessaoTipo(TipoUsuario::PROFESSOR);
 
 require_once $root . 'database/Query.php';
 require_once $root . 'dao/PermissaoEntrega.php';
+require_once $root . 'dao/TarefaDAO.php';
 
 try
 {
