@@ -25,7 +25,7 @@ class PermissaoTarefa
         $dados = Query::select(
             'SELECT ta.id_professor
                   , ta.fechamento < CURRENT_TIMESTAMP AS fechada
-                  , ta.abertura >= CURRENT_TIMESTAMP AS aberta
+                  , ta.abertura <= CURRENT_TIMESTAMP AS aberta
                   , di.id_disciplina
                   , tu.id_turma
                   , tu.ano != :ano AS arquivada
@@ -41,6 +41,7 @@ class PermissaoTarefa
         $this->idProfessor = $dados['id_professor'];
         $this->idDisciplina = $dados['id_disciplina'];
         $this->idTurma = $dados['id_turma'];
+        $this->aberta = $dados['aberta'];
         $this->fechada = $dados['fechada'];
         $this->arquivada = $dados['arquivada'];
         $this->temEntregas = $dados['tem_entregas'];
