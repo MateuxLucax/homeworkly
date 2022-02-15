@@ -57,24 +57,25 @@ class DisciplinaDAO
     }
 
     public static function disciplinasDeTurma(int $idAluno, int $idTurma): array {
-        $result = Query::select('SELECT
-                                    d.id_disciplina,
-                                    d.nome,
-                                    count(ta.id_tarefa) as tarefas,
-                                    avg(e.nota) as nota_media
-                                FROM
-                                    disciplina d
-                                INNER JOIN turma t ON
-                                    d.id_turma = t.id_turma
-                                    AND t.id_turma = :id_turma
-                                INNER JOIN tarefa ta ON 
-                                    ta.id_disciplina  = d.id_disciplina
-                                INNER JOIN aluno_em_turma aet ON
-                                    aet.id_turma = aet.id_turma
-                                    AND aet.id_aluno = :id_aluno
-                                LEFT JOIN entrega e ON 
-                                    e.id_tarefa = ta.id_tarefa
-                                GROUP BY 1, 2', 
+        $result = Query::select(
+            'SELECT
+                    d.id_disciplina,
+                    d.nome,
+                    count(DISTINCT(ta.id_tarefa)) as tarefas,
+                    avg(a.nota) as nota_media
+                FROM
+                    disciplina d
+                INNER JOIN turma t ON
+                    d.id_turma = t.id_turma
+                    AND t.id_turma = :id_turma
+                INNER JOIN tarefa ta ON 
+                    ta.id_disciplina  = d.id_disciplina
+                INNER JOIN aluno_em_turma aet ON
+                    aet.id_turma = aet.id_turma
+                    AND aet.id_aluno = :id_aluno
+                LEFT JOIN avaliacao a ON 
+                    a.id_tarefa = ta.id_tarefa 
+                GROUP BY 1, 2', 
                                 ['id_turma' => $idTurma, 'id_aluno' => $idAluno]);
 
         return array_map(
@@ -94,7 +95,7 @@ class DisciplinaDAO
             'SELECT
                     d.nome AS disciplina,
                     u.nome AS aluno,
-                    count(ta.id_tarefa) AS tarefas,
+                    count(DISTINCT(ta.id_tarefa)) AS tarefas,
                     avg(a.nota) AS nota_media
                 FROM
                     disciplina d
