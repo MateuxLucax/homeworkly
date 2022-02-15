@@ -1,6 +1,6 @@
 <?php
 
-const HOST = '10.108.0.2';
+const HOST = 'localhost';
 const PORT = '5432';
 const DBNAME = 'homeworkly';
 const USER = 'root';
