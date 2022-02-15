@@ -22,9 +22,5 @@ RUN pecl install xdebug \
 RUN a2enmod rewrite
 RUN a2enmod ssl
 
-COPY ./docker/cert/ssl.crt /etc/apache2/ssl/ssl.crt
-COPY ./docker/cert/ssl.key /etc/apache2/ssl/ssl.key
-RUN mkdir -p /var/run/apache2/
-
 EXPOSE 80
 EXPOSE 443
