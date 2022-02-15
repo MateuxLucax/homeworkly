@@ -11,9 +11,9 @@
     </a>
 </li>
 <li class="nav-item">
-    <a href="/professor/disciplinas" class="nav-link link-dark  <?= active('/professor/disciplinas/'); ?>">
-        <i class="fas fa-chalkboard-teacher fa-fw me-2"></i>
-        Disciplinas
+    <a href="/professor/alunos" class="nav-link link-dark  <?= active('/professor/alunos/'); ?>">
+        <i class="fas fa-graduation-cap"></i>
+        Alunos
     </a>
 </li>
 
