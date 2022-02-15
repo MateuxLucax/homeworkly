@@ -228,4 +228,23 @@ class TurmaDAO
             $rows
         );
     }
+    public static function turmaAtualDeProfessor(int $idProfessor): ?Turma
+    {
+        $rows = Query::select(
+            "SELECT t.id_turma, t.nome, t.ano 
+                                     FROM turma t
+                                     JOIN  disciplina d on t.id_turma = d.id_turma
+                                     JOIN professor_de_disciplina pdd on d.id_disciplina = pdd.id_disciplina
+                                    WHERE t.ano = date_part('year', CURRENT_DATE)
+                                      AND pdd.id_professor = :id_professor",
+            ['id_professor' => $idProfessor]
+        );
+        return array_map(
+            fn ($row) => (new Turma)
+                ->setId($row['id_turma'])
+                ->setNome($row['nome'])
+                ->setAno($row['ano']),
+            $rows
+        )[0];
+    }
 }

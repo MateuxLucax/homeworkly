@@ -81,7 +81,7 @@ class TarefaDAO
         )[0]['existe'];
     }
 
-    public static function listarPorProfessor(int $idAluno, int $idTurma): array
+    public static function listarPorProfessor(int $idProfessor, int $idTurma): array
     {
         $rows = Query::select(
             'SELECT ta.id_tarefa
@@ -106,7 +106,7 @@ class TarefaDAO
                JOIN professor_de_disciplina pdd on di.id_disciplina = pdd.id_disciplina
               WHERE pdd.id_professor = :id_professor
                 AND tu.id_turma = :id_turma',
-            ['id_professor' => $idAluno, 'id_turma' => $idTurma]
+            ['id_professor' => $idProfessor, 'id_turma' => $idTurma]
         );
 
         return array_map(self::toModel(...), $rows);
