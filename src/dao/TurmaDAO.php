@@ -247,4 +247,61 @@ class TurmaDAO
             $rows
         )[0];
     }
+
+    public static function alunosDeProfessor(int $idProfessor): array
+    {
+        return Query::select(
+            "SELECT t.nome,
+                    jsonb_agg(json_build_object(
+                        'nome', results.disciplina,
+                        'alunos', results.alunos
+                    )) AS disciplinas
+            FROM 
+            (
+                SELECT
+                    d.nome AS disciplina,
+                    t.id_turma,
+                    json_agg(results.alunos) AS alunos
+                FROM
+                    (
+                        SELECT
+                            d.id_disciplina,
+                            json_build_object(
+                    'nome', u.nome,
+                    'tarefas', count(DISTINCT(ta.id_tarefa)),
+                    'nota_media', avg(a.nota) 
+                ) AS alunos
+                        FROM
+                            disciplina d
+                        INNER JOIN turma t ON
+                            d.id_turma = t.id_turma
+                        INNER JOIN tarefa ta ON
+                            ta.id_disciplina = d.id_disciplina
+                        INNER JOIN professor_de_disciplina pdd ON
+                            pdd.id_disciplina = d.id_disciplina
+                        INNER JOIN aluno_em_turma aet ON
+                            aet.id_turma = t.id_turma
+                        INNER JOIN usuario u ON
+                            u.id_usuario = aet.id_aluno
+                        LEFT JOIN avaliacao a ON
+                            a.id_aluno = u.id_usuario
+                        WHERE
+                            pdd.id_professor = :id_professor
+                        GROUP BY
+                            1,
+                            u.nome
+                    ) AS results
+                JOIN disciplina d ON
+                    d.id_disciplina = results.id_disciplina
+                JOIN turma t ON
+                    d.id_turma = t.id_turma
+                GROUP BY
+                    1, 2
+            ) AS results
+            JOIN turma t ON t.id_turma = results.id_turma
+            GROUP BY
+            1",
+            ['id_professor' => $idProfessor]
+        );
+    }
 }

@@ -74,7 +74,7 @@ class DisciplinaDAO
                     aet.id_turma = aet.id_turma
                     AND aet.id_aluno = :id_aluno
                 LEFT JOIN avaliacao a ON 
-                    a.id_tarefa = ta.id_tarefa 
+                    a.id_aluno = aet.id_aluno 
                 GROUP BY 1, 2', 
             ['id_turma' => $idTurma, 'id_aluno' => $idAluno]
         );
@@ -84,44 +84,6 @@ class DisciplinaDAO
                 'disciplina' => $row['nome'],
                 'disciplina_id' => $row['id_disciplina'],
                 'professores' => UsuarioDAO::buscarProfessoresDeDisciplina($row['id_disciplina']),
-                'tarefas' => $row['tarefas'],
-                'nota_media' => $row['nota_media']
-            ],
-            $result
-        );
-    }
-
-    public static function alunosDeProfessor(int $idProfessor, int $idTurma): array
-    {
-        $result = Query::select(
-            'SELECT
-                    d.nome AS disciplina,
-                    u.nome AS aluno,
-                    count(DISTINCT(ta.id_tarefa)) AS tarefas,
-                    avg(a.nota) AS nota_media
-                FROM
-                    disciplina d
-                INNER JOIN turma t ON
-                    d.id_turma = t.id_turma
-                    AND t.id_turma = :id_turma
-                INNER JOIN tarefa ta ON 
-                    ta.id_disciplina  = d.id_disciplina
-                INNER JOIN professor_de_disciplina pdd  ON
-                    pdd.id_professor = :id_professor
-                INNER JOIN aluno_em_turma aet ON
-                    aet.id_turma = t.id_turma
-                INNER JOIN usuario u ON
-                    u.id_usuario = aet.id_aluno 
-                LEFT JOIN avaliacao a ON 
-                    a.id_tarefa = ta.id_tarefa 
-                GROUP BY 1, 2',
-            ['id_turma' => $idTurma, 'id_professor' => $idProfessor]
-        );
-
-        return array_map(
-            fn ($row) => [
-                'disciplina' => $row['disciplina'],
-                'aluno' => $row['aluno'],
                 'tarefas' => $row['tarefas'],
                 'nota_media' => $row['nota_media']
             ],

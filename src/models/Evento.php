@@ -86,16 +86,16 @@ class Evento
         return $this;
     }
 
-    public static function getTempoRestante(DateTime $dataFinal): string {
+    public static function getTempoRestante(DateTime $dataEntrega): string {
         date_default_timezone_set("America/Sao_Paulo");
-        $diasFaltando = round(((($dataFinal->getTimestamp() - time()) / 24) / 60) / 60);
-        if ($diasFaltando > 1) {
-            return 'Faltam ' . intval($diasFaltando) . ' dias';
-        } else if ($diasFaltando == 1) {
-            return 'Fecha hoje';
+        $faltandoEntrega = round(((($dataEntrega->getTimestamp() - time()) / 24) / 60) / 60);
+        if ($faltandoEntrega > 1) {
+            return 'Entrega em ' . intval($faltandoEntrega) . ' dias';
+        } else if ($faltandoEntrega == 1) {
+            return 'Entrega hoje';
         }
 
-        return 'Fechada';
+        return 'Atrasado';
     }
 
     public function toArray(): array
@@ -116,7 +116,7 @@ class Evento
             fn (Tarefa $row) => (new Evento)
                 ->setTitulo(self::construirTitulo($row))
                 ->setDataInicial($row->dataHoraAbertura())
-                ->setDataFinal($row->dataHoraEntrega())
+                ->setDataFinal($row->dataHoraFechamento())
                 ->setCorEvento()
                 ->setDestino('tarefas/tarefa?id=' . $row->id()),
             $tarefas

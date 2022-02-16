@@ -11,9 +11,9 @@
     </a>
 </li>
 <li class="nav-item">
-    <a href="/professor/alunos" class="nav-link link-dark  <?= active('/professor/alunos/'); ?>">
+    <a href="/professor/turmas" class="nav-link link-dark  <?= active('/professor/turmas/'); ?>">
         <i class="fas fa-graduation-cap"></i>
-        Alunos
+        Turmas
     </a>
 </li>
 
