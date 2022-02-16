@@ -70,3 +70,14 @@ insert into avaliacao (id_tarefa, id_aluno, visto, nota, comentario) values
 , (1, 4, null, 0.0, 'O quê??')
 , (1, 5, null, 10.0, 'Parabéns')
 on conflict do nothing;
+
+
+-- para testar o cálculo de esforço
+
+insert into tarefa (id_professor, id_disciplina, titulo, descricao, com_nota, abertura, entrega, fechamento, esforco_minutos) values
+(7, 2, 'T1', '', false, current_timestamp, current_timestamp + interval '7 days', current_timestamp + interval '8 days', 60*3),
+(7, 2, 'T2', '', false, current_timestamp - interval '3 day', current_timestamp + interval '7 days', current_timestamp + interval '8 days', 60*4),
+(7, 2, 'T3', '', false, current_timestamp + interval '2 day', current_timestamp + interval '5 days', current_timestamp + interval '7 days', 60*2),
+(7, 2, 'T4', '', false, current_timestamp + interval '2 day', current_timestamp + interval '20 days', current_timestamp + interval '21 days', 60*10),
+(7, 2, 'T5', '', false, current_timestamp + interval '1 day', current_timestamp + interval '30 days', current_timestamp + interval '31 days', 60*1),
+(7, 2, 'T6', '', false, current_timestamp + interval '15 day', current_timestamp + interval '16 days', current_timestamp + interval '17 days', 60*3);

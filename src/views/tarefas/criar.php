@@ -72,6 +72,24 @@
                         <textarea class="form-control" name="descricao" id="descricao"><?= $tarefa?->descricao() ?></textarea>
                     </div>
 
+                    <?php $comNota = !$paginaAlterar || $tarefa->comNota(); ?>
+                    <div class="mb-0">
+                        <label class="form-label" for="comNota">Avaliação</label>
+                        <br />
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" name="comNota" type="checkbox" id="avaliacao-nota" <?= $comNota ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="avaliacao-nota">Possui nota?</label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <span>Datas e esforço</span>
+                </div>
+                <div class="card-body">
                     <?php $aberturaPassou = $paginaAlterar && $tarefa->estado() != TarefaEstado::ESPERANDO_ABERTURA; ?>
 
                     <?php
@@ -140,7 +158,7 @@
                             <label class="form-label" for="fechamento">
                                 Data fechamento
                                 &nbsp;
-                                <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Opcional – se não informar, você pode fechar manualmente depois. Depois dela, alunos não podem mais fazer entregas."></i>
+                                <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Depois da data de fechamento, os alunos não podem mais fazer entregas."></i>
                             </label>
                             <input class="form-control" type="datetime-local" name="fechamento" id="fechamento" required value="<?= dataFechamento() ?>" />
                         </div>
@@ -157,9 +175,6 @@
                         }
                         ?>
 
-                        <!-- TODO validar com customValidiyt conforme usuário editar:
-                         depois de contabilizar quantos minutos dá, deve ser maior que 0 -->
-
                         <div class="col-12 mb-3 col-sm-6 mb-sm-0 col-md-4">
                             <label class="form-label" for="esforcoMinutos">
                                 Esforço
@@ -167,34 +182,34 @@
                                 <i class="fas fa-question-circle" data-bs-toggle="tooltip" title="Estimativa de quanto tempo, em horas e minutos, um aluno demorará para realizar essa tarefa."></i>
                             </label>
                             <div class="input-group">
-                                <input name="esforcoHoras" class="form-control" placeholder="Horas" style="text-align: right;" type="text" pattern="\d*" inputmode="numeric" value="<?= $horasVal ?>" />
+                                <input id="esforcoHoras" name="esforcoHoras" class="form-control" placeholder="Horas" style="text-align: right;" type="text" pattern="\d*" inputmode="numeric" value="<?= $horasVal ?>" required />
                                 <span class="input-group-text">:</span>
-                                <input name="esforcoMinutos" class="form-control" placeholder="Minutos" type="text" pattern="[0-5]?\d" inputmode="numberic" value="<?= $minsVal ?>" />
+                                <input id="esforcoMinutos" name="esforcoMinutos" class="form-control" placeholder="Minutos" type="text" pattern="[0-5]?\d" inputmode="numberic" value="<?= $minsVal ?>" required />
                             </div>
                         </div>
 
-                        <?php $comNota = !$paginaAlterar || $tarefa->comNota(); ?>
-                        <div class="col-12 col-sm-6 col-md-8" style="margin-left:auto">
-                            <label class="form-label" for="comNota">Avaliação</label>
-                            <br />
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" name="comNota" type="checkbox" id="avaliacao-nota" <?= $comNota ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="avaliacao-nota">Possui nota?</label>
-                            </div>
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div style="margin-bottom: 8px;">&nbsp;</div>
+                            <button type="button" class="btn btn-secondary" id="btn-calcular-esforco">
+                                <i class="fas fa-calculator"></i>
+                                Calcular
+                            </button>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-end">
-                                <button class="btn btn-primary btn-lg" type="submit">
-                                    <?= $paginaAlterar ? 'Alterar tarefa' : 'Criar tarefa' ?>
-                                </button>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>
+
+            <div class="row mb-5">
+                <div class="col">
+                    <div class="text-end">
+                        <button class="btn btn-primary btn-lg" type="submit" disabled>
+                            <?= $paginaAlterar ? 'Alterar tarefa' : 'Criar tarefa' ?>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </form>
     </main>
 
@@ -255,18 +270,17 @@
     //
 
     function validarDatas() {
-        const abertura = new Date(form.abertura.value),
-            entrega = new Date(form.entrega.value),
-            fechamento = new Date(form.fechamento.value),
-            agora = new Date();
+        const agora = new Date();
+
+        const abertura = switchAbrirAgora.checked ? agora : new Date(form.abertura.value),
+              entrega = new Date(form.entrega.value),
+              fechamento = new Date(form.fechamento.value);
 
         let validAbertura = '';
-        if (!switchAbrirAgora.checked) {
-            if (abertura < agora) {
-                validAbertura = 'A data de abertura não pode estar no passado';
-            } else if (abertura.getFullYear() > agora.getFullYear()) {
-                validAbertura = 'A tarefa deverá ser aberta este ano';
-            }
+        if (abertura < agora) {
+            validAbertura = 'A data de abertura não pode estar no passado';
+        } else if (abertura.getFullYear() > agora.getFullYear()) {
+            validAbertura = 'A tarefa deverá ser aberta este ano';
         }
         form.abertura.setCustomValidity(validAbertura);
 
@@ -392,12 +406,53 @@
                     icon: 'success',
                     text: ret.message
                 });
-                // TODO trocar para location.assign('/{tipoUsuario}/disciplinas/disciplina?id=...);
-                // quando esse endpoint existir
-                history.back();
+                location.assign('/professor/disciplinas/disciplina?id='+form.id.value);
             } catch (e) {
                 console.error(e, '\n', text);
             }
         }
     }
+
+    //
+    // Cálculo de esforço
+    //
+
+    function formatarData(data) {
+        const pad = num => num < 10 ? '0' + num : num;
+        return `${data.getFullYear()}-${pad(data.getMonth()+1)}-${data.getDate()}`;
+    }
+
+
+    document.getElementById('btn-calcular-esforco').addEventListener('click', calcularEsforco);
+
+    async function calcularEsforco() {
+        if (!form.reportValidity()) return;
+
+        const abertura = switchAbrirAgora.checked
+                       ? new Date()
+                       : new Date(form.abertura.value);
+        const entrega        = new Date(form.entrega.value);
+        const esforcoMinutos = Number(form.esforcoHoras.value) * 60 + Number(form.esforcoMinutos.value),
+
+        const idDisciplina = <?= $disciplina->getId() ?>;
+
+        const response = await fetch('calcular-esforco', {
+            method: 'POST',
+            body: JSON.stringify({ 
+                idDisciplina,
+                abertura: formatarData(abertura),
+                entrega: formatarData(entrega),
+                esforcoMinutos
+            })
+        });
+        const text = await response.text();
+        try {
+            const retorno = JSON.parse(text);
+            console.log(retorno);
+            // se retorno for ok, habilitar botão de criar tarefa
+        }
+        catch(e) { console.error(e, '\n', text); }
+    }
+    
+
 </script>
