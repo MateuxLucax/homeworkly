@@ -12,7 +12,11 @@
         <tbody>
             <?php foreach ($view['disciplinas'] as $disciplina) : ?>
                 <tr>
-                    <td><?= $disciplina['disciplina'] ?></td>
+                    <td>
+                        <a href="/aluno/disciplinas/disciplina?id=<?=$disciplina['disciplina_id']?>">
+                            <?= $disciplina['disciplina'] ?>
+                        </a>
+                    </td>
                     <td><?= join(', ', array_map(fn($row) => $row->getNome(), $disciplina['professores']))  ?></td>
                     <td><?= $disciplina['tarefas'] ?></td>
                     <td><?= $disciplina['nota_media'] <= 0 ? '-' : $disciplina['nota_media'] ?></td>

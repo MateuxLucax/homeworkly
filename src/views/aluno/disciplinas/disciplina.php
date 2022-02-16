@@ -28,7 +28,7 @@
     <div class="card-body pb-0">
         <ul>
             <?php foreach ($disciplina->getProfessores() as $prof) {
-                echo '<li><a target="_blank" href="'.$rootUsuario.'usuarios/perfil?id='.$prof->getId().'">
+                echo '<li><a target="_blank" href="'.$rootUsuario.'usuarios/?id='.$prof->getId().'">
                     '.$prof->getNome().'
                 </a></li>';
             } ?>

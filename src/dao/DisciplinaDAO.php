@@ -76,11 +76,13 @@ class DisciplinaDAO
                 LEFT JOIN avaliacao a ON 
                     a.id_tarefa = ta.id_tarefa 
                 GROUP BY 1, 2', 
-                                ['id_turma' => $idTurma, 'id_aluno' => $idAluno]);
+            ['id_turma' => $idTurma, 'id_aluno' => $idAluno]
+        );
 
         return array_map(
             fn ($row) => [
                 'disciplina' => $row['nome'],
+                'disciplina_id' => $row['id_disciplina'],
                 'professores' => UsuarioDAO::buscarProfessoresDeDisciplina($row['id_disciplina']),
                 'tarefas' => $row['tarefas'],
                 'nota_media' => $row['nota_media']
