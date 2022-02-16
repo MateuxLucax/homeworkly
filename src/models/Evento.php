@@ -86,6 +86,18 @@ class Evento
         return $this;
     }
 
+    public static function getTempoRestante(DateTime $dataFinal): string {
+        date_default_timezone_set("America/Sao_Paulo");
+        $diasFaltando = round(((($dataFinal->getTimestamp() - time()) / 24) / 60) / 60);
+        if ($diasFaltando > 1) {
+            return 'Faltam ' . intval($diasFaltando) . ' dias';
+        } else if ($diasFaltando == 1) {
+            return 'Fecha hoje';
+        }
+
+        return 'Fechada';
+    }
+
     public function toArray(): array
     {
         return [
@@ -102,12 +114,20 @@ class Evento
     {
         return array_map(
             fn (Tarefa $row) => (new Evento)
-                ->setTitulo($row->disciplina()->getNome() . ' - ' .  $row->titulo())
+                ->setTitulo(self::construirTitulo($row))
                 ->setDataInicial($row->dataHoraAbertura())
                 ->setDataFinal($row->dataHoraEntrega())
                 ->setCorEvento()
                 ->setDestino('tarefas/tarefa?id=' . $row->id()),
             $tarefas
         );
+    }
+
+    private static function construirTitulo(Tarefa $row) {
+        return $row->disciplina()->getNome().
+               ' - '.
+               $row->titulo().
+               ' - '.
+               self::getTempoRestante($row->dataHoraEntrega());
     }
 }
