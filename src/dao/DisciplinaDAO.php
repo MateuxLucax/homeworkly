@@ -141,9 +141,10 @@ class DisciplinaDAO
                 JOIN professor_de_disciplina pdd ON
                     d.id_disciplina = pdd.id_disciplina
                 JOIN turma t ON
-                    d.id_turma = :id_turma
+                    d.id_turma = t.id_turma
                 WHERE
-                    pdd.id_professor = :id_professor',
+                    pdd.id_professor = :id_professor
+                AND t.id_turma = :id_turma',
             ['id_turma' => $idTurma, 'id_professor' => $idProfessor]
         );
 
