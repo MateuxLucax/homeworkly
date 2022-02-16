@@ -66,7 +66,8 @@ class TarefaDAO
                JOIN turma tu ON di.id_turma = tu.id_turma
                JOIN aluno_em_turma aet ON aet.id_turma = tu.id_turma
               WHERE aet.id_aluno = :id_aluno
-                AND tu.id_turma = :id_turma',
+                AND tu.id_turma = :id_turma
+                AND CURRENT_DATE >= ta.abertura',
             ['id_aluno' => $idAluno, 'id_turma' => $idTurma]
         );
 
