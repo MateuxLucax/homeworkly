@@ -13,9 +13,7 @@
         <?=$turma->getAno()?>
     </li>
     <li class="breadcrumb-item">
-        <a href="<?=$rootUsuario?>turmas/turma?id=<?=$turma->getId()?>">
-            <?=$turma->getNome()?>
-        </a>
+        <?=$turma->getNome()?>
     </li>
     <li class="breadcrumb-item active">
         <a href="<?=$rootUsuario?>disciplinas/disciplina?id=<?=$disciplina->getId()?>">
