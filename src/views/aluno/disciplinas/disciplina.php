@@ -18,17 +18,12 @@
 </ol>
 
 <div class="card px-0 mb-3">
-    <div class="card-header">
-        <div class="card-title">
-            Professor(es)
-        </div>
-    </div>
+    <div class="card-header">Professor(es)</div>
     <div class="card-body pb-0">
         <ul>
             <?php foreach ($disciplina->getProfessores() as $prof) {
-                echo '<li><a target="_blank" href="'.$rootUsuario.'usuarios/?id='.$prof->getId().'">
-                    '.$prof->getNome().'
-                </a></li>';
+                // TODO :ColocarLinkPerfil se for criado a tempo
+                echo '<li>'.$prof->getNome().'</li>';
             } ?>
         </ul>
     </div>
@@ -50,11 +45,7 @@
 </style>
 
 <div class="card px-0 mb-3">
-    <div class="card-header">
-        <div class="card-title">
-            Tarefas
-        </div>
-    </div>
+    <div class="card-header">Tarefas</div>
     <div class="card-body">
 
         <ul class="nav nav-pills nav-fill mb-3">

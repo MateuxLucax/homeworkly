@@ -254,12 +254,14 @@ class TurmaDAO
             "SELECT t.nome,
                     jsonb_agg(json_build_object(
                         'nome', results.disciplina,
+                        'id', results.id_disciplina,
                         'alunos', results.alunos
                     )) AS disciplinas
             FROM 
             (
                 SELECT
                     d.nome AS disciplina,
+                    d.id_disciplina,
                     t.id_turma,
                     json_agg(results.alunos) AS alunos
                 FROM
@@ -297,7 +299,7 @@ class TurmaDAO
                 JOIN turma t ON
                     d.id_turma = t.id_turma
                 GROUP BY
-                    1, 2
+                    1, 2, 3
             ) AS results
             JOIN turma t ON t.id_turma = results.id_turma
             GROUP BY

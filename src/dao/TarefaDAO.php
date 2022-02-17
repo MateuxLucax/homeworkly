@@ -113,6 +113,37 @@ class TarefaDAO
         return array_map(self::toModel(...), $rows);
     }
 
+    public static function buscarDeDisciplina(int $idDisciplina): array
+    {
+        $rows = Query::select(
+            'SELECT ta.id_tarefa
+                  , pro.id_usuario AS id_professor
+                  , pro.nome AS nome_professor
+                  , di.id_disciplina
+                  , di.nome AS nome_disciplina
+                  , tu.id_turma
+                  , tu.nome AS nome_turma
+                  , tu.ano AS turma_ano
+                  , ta.titulo
+                  , ta.descricao
+                  , ta.esforco_minutos
+                  , ta.com_nota
+                  , ta.abertura
+                  , ta.entrega
+                  , ta.fechamento
+               FROM tarefa ta
+               JOIN disciplina di ON ta.id_disciplina = di.id_disciplina
+               JOIN turma tu ON di.id_turma = tu.id_turma
+               JOIN usuario pro ON ta.id_professor = pro.id_usuario
+               JOIN professor_de_disciplina pdd on di.id_disciplina = pdd.id_disciplina
+              WHERE ta.id_disciplina = :idDisciplina
+           ORDER BY ta.entrega, ta.fechamento',
+            [ 'idDisciplina' => $idDisciplina ]
+        );
+
+        return array_map(self::toModel(...), $rows);
+    }
+
     public static function toModel(array $row): Tarefa
     {
         return (new Tarefa)

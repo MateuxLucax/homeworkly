@@ -2,7 +2,11 @@
 <div class="card pt-3 mb-3">
     <h2><?= $turma['nome'] ?></h2>
     <?php foreach (json_decode($turma['disciplinas'], true) as $disciplina) : ?>
-    <h5><?= $disciplina['nome'] ?></h5>
+    <h5>
+        <a href="/professor/disciplinas/disciplina?id=<?=$disciplina['id']?>">
+            <?= $disciplina['nome'] ?>
+        </a>
+    </h5>
     <table class="table table-hover table-striped table-bordered">
         <thead>
             <tr>
