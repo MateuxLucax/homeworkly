@@ -200,10 +200,22 @@
                 </div>
             </div>
 
+            <div class="d-none" id="info-carga-ok">
+                <div class="alert alert-success">
+                    Não detectamos que o aluno está sobrecarregado.
+                </div>
+            </div>
+
+            <div class="d-none" id="info-sobrecarga">
+                <div class="alert alert-danger">
+                    <b>Aviso:</b> Detectamos que o aluno pode estar sobrecarregado atualmente ou ficará sobrecarregado com a criação dessa tarefa.</br>Considere estender a data de entrega.
+                </div>
+            </div>
+
             <div class="row mb-5">
                 <div class="col">
                     <div class="text-end">
-                        <button class="btn btn-primary btn-lg" type="submit" disabled>
+                        <button id="btn-enviar-tarefa" class="btn btn-primary btn-lg" type="submit" disabled>
                             <?= $paginaAlterar ? 'Alterar tarefa' : 'Criar tarefa' ?>
                         </button>
                     </div>
@@ -432,9 +444,20 @@
                        ? new Date()
                        : new Date(form.abertura.value);
         const entrega        = new Date(form.entrega.value);
-        const esforcoMinutos = Number(form.esforcoHoras.value) * 60 + Number(form.esforcoMinutos.value),
+        const esforcoMinutos = Number(form.esforcoHoras.value) * 60 + Number(form.esforcoMinutos.value);
 
         const idDisciplina = <?= $disciplina->getId() ?>;
+
+        const elemCargaOk = document.getElementById('info-carga-ok');
+        const elemSobrecarga = document.getElementById('info-sobrecarga');
+        const btnEnviarTarefa = document.getElementById('btn-enviar-tarefa');
+
+        console.log(JSON.stringify({ 
+            idDisciplina,
+            abertura: formatarData(abertura),
+            entrega: formatarData(entrega),
+            esforcoMinutos
+        }));
 
         const response = await fetch('calcular-esforco', {
             method: 'POST',
@@ -448,8 +471,14 @@
         const text = await response.text();
         try {
             const retorno = JSON.parse(text);
-            console.log(retorno);
-            // se retorno for ok, habilitar botão de criar tarefa
+            if (retorno.status == 'sobrecarga') {
+                elemCargaOk.classList.add('d-none');
+                elemSobrecarga.classList.remove('d-none');
+            } else {  // retorno.status == ok
+                elemCargaOk.classList.remove('d-none');
+                elemSobrecarga.classList.add('d-none');
+            }
+            btnEnviarTarefa.removeAttribute('disabled');
         }
         catch(e) { console.error(e, '\n', text); }
     }

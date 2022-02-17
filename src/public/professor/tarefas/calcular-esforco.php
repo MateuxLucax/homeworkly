@@ -33,8 +33,6 @@ if (empty($resIdTurma)) respondJson(
 );
 $idTurma = (int) $resIdTurma[0]['id_turma'];
 
-// TODO encapsular cálculo de esforço num objeto, reutilizar para validar a tarefa nos endpoints de criação e alteração
-
 $sqlTarefasAdjacentes = '
     SELECT ta.abertura
          , ta.entrega
@@ -51,7 +49,7 @@ $sqlTarefasAdjacentes = '
 //   ****    ******     **      ****
 // ####       ####     ####       ####
 
-    $tarefas = Query::select(
+$tarefas = Query::select(
     $sqlTarefasAdjacentes,
     [ ':idTurma' => $idTurma
     , ':abertura' => $dados['abertura'].' 00:00:00'
@@ -59,7 +57,10 @@ $sqlTarefasAdjacentes = '
     ]
 );
 
-// TODO lidar com o caso em que não há tarefas adjacentes
+if (empty($tarefas)) respondJson(
+    HttpCodes::OK,
+    [ 'status' => 'ok' ]
+);
 
 // Incluir tarefa que está sendo criada
 $tarefas[] = [
@@ -107,16 +108,18 @@ foreach ($tarefas as $tarefa) {
     }
 }
 
-$mediaMinutosPorDia = array_sum($minutosPorDia) / count($minutosPorDia);
+// die(json_encode($minutosPorDia));
 
-// Dado um valor threshold, tipo 4 horas por dia,
-// se a média for maior que isso, retornar que não pode,
-// se houver algum dia com mais que 5 horas de trabalho, retornar que não pode
-// (threshold * 1.2 ou algo assim)
-// caso contrário retornar que pode
+$limiteMinutosPorDia = 4 * 60;
 
-// junto retornar qual ficou a média de trabalho por dia, só pra ficar mais informativo pro professor
-// mas essa média só considerando o período da tarefa
-// porque nvdd o $mediaMinutosPorDia tá incompleto pq não considera outras tarefas no período
-// de $menorData a $maiorData que não _intercedam_ a tarefa criada
+foreach ($minutosPorDia as $minutosDia) {
+    if ($minutosDia > $limiteMinutosPorDia) respondJson(
+        HttpCodes::OK,
+        [ 'status' => 'sobrecarga' ]
+    );
+}
 
+respondJson(
+    HttpCodes::OK,
+    [ 'status' => 'ok' ]
+);
