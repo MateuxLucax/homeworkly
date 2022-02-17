@@ -418,7 +418,7 @@
                     icon: 'success',
                     text: ret.message
                 });
-                location.assign('/professor/disciplinas/disciplina?id='+form.id.value);
+                location.assign('/professor/disciplinas/disciplina?id='+form.disciplina.value);
             } catch (e) {
                 console.error(e, '\n', text);
             }
