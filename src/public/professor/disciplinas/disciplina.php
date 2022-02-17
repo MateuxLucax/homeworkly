@@ -23,11 +23,12 @@ if (!isset($_GET['id'])) respondWithErrorPage(
 $id = $_GET['id'];
 
 $disciplina = DisciplinaDAO::buscar($id);
-$disciplina->setProfessores(UsuarioDAO::buscarProfessoresDeDisciplina($disciplina->getId()));
 
 if ($disciplina == null) respondWithNotFoundPage(
     'Não existe disciplina de ID '.$id
 );
+
+$disciplina->setProfessores(UsuarioDAO::buscarProfessoresDeDisciplina($disciplina->getId()));
 
 $tarefas = TarefaDao::buscarDeDisciplina($id);
 
