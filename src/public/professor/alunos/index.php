@@ -12,9 +12,13 @@ UsuarioDAO::validaSessaoTipo(TipoUsuario::PROFESSOR);
 
 $usuario = SessionUtil::usuarioLogado();
 
-$view['title'] = 'Tur,as';
+$turmaAtual = isset($_GET['id_turma'])
+    ? TurmaDAO::buscar($_GET['id_turma'])
+    : TurmaDAO::turmasDeProfessor($usuario->getId())[0];
+
+$view['title'] = 'Alunos';
 $view['sidebar_links'] = 'professor/componentes/sidebar.php';
-$view['content_path'] = 'views/professor/turmas/listar.php';
-$view['turmas'] = TurmaDAO::alunosDeProfessor($usuario->getId());
+$view['content_path'] = 'views/professor/alunos/listar.php';
+$view['turma'] = TurmaDAO::alunosDeProfessor($usuario->getId(), $turmaAtual->getId());
 
 require_once $root . 'views/componentes/base.php';

@@ -1,4 +1,4 @@
-<?php foreach ($view['turmas'] as $turma) : ?>
+<?php foreach ($view['turma'] as $turma) : ?>
 <div class="card pt-3 mb-3">
     <h2><?= $turma['nome'] ?></h2>
     <?php foreach (json_decode($turma['disciplinas'], true) as $disciplina) : ?>

@@ -248,7 +248,7 @@ class TurmaDAO
         )[0];
     }
 
-    public static function alunosDeProfessor(int $idProfessor): array
+    public static function alunosDeProfessor(int $idProfessor, int $idTurma): array
     {
         return Query::select(
             "SELECT t.nome,
@@ -287,6 +287,7 @@ class TurmaDAO
                             a.id_aluno = u.id_usuario
                         WHERE
                             pdd.id_professor = :id_professor
+                        AND t.id_turma = :id_turma
                         GROUP BY
                             1,
                             u.nome
@@ -301,7 +302,7 @@ class TurmaDAO
             JOIN turma t ON t.id_turma = results.id_turma
             GROUP BY
             1",
-            ['id_professor' => $idProfessor]
+            ['id_professor' => $idProfessor, 'id_turma' => $idTurma]
         );
     }
 }
