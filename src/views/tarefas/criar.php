@@ -208,7 +208,7 @@
 
             <div class="d-none" id="info-sobrecarga">
                 <div class="alert alert-danger">
-                    <b>Aviso:</b> Detectamos que o aluno pode estar sobrecarregado atualmente ou ficará sobrecarregado com a criação dessa tarefa.</br>Considere estender a data de entrega.
+                    <b>Aviso:</b> Detectamos que o aluno está sobrecarregado atualmente ou ficará sobrecarregado com a criação dessa tarefa.</br>Considere estender a data de entrega.
                 </div>
             </div>
 

@@ -101,6 +101,8 @@ for ($i = 0; $i < $qtdDiasPeriodo; $i++) {
 foreach ($tarefas as $tarefa) {
     $indiceDiaInicio = diffDias($tarefa['abertura'], $menorData);
     $qtdDiasTarefa = diffDias($tarefa['entrega'], $tarefa['abertura']);
+
+    if ($qtdDiasTarefa == 0) continue;
     $minutosPorDiaTarefa = $tarefa['esforco_minutos'] / $qtdDiasTarefa;
 
     for ($i = 0; $i < $qtdDiasTarefa; $i++) {
